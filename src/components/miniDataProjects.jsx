@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import '../styles/main.css';
+import '../App.css';
 
 const projects = [
     {

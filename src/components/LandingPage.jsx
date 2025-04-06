@@ -1,40 +1,97 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-import '../styles/main.css'; 
+import Navbar from './Navbar'; // Import the new Navbar component
+import Footer from './Footer'; // Import the new Footer component
+import '../App.css'; // Updated import
 
 const LandingPage = () => {
-    return (
-        <div className="landing-page">
-            <nav>
-                <NavLink to="/" exact activeClassName="active">Home</NavLink>
-                <NavLink to="/miniDataProjects" activeClassName="active">Data ML Projects</NavLink>
-                <NavLink to="/contact" activeClassName="active">Contact</NavLink>
-            </nav>
-            <header className="landing-header">
-                <h1>Welcome to My Personal Website</h1>
-                <p>Hi, I'm Shangmin Chen. A passionate developer and lifelong learner.</p>
-            </header>
-            <section className="about-section">
-                <h2>About Me</h2>
-                <p>
-                    I specialize in building modern web applications and love exploring new technologies.
-                    Feel free to explore my projects and get to know more about me.
-                </p>
-            </section>
-            <section className="projects-section">
-                <h2>Projects</h2>
-                <p>Check out some of my work below:</p>
-                <ul>
-                    <li><a href="#project1">Project 1</a></li>
-                    <li><a href="#project2">Project 2</a></li>
-                    <li><a href="#project3">Project 3</a></li>
-                </ul>
-            </section>
-            <footer className="landing-footer">
-                <p>© 2023 Shangmin Chen. All rights reserved.</p>
-            </footer>
+  return (
+    <div className="landing-page">
+      <Navbar />
+      <header className="landing-header" id="about">
+        <h1>Shangmin Chen</h1>
+        <p>A passionate developer and lifelong learner.</p>
+      </header>
+      <section className="intro-section">
+        <div className="intro-content">
+          <h2>Who I Am</h2>
+          <p>
+            I specialize in building modern web applications and love exploring new technologies. Scroll down to learn more about my work and get in touch.
+          </p>
         </div>
-    );
+        <div className="intro-media">
+          {/* Placeholder for a video or image */}
+          <div className="media-placeholder">
+            <span>*placeholder for image or video*</span>
+          </div>
+        </div>
+      </section>
+      <section className="about-section">
+        <h2>About Me</h2>
+        <p>
+          I'm a developer with a focus on creating efficient, user-friendly web applications. I'm constantly learning and experimenting with new tools and technologies to improve my craft.
+        </p>
+      </section>
+      <section className="projects-section" id="projects">
+        <h2>Projects</h2>
+        <p>Check out some of my work below:</p>
+        <div className="projects-list">
+          <div className="project-item">
+            <div className="media-placeholder">
+              <span>*image*</span>
+            </div>
+            <h3>Project 1</h3>
+            <p>A brief description of Project 1.</p>
+            <a href="https://github.com/your-username/project-1" target="_blank" rel="noopener noreferrer">Visit this project</a>
+          </div>
+          <div className="project-item">
+            <div className="media-placeholder">
+              <span>*image*</span>
+            </div>
+            <h3>Project 2</h3>
+            <p>A brief description of Project 2.</p>
+            <a href="https://github.com/your-username/project-2" target="_blank" rel="noopener noreferrer">Visit this project</a>
+          </div>
+          <div className="project-item">
+            <div className="media-placeholder">
+              <span>*image*</span>
+            </div>
+            <h3>Project 3</h3>
+            <p>A brief description of Project 3.</p>
+            <a href="https://github.com/your-username/project-3" target="_blank" rel="noopener noreferrer">Visit this project</a>
+          </div>
+          <div className="project-item">
+            <div className="media-placeholder">
+              <span>*image*</span>
+            </div>
+            <h3>Project 3</h3>
+            <p>A brief description of Project 3.</p>
+            <a href="https://github.com/your-username/project-3" target="_blank" rel="noopener noreferrer">Visit this project</a>
+          </div>
+          <div className="project-item">
+            <div className="media-placeholder">
+              <span>*image*</span>
+            </div>
+            <h3>Project 3</h3>
+            <p>A brief description of Project 3.</p>
+            <a href="https://github.com/your-username/project-3" target="_blank" rel="noopener noreferrer">Visit this project</a>
+          </div>
+          <div className="project-item">
+            <div className="media-placeholder">
+              <span>*image*</span>
+            </div>
+            <h3>Project 3</h3>
+            <p>A brief description of Project 3.</p>
+            <a href="https://github.com/your-username/project-3" target="_blank" rel="noopener noreferrer">Visit this project</a>
+          </div>
+        </div>
+      </section>
+      <section className="contact-section" id="contact">
+        <h2>Contact</h2>
+        <p>Feel free to reach out to me at <a href="mailto:your-email@example.com">your-email@example.com</a>.</p>
+      </section>
+      <Footer />
+    </div>
+  );
 };
 
 export default LandingPage;
