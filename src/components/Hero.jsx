@@ -13,11 +13,10 @@ const Hero = () => {
           Hello, I'm <span className="highlight">Shangmin Chen</span>
         </h1>
         <p className="hero-subtitle">
-          Data Scientist & Software Developer
+          Software Engineer
         </p>
         <p className="hero-description">
-          I build modern web applications and create data-driven solutions 
-          that make a real impact. Let's create something meaningful together.
+          I build beautiful applications with ML and AI when I see a need or problem worth solving.
         </p>
         <div className="hero-buttons">
           <button 
