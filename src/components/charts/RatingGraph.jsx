@@ -11,18 +11,22 @@ const RatingGraph = ({ contests }) => {
   const chartData = sortedContests.map(contest => ({
     date: new Date(contest.ratingUpdateTimeSeconds * 1000).toLocaleDateString('en-US', { 
       month: 'short', 
+      day: 'numeric',
       year: 'numeric' 
     }),
     rating: contest.newRating,
-    contestName: contest.contestName
+    contestName: contest.contestName,
+    contestId: contest.contestId
   }));
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
+      const data = payload[0].payload;
       return (
         <div className="custom-tooltip">
           <p className="tooltip-label">{label}</p>
           <p className="tooltip-rating">{`Rating: ${payload[0].value}`}</p>
+          <p className="tooltip-contest">{data.contestName}</p>
         </div>
       );
     }

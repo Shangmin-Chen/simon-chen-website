@@ -119,7 +119,7 @@ const CompetitiveProgramming = () => {
               <h3>Contest History</h3>
               <RatingGraph contests={contests} />
               <div className="contests-list">
-                {contests.map((contest) => (
+                {contests.slice(0, 3).map((contest) => (
                   <Card key={contest.contestId} variant="contest">
                     <div className="contest-header">
                       <h4 className="contest-name">
