@@ -1,6 +1,6 @@
 # Shangmin Chen - Portfolio Website
 
-A modern, responsive portfolio website built with React, featuring smooth animations, contact form integration, and automated deployment to GitHub Pages.
+A modern, responsive portfolio website built with React, featuring smooth animations, contact form integration, and containerized deployment with Docker.
 
 ## 🚀 Live Demo
 
@@ -12,152 +12,16 @@ Visit the live website: [https://shangmin.me](https://shangmin.me)
 - **Styling**: CSS3 with custom animations
 - **Email Service**: EmailJS for client-side email functionality
 - **Smooth Scrolling**: Lenis for enhanced user experience
-- **Deployment**: GitHub Pages with automated CI/CD
-- **Domain**: Custom domain (shangmin.me) with CNAME configuration
+- **Containerization**: Docker with multi-stage builds
+- **Web Server**: Nginx for production serving
 
-## 📧 EmailJS Contact Form Setup
-
-The contact form uses EmailJS to send emails directly from the client-side without requiring a backend server.
-
-### Step-by-Step Setup:
-
-1. **Create EmailJS Account**
-   - Sign up at [EmailJS](https://www.emailjs.com/)
-   - Verify your email address
-
-2. **Create Email Service**
-   - Go to "Email Services" in your EmailJS dashboard
-   - Add a new service (Gmail, Outlook, Yahoo, etc.)
-   - Follow the authentication steps for your chosen email provider
-   - Note down your Service ID
-
-3. **Create Email Template**
-   - Go to "Email Templates" and create a new template
-   - Use these template variables (case-sensitive):
-     ```
-     Subject: {{subject}}
-     From: {{name}} <{{email}}>
-     Message: {{message}}
-     ```
-   - Set the "To Email" field to your email address (shangminch@gmail.com)
-   - Note down your Template ID
-
-4. **Get Public Key**
-   - Go to "Account" → "General"
-   - Copy your Public Key
-
-5. **Environment Variables Setup**
-   
-   **For Local Development:**
-   Create a `.env` file in the root directory:
-   ```env
-   REACT_APP_EMAILJS_SERVICE_ID=your_service_id_here
-   REACT_APP_EMAILJS_TEMPLATE_ID=your_template_id_here
-   REACT_APP_EMAILJS_PUBLIC_KEY=your_public_key_here
-   ```
-   
-   **For Production (GitHub Pages):**
-   Add these as GitHub Secrets in your repository:
-   - Go to Settings → Secrets and variables → Actions
-   - Add the following repository secrets:
-     - `REACT_APP_EMAILJS_SERVICE_ID`
-     - `REACT_APP_EMAILJS_TEMPLATE_ID`
-     - `REACT_APP_EMAILJS_PUBLIC_KEY`
-
-### EmailJS Implementation Details:
-
-The email service is implemented in `src/utils/emailService.js` with:
-- Environment variable validation
-- Error handling and user feedback
-- Template parameter mapping
-- Fallback error messages
-
-## 🔄 GitHub Actions Workflow
-
-The project uses GitHub Actions for automated deployment to GitHub Pages.
-
-### Workflow Configuration (`.github/workflows/deploy.yml`):
-
-```yaml
-name: Deploy to GitHub Pages
-
-on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Build
-        run: npm run build
-        env:
-          REACT_APP_EMAILJS_SERVICE_ID: ${{ secrets.REACT_APP_EMAILJS_SERVICE_ID }}
-          REACT_APP_EMAILJS_TEMPLATE_ID: ${{ secrets.REACT_APP_EMAILJS_TEMPLATE_ID }}
-          REACT_APP_EMAILJS_PUBLIC_KEY: ${{ secrets.REACT_APP_EMAILJS_PUBLIC_KEY }}
-      
-      - name: Copy CNAME to build folder
-        run: |
-          if [ -f public/CNAME ]; then
-            cp public/CNAME build/CNAME
-          elif [ -f CNAME ]; then
-            cp CNAME build/CNAME
-          fi
-      
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-      
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: './build'
-
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-```
-
-### Key Features:
-- **Automatic Deployment**: Triggers on every push to main branch
-- **Manual Trigger**: Can be triggered manually via GitHub UI
-- **Environment Variables**: Securely injects EmailJS credentials
-- **CNAME Support**: Automatically copies CNAME file for custom domain
-- **Node.js 20**: Uses latest LTS version with npm caching
-- **Concurrency Control**: Prevents multiple deployments from running simultaneously
-
-## 🏠 Local Development Setup
+## 🐳 Quick Start with Docker
 
 ### Prerequisites:
-- Node.js 20+ (LTS recommended)
-- npm or yarn package manager
-- Git
+- [Docker](https://www.docker.com/get-started) (version 20.10+)
+- [Docker Compose](https://docs.docker.com/compose/install/) (optional, but recommended)
 
-### Installation Steps:
+### Option 1: Using Docker Compose (Recommended)
 
 1. **Clone the Repository**
    ```bash
@@ -165,115 +29,279 @@ jobs:
    cd Shangmin-Chen.github.io
    ```
 
-2. **Install Dependencies**
-   ```bash
-   npm install
-   ```
+2. **Set Environment Variables (Optional)**
 
-3. **Environment Setup**
-   Create a `.env` file in the root directory:
+   If you need EmailJS functionality, create a `.env` file:
    ```env
    REACT_APP_EMAILJS_SERVICE_ID=your_service_id_here
    REACT_APP_EMAILJS_TEMPLATE_ID=your_template_id_here
    REACT_APP_EMAILJS_PUBLIC_KEY=your_public_key_here
    ```
 
-4. **Start Development Server**
-   ```bash
-   npm start
+   Then uncomment the `args` section in `docker-compose.yml`:
+   ```yaml
+   build:
+     context: .
+     dockerfile: Dockerfile
+     args:
+       - REACT_APP_EMAILJS_SERVICE_ID=${REACT_APP_EMAILJS_SERVICE_ID}
+       - REACT_APP_EMAILJS_TEMPLATE_ID=${REACT_APP_EMAILJS_TEMPLATE_ID}
+       - REACT_APP_EMAILJS_PUBLIC_KEY=${REACT_APP_EMAILJS_PUBLIC_KEY}
    ```
-   The application will open at [http://localhost:3000](http://localhost:3000)
 
-### Development Commands:
+3. **Build and Run**
+   ```bash
+   docker-compose up --build
+   ```
+
+4. **Access the Application**
+   
+   Open your browser and navigate to [http://localhost:3000](http://localhost:3000)
+
+### Option 2: Using Docker Directly
+
+1. **Build the Docker Image**
+   ```bash
+   docker build -t shangmin-portfolio .
+   ```
+   
+   **With Environment Variables:**
+   ```bash
+   docker build \
+     --build-arg REACT_APP_EMAILJS_SERVICE_ID=your_service_id \
+     --build-arg REACT_APP_EMAILJS_TEMPLATE_ID=your_template_id \
+     --build-arg REACT_APP_EMAILJS_PUBLIC_KEY=your_public_key \
+     -t shangmin-portfolio .
+   ```
+
+2. **Run the Container**
+   ```bash
+   docker run -d -p 3000:80 --name shangmin-portfolio shangmin-portfolio
+   ```
+
+3. **Access the Application**
+   
+   Open your browser and navigate to [http://localhost:3000](http://localhost:3000)
+
+## 📋 Docker Commands
+
+### Basic Operations
 
 ```bash
-# Start development server with hot reload
-npm start
+# Build the image
+docker build -t shangmin-portfolio .
 
-# Run tests in interactive watch mode
-npm test
+# Run the container
+docker run -p 3000:80 shangmin-portfolio
 
-# Build production bundle
-npm run build
+# Run in detached mode
+docker run -d -p 3000:80 --name shangmin-portfolio shangmin-portfolio
 
-# Deploy to GitHub Pages (manual deployment)
-npm run deploy
+# Stop the container
+docker stop shangmin-portfolio
+
+# Start a stopped container
+docker start shangmin-portfolio
+
+# Remove the container
+docker rm shangmin-portfolio
+
+# View running containers
+docker ps
+
+# View container logs
+docker logs shangmin-portfolio
+
+# Follow container logs
+docker logs -f shangmin-portfolio
 ```
 
-### Project Structure:
+### Docker Compose Commands
+
+```bash
+# Build and start services
+docker-compose up --build
+
+# Start services in detached mode
+docker-compose up -d
+
+# Stop services
+docker-compose down
+
+# View logs
+docker-compose logs
+
+# Follow logs
+docker-compose logs -f
+
+# Rebuild without cache
+docker-compose build --no-cache
+
+# Stop and remove containers, networks
+docker-compose down -v
 ```
-src/
-├── components/          # React components
-│   ├── About.jsx       # About section
-│   ├── Blog.jsx        # Blog section
-│   ├── Contact.jsx     # Contact form
-│   ├── Experience.jsx  # Work experience
-│   ├── Hero.jsx        # Hero section
-│   ├── Navbar.jsx      # Navigation
-│   └── Projects.jsx    # Projects showcase
-├── hooks/              # Custom React hooks
-│   └── useLenis.js     # Smooth scrolling hook
-├── utils/              # Utility functions
-│   ├── emailService.js # EmailJS integration
-│   └── scrollUtils.js  # Scroll utilities
-├── App.jsx             # Main app component
-├── App.css            # Global styles
-└── index.js           # Entry point
+
+## 🏗️ Docker Architecture
+
+The Docker setup uses a **multi-stage build** for optimal image size and performance:
+
+### Stage 1: Builder
+- Uses `node:20-alpine` as base image
+- Installs dependencies with `npm ci`
+- Builds the React application
+- Creates optimized production bundle
+
+### Stage 2: Production
+- Uses `nginx:alpine` as base image (lightweight)
+- Copies built static files from builder stage
+- Configures nginx for:
+  - React Router support (SPA routing)
+  - Gzip compression
+  - Static asset caching
+  - Security headers
+  - Health check endpoint
+
+### Features:
+- ✅ **Small Image Size**: Multi-stage build reduces final image size
+- ✅ **Production Ready**: Optimized nginx configuration
+- ✅ **Health Checks**: Built-in health monitoring
+- ✅ **SPA Support**: Proper routing for React Router
+- ✅ **Performance**: Gzip compression and asset caching
+- ✅ **Security**: Security headers configured
+
+## 📧 EmailJS Setup
+
+If you need the contact form to work, you'll need to configure EmailJS:
+
+1. **Create EmailJS Account**
+   - Sign up at [EmailJS](https://www.emailjs.com/)
+   - Verify your email address
+
+2. **Create Email Service and Template**
+   - Follow the EmailJS setup guide in `pre-migration.md`
+   - Get your Service ID, Template ID, and Public Key
+
+3. **Pass Environment Variables**
+   
+   **For Docker Compose:**
+   - Add variables to `.env` file
+   - Uncomment `args` section in `docker-compose.yml`
+   
+   **For Docker Build:**
+   - Use `--build-arg` flags when building
+   - Or create a `.env` file and use it with build args
+
+## 🔧 Configuration
+
+### Port Configuration
+
+To change the port mapping, modify `docker-compose.yml`:
+```yaml
+ports:
+  - "YOUR_PORT:80"  # Change YOUR_PORT to desired port
 ```
 
-### Custom Domain Setup:
+Or with Docker directly:
+```bash
+docker run -p YOUR_PORT:80 shangmin-portfolio
+```
 
-1. **CNAME File**: The `CNAME` file in the root directory contains `shangmin.me`
-2. **DNS Configuration**: Point your domain's CNAME record to `shangmin-chen.github.io`
-3. **Automatic Copy**: The GitHub Action automatically copies the CNAME file to the build directory
+### Nginx Configuration
 
-## 🚀 Deployment Process
+The nginx configuration is in `nginx.conf`. You can customize:
+- Server settings
+- Compression settings
+- Cache policies
+- Security headers
 
-### Automatic Deployment:
-1. Push changes to the `main` branch
-2. GitHub Actions automatically builds and deploys
-3. Site updates within 2-3 minutes
+After modifying, rebuild the image:
+```bash
+docker-compose build --no-cache
+```
 
-### Manual Deployment:
-1. Run `npm run build` to create production build
-2. Run `npm run deploy` to deploy to GitHub Pages
-3. Or use the "Actions" tab in GitHub to trigger the workflow manually
+## 🚀 Deployment
 
-### Environment Variables in Production:
-- EmailJS credentials are securely stored as GitHub Secrets
-- Automatically injected during the build process
-- No sensitive data exposed in the repository
+### Deploy to Cloud Platforms
 
-## 🔧 Troubleshooting
+The Docker container can be deployed to various platforms:
 
-### Common Issues:
+**Docker Hub:**
+```bash
+# Tag the image
+docker tag shangmin-portfolio yourusername/shangmin-portfolio
 
-1. **EmailJS Not Working**
-   - Verify environment variables are set correctly
-   - Check EmailJS template variables match exactly
-   - Ensure EmailJS service is properly configured
+# Push to Docker Hub
+docker push yourusername/shangmin-portfolio
+```
 
-2. **Build Failures**
-   - Check Node.js version (requires 20+)
-   - Verify all dependencies are installed
-   - Check for syntax errors in components
+**AWS ECS, Google Cloud Run, Azure Container Instances:**
+- Use the Dockerfile directly
+- Platforms will build and deploy automatically
 
-3. **Deployment Issues**
-   - Verify GitHub Pages is enabled in repository settings
-   - Check GitHub Actions permissions
-   - Ensure CNAME file is present for custom domain
+**VPS/Server:**
+```bash
+# On your server
+docker pull yourusername/shangmin-portfolio
+docker run -d -p 80:80 --name portfolio shangmin-portfolio
+```
 
-4. **Local Development Issues**
-   - Clear browser cache
-   - Restart development server
-   - Check console for error messages
+### Environment Variables in Production
+
+For production deployments, pass environment variables at build time:
+- Use build args during image build
+- Or use platform-specific secret management
+- Never commit sensitive keys to the repository
+
+## 🔍 Health Check
+
+The container includes a health check endpoint at `/health`. You can verify the container is running:
+
+```bash
+# Check health status
+docker ps  # Look for "healthy" status
+
+# Test health endpoint
+curl http://localhost:3000/health
+```
+
+## 🐛 Troubleshooting
+
+### Container Won't Start
+```bash
+# Check logs
+docker logs shangmin-portfolio
+
+# Check if port is already in use
+lsof -i :3000
+```
+
+### Build Fails
+```bash
+# Clear Docker cache
+docker builder prune
+
+# Rebuild without cache
+docker-compose build --no-cache
+```
+
+### Environment Variables Not Working
+- Ensure variables are passed at **build time** (not runtime)
+- React environment variables must start with `REACT_APP_`
+- Rebuild the image after changing environment variables
+
+### Can't Access Application
+- Verify container is running: `docker ps`
+- Check port mapping: `docker port shangmin-portfolio`
+- Ensure firewall allows the port
+- Try accessing `http://localhost:3000` or `http://127.0.0.1:3000`
 
 ## 📚 Additional Resources
 
+- [Docker Documentation](https://docs.docker.com/)
+- [Docker Compose Documentation](https://docs.docker.com/compose/)
 - [React Documentation](https://reactjs.org/)
+- [Nginx Documentation](https://nginx.org/en/docs/)
 - [EmailJS Documentation](https://www.emailjs.com/docs/)
-- [GitHub Pages Documentation](https://docs.github.com/en/pages)
-- [Lenis Smooth Scrolling](https://github.com/studio-freight/lenis)
 
 ## 📄 License
 
