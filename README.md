@@ -19,7 +19,7 @@ Visit the live website: [https://shangmin.me](https://shangmin.me)
 
 ### Prerequisites:
 - [Docker](https://www.docker.com/get-started) (version 20.10+)
-- [Docker Compose](https://docs.docker.com/compose/install/) (optional, but recommended)
+- Docker Compose V2 (included with Docker Desktop, or install separately)
 
 ### Option 1: Using Docker Compose (Recommended)
 
@@ -51,7 +51,7 @@ Visit the live website: [https://shangmin.me](https://shangmin.me)
 
 3. **Build and Run**
    ```bash
-   docker-compose up --build
+   docker compose up --build
    ```
 
 4. **Access the Application**
@@ -120,25 +120,25 @@ docker logs -f shangmin-portfolio
 
 ```bash
 # Build and start services
-docker-compose up --build
+docker compose up --build
 
 # Start services in detached mode
-docker-compose up -d
+docker compose up -d
 
 # Stop services
-docker-compose down
+docker compose down
 
 # View logs
-docker-compose logs
+docker compose logs
 
 # Follow logs
-docker-compose logs -f
+docker compose logs -f
 
 # Rebuild without cache
-docker-compose build --no-cache
+docker compose build --no-cache
 
 # Stop and remove containers, networks
-docker-compose down -v
+docker compose down -v
 ```
 
 ## 🏗️ Docker Architecture
@@ -216,7 +216,7 @@ The nginx configuration is in `nginx.conf`. You can customize:
 
 After modifying, rebuild the image:
 ```bash
-docker-compose build --no-cache
+docker compose build --no-cache
 ```
 
 ## 🚀 Deployment
@@ -281,7 +281,7 @@ lsof -i :3000
 docker builder prune
 
 # Rebuild without cache
-docker-compose build --no-cache
+docker compose build --no-cache
 ```
 
 ### Environment Variables Not Working
