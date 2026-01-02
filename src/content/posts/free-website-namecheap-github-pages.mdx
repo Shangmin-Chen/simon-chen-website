@@ -1,81 +1,71 @@
 ---
-title: "Host Your Website Free: GitHub Pages + Namecheap Domain (2025)"
-date: "2025-11-09"
-excerpt: "A comprehensive, up-to-date tutorial for university students on how to get a free .me domain through GitHub Education and host your personal website using GitHub Pages. Includes modern deployment options with GitHub Actions and all the resources you need."
-readTime: "8 min read"
+title: "Host Your Website Free: GitHub Pages + Namecheap Domain (2026)"
+date: "01-01-2026"
+excerpt: "Get a free .me domain through GitHub Education and host your website on GitHub Pages. Simple, step-by-step guide for students."
+readTime: "6 min read"
 category: "Tutorial"
 slug: "free-website-namecheap-github-pages"
 ---
 
-<div className="tldr-box">
-  <h3>TL;DR</h3>
-  <p>Get a free .me domain through GitHub Education → Create a repository → Deploy with GitHub Actions → Connect your domain. Total time: ~30 minutes (plus DNS propagation).</p>
-</div>
+## What You'll Get
 
-## What You'll Need
+A professional website at `yourname.me` with free hosting, automatic deployments, and HTTPS. Total cost: $0 for the first year.
 
-- GitHub account and university email (.edu)
-- Basic Git knowledge
-- Your website code (HTML/CSS or React/Next.js/Vue)
+## Before You Start
 
-## Step 1: Get Your Free .me Domain (5 min)
+You'll need:
+- GitHub account + university email (.edu)
+- Git and Node.js installed ([Git](https://git-scm.com/downloads) | [Node.js](https://nodejs.org/))
+- Your website code ready
 
-1. Apply for [GitHub Student Developer Pack](https://education.github.com/pack) (approval takes 1-3 days)
-2. Once approved, claim the **Namecheap .me domain** offer from your benefits page
-3. Register your `.me` domain with the education discount code (makes it free for year 1)
+**Quick check:** Run `git --version` and `node --version` in your terminal.
 
-**Note:** The GitHub Student Pack specifically offers a free `.me` domain for one year through Namecheap.
+## Step 1: Get Your Free Domain (5 min)
 
-**Tip:** Use `yourname.me` for a personal, memorable domain that stands out!
+1. Apply for [GitHub Student Developer Pack](https://education.github.com/pack) (1-3 day approval)
+2. Once approved, claim the **Namecheap .me domain** offer
+3. Register your domain (e.g., `yourname.me`) - free for year 1
 
-## Step 2: Create Your Repository (2 min)
+## Step 2: Create Repository (2 min)
 
-Create a new repo named `yourusername.github.io` at [github.com/new](https://github.com/new)
+1. Go to [github.com/new](https://github.com/new)
+2. Name it `yourusername.github.io` (use your exact GitHub username)
+3. Make it public or private (both work)
+4. Click **Create repository**
 
-- Can be **public or private** (GitHub Pro via Student Pack allows private repos!)
-- Repository name must match your GitHub username exactly
-- Alternative: Use any repo name for a project site at `yourusername.github.io/repo-name`
+**Important:** The repository must be named exactly `yourusername.github.io` - this avoids complicated base path configurations.
 
 ## Step 3: Deploy Your Site
 
-<div className="deployment-tabs">
-  <h3>Choose Your Deployment Method:</h3>
-  
-  <div className="tab-content">
-    <h4>🚀 GitHub Actions (Recommended for React/Next.js/Vue)</h4>
-    <p>Automatically builds and deploys on every push. No build files in your repo.</p>
-    <ol>
-      <li>Go to repo <strong>Settings</strong> → <strong>Pages</strong></li>
-      <li>Set Source to <strong>GitHub Actions</strong></li>
-      <li>Create <code>.github/workflows/deploy.yml</code> in your repo</li>
-      <li>Copy the workflow for your framework from the examples below</li>
-    </ol>
-    <p><strong>Quick workflow links by framework:</strong></p>
-    <ul>
-      <li>React/Vite workflow (see below)</li>
-      <li>Next.js workflow (see below)</li>
-      <li>Vue workflow (see below)</li>
-      <li>Plain HTML workflow (see below)</li>
-    </ul>
-  </div>
+Choose based on your project type:
 
-  <div className="tab-content">
-    <h4>📁 Deploy from Branch (Simple HTML sites)</h4>
-    <ol>
-      <li>Go to repo <strong>Settings</strong> → <strong>Pages</strong></li>
-      <li>Set Source to <strong>Deploy from a branch</strong></li>
-      <li>Choose <code>main</code> branch and <code>/ (root)</code> folder</li>
-      <li>Push your <code>index.html</code> and other files to the repo</li>
-    </ol>
-  </div>
-</div>
+### For React, Next.js, or Vue (GitHub Actions)
 
-Your site will be live at `https://yourusername.github.io` in ~2 minutes!
+**Why?** Builds your site automatically on every push.
 
-### Example GitHub Actions Workflows
+1. In your repo, go to **Settings** → **Pages**
+2. Set **Source** to **GitHub Actions**
+3. In your project, create `.github/workflows/deploy.yml`:
+
+```bash
+mkdir -p .github/workflows
+```
+
+4. Copy the workflow below for your framework
+5. Commit and push:
+
+```bash
+git add .
+git commit -m "Add deployment workflow"
+git push origin main
+```
+
+6. Check the **Actions** tab - wait for the green checkmark (2-3 min)
+
+Your site is now live at `https://yourusername.github.io`!
 
 <details>
-  <summary>Show example workflow (React/Vite)</summary>
+<summary><strong>React/Vite Workflow</strong></summary>
 
 ```yaml
 # .github/workflows/deploy.yml
@@ -118,24 +108,20 @@ jobs:
 </details>
 
 <details>
-  <summary>Show example workflow (Next.js)</summary>
+<summary><strong>Next.js Workflow</strong></summary>
 
-First, add this to your `next.config.js`:
-
+Update `next.config.js`:
 ```javascript
 const nextConfig = {
   output: 'export',
-  images: {
-    unoptimized: true,
-  },
+  images: { unoptimized: true },
 }
-
 module.exports = nextConfig
 ```
 
-Then create `.github/workflows/deploy.yml`:
-
+Create workflow:
 ```yaml
+# .github/workflows/deploy.yml
 name: Deploy to GitHub Pages
 
 on:
@@ -174,122 +160,140 @@ jobs:
 
 </details>
 
-## Step 4: Connect Your Custom .me Domain (10 min)
+<details>
+<summary><strong>Vue Workflow</strong></summary>
 
-<div className="warning-box">
-  <strong>⚠️ Important:</strong> Do steps 4.1 and 4.2 in order to prevent security issues!
-</div>
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy to GitHub Pages
 
-### 4.1: Add Domain to GitHub First
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment
+```
+
+For Vue Router, use hash mode to avoid 404s:
+```javascript
+import { createRouter, createWebHashHistory } from 'vue-router'
+
+const router = createRouter({
+  history: createWebHashHistory(),
+  routes: [/* your routes */]
+})
+```
+
+</details>
+
+### For Plain HTML/CSS Sites
+
+**Why?** No build step needed - just upload files.
+
+1. Push your files:
+```bash
+git add .
+git commit -m "Add website files"
+git push origin main
+```
+
+2. Go to **Settings** → **Pages**
+3. Set **Source** to **Deploy from a branch**
+4. Select `main` branch and `/ (root)` folder
+5. Click **Save**
+
+Your site goes live in ~2 minutes at `https://yourusername.github.io`!
+
+## Step 4: Connect Your Domain (10 min)
+
+### 4.1: Add Domain to GitHub
 
 1. Go to repo **Settings** → **Pages**
-2. Under "Custom domain", enter your domain (e.g., `yourname.me`)
-3. Click **Save**
+2. Under "Custom domain", enter: `yourname.me`
+3. Click **Save** (you'll see a DNS error - that's expected)
 
 ### 4.2: Configure DNS in Namecheap
 
-1. Log into [Namecheap](https://www.namecheap.com/myaccount/login/) → Domain List → Manage → **Advanced DNS**
-2. Delete existing A/CNAME records
-3. Add these records ([official Namecheap guide](https://www.namecheap.com/support/knowledgebase/article.aspx/9645/2208/how-do-i-link-my-domain-to-github-pages/)):
+1. Log into [Namecheap](https://www.namecheap.com/) → **Domain List** → **Manage**
+2. Go to **Advanced DNS** tab
+3. Delete all existing A/CNAME records
+4. Add these records:
 
-| Type | Host | Value |
-|------|------|-------|
-| A Record | @ | 185.199.108.153 |
-| A Record | @ | 185.199.109.153 |
-| A Record | @ | 185.199.110.153 |
-| A Record | @ | 185.199.111.153 |
-| CNAME | www | yourusername.github.io. |
+| Type | Host | Value | TTL |
+|------|------|-------|-----|
+| A Record | @ | 185.199.108.153 | Automatic |
+| A Record | @ | 185.199.109.153 | Automatic |
+| A Record | @ | 185.199.110.153 | Automatic |
+| A Record | @ | 185.199.111.153 | Automatic |
+| CNAME Record | www | yourusername.github.io. | Automatic |
 
-**Note:** Make sure to include the trailing dot (`.`) after `github.io` in the CNAME record!
+**Important:** Include the period (`.`) after `github.io` in the CNAME record.
 
-### 4.3: Enable HTTPS
+### 4.3: Wait for DNS (15 min - 2 hours)
 
-Wait 15-30 minutes for DNS propagation ([check status](https://dnschecker.org/)), then:
+DNS changes take time to propagate. Check progress at [dnschecker.org](https://dnschecker.org/) - look for the GitHub IPs (185.199.108-111.153).
 
-1. Return to repo **Settings** → **Pages**
+### 4.4: Enable HTTPS
+
+Once DNS propagates:
+1. Return to **Settings** → **Pages**
 2. Check **Enforce HTTPS**
 
-✅ Done! Visit `https://yourname.me` to see your site live.
+Done! Visit `https://yourname.me` 🎉
 
-## FAQ
-
-<details>
-  <summary><strong>Domain not working yet?</strong></summary>
-
-DNS propagation (the process of your domain settings spreading across the internet) takes time. Think of it like mailing a change-of-address form—it doesn't update everywhere instantly.
-
-**Timeline:**
-- Minimum: 15-30 minutes
-- Typical: 1-2 hours
-- Maximum: Up to 24 hours (rare)
-
-**How to check:**
-1. Visit [dnschecker.org](https://dnschecker.org/)
-2. Enter your domain (e.g., `yourname.me`)
-3. Look for green checkmarks showing your GitHub Pages IPs (185.199.108-111.153)
-
-**Still not working after 24 hours?**
-- Double-check your DNS records in Namecheap match exactly (including the trailing dot in CNAME)
-- Make sure you saved the custom domain in GitHub Settings → Pages
-- Try clearing your browser cache or using incognito mode
-
-</details>
+## Troubleshooting
 
 <details>
-  <summary><strong>What is a CNAME file and why does it matter?</strong></summary>
+<summary><strong>Workflow Failed?</strong></summary>
 
-**What is it?**
-A CNAME file is a simple text file that tells GitHub Pages which custom domain your site should use. It literally just contains your domain name (e.g., `yourname.me`) with no other formatting.
+Check the **Actions** tab in your repository for error details. Common fixes:
 
-**How it traditionally works:**
-- When you first set up GitHub Pages by committing files directly (the "Deploy from branch" method), you'd manually create a file named `CNAME` (no extension) in your repository root
-- This file would contain just your domain name: `yourname.me`
-
-**How it works with GitHub Actions (modern approach):**
-When you add your custom domain in **Settings → Pages → Custom domain**, GitHub automatically:
-1. Creates the CNAME file for you
-2. Commits it to your `gh-pages` branch (the deployment branch Actions uses)
-3. Updates it whenever you change your domain in settings
-
-**Why it might disappear:**
-If you're using the old "Deploy from branch" method with your `main` branch and manually adding a CNAME file, GitHub Actions workflows can overwrite it because they generate a fresh deployment. This is why we recommend:
-- Always set your custom domain in **Settings → Pages** (not by manually creating the file)
-- Use GitHub Actions deployment (which handles the CNAME automatically)
-- Never manually create a CNAME file when using Actions—let GitHub manage it
-
-**Bottom line:** As long as you've added your domain in the GitHub Pages settings, the CNAME file is handled automatically. You don't need to touch it!
-
-</details>
-
-<details>
-  <summary><strong>GitHub Actions workflow failing?</strong></summary>
-
-Check the **Actions** tab in your repository for detailed error logs. Click on the failed workflow run to see what went wrong.
-
-**Common fixes:**
-
-**Wrong build output path:**
-Your workflow needs to know where your build files are created.
-- Vite/React: Usually `dist`
-- Next.js (with export): `out`
+**Wrong output folder:**
+Update the `path:` in your workflow file:
+- React/Vue/Vite: `dist`
+- Next.js: `out`
 - Create React App: `build`
-- Vue: `dist`
 
-Check your `package.json` scripts and update the workflow's `path:` accordingly.
-
-**Missing dependencies:**
-Make sure all your packages are in `package.json`. If you installed something with `npm install` but didn't save it (old npm versions), it won't be in the file.
+**Missing packages:**
+Run `npm install` to add missing dependencies to `package.json`.
 
 **Node version mismatch:**
-If your site works locally but fails in Actions, try matching the Node version:
+Change the Node version in your workflow to match your local version:
 ```yaml
 - uses: actions/setup-node@v4
   with:
-    node-version: '20'  # Change to match your local version
+    node-version: '20'  # Change to match: node --version
 ```
 
-**Missing workflow permissions:**
-Make sure your workflow file includes:
+**Permission errors:**
+Ensure your workflow includes:
 ```yaml
 permissions:
   contents: read
@@ -297,114 +301,111 @@ permissions:
   id-token: write
 ```
 
-**Environment configuration:**
-Some frameworks need environment variables. Add them to your workflow:
-```yaml
-env:
-  NODE_ENV: production
-```
+</details>
+
+<details>
+<summary><strong>Changes Not Showing?</strong></summary>
+
+Try these steps in order:
+
+1. **Check deployment status:** Go to the **Actions** tab - look for a green checkmark
+2. **Hard refresh your browser:** 
+   - Windows/Linux: `Ctrl + Shift + R`
+   - Mac: `Cmd + Shift + R`
+3. **Try incognito/private mode** to rule out caching
+4. **Wait 2-3 minutes** for the deployment to complete
+5. **Verify you pushed to main:** Run `git status` to confirm
+
+**Pro tip:** Add `?v=1` to your URL to force reload: `yourname.me?v=1`
 
 </details>
 
 <details>
-  <summary><strong>Getting 404 errors when you refresh or navigate directly to a page?</strong></summary>
+<summary><strong>Domain Not Working After 24 Hours?</strong></summary>
+
+**Checklist:**
+- [ ] DNS records in Namecheap match exactly (including the trailing `.` in CNAME)
+- [ ] Custom domain is saved in GitHub **Settings** → **Pages**
+- [ ] Check [dnschecker.org](https://dnschecker.org/) - you should see the GitHub IPs (185.199.108-111.153)
+- [ ] Try visiting both `yourname.me` and `www.yourname.me`
+- [ ] Clear browser cache or try a different browser/device
+
+**Still not working?**
+Check [GitHub's troubleshooting guide](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/troubleshooting-custom-domains-and-github-pages).
+
+</details>
+
+<details>
+<summary><strong>Getting 404 on Page Refresh (React/Vue)?</strong></summary>
 
 **Why this happens:**
-Single-page applications (SPAs) like React, Vue, or Angular use "client-side routing"—they handle URLs in JavaScript, not on the server. When you refresh on `/about`, GitHub Pages looks for an actual `/about/index.html` file, doesn't find it, and shows a 404.
+Single-page apps handle routing with JavaScript. When you refresh on `/about`, GitHub Pages looks for an actual file and shows a 404.
 
-**Solutions:**
+**Solution: Use hash routing**
 
-**Option 1: Hash-based routing (easiest)**
-Use URLs like `yoursite.com/#/about` instead of `yoursite.com/about`:
+This changes URLs from `yoursite.com/about` to `yoursite.com/#/about`:
 
-*React Router:*
+**React Router:**
 ```javascript
 import { HashRouter } from 'react-router-dom';
-// Use HashRouter instead of BrowserRouter
-```
 
-*Vue Router:*
-```javascript
-const router = createRouter({
-  history: createWebHashHistory(),
-  routes,
-})
-```
-
-**Option 2: 404 redirect trick**
-Create a `404.html` file that redirects to `index.html`. This works but can cause issues with actual 404s.
-
-**Option 3: Use a framework with built-in support**
-Next.js, Astro, and other meta-frameworks handle this better with static export configurations.
-
-**Note:** Hash routing is the most reliable solution for SPAs on GitHub Pages since it doesn't require server configuration.
-
-</details>
-
-<details>
-  <summary><strong>My site looks broken or unstyled!</strong></summary>
-
-**Base path issues:**
-When your site is at `yourname.github.io/projectname` (project site, not user site), your assets load from the wrong path.
-
-**Fixes by framework:**
-
-*Vite (React/Vue):*
-```javascript
-// vite.config.js
-export default defineConfig({
-  base: '/repo-name/', // Add this if using project site
-})
-```
-
-*Next.js:*
-```javascript
-// next.config.js
-const nextConfig = {
-  basePath: '/repo-name', // Add if using project site
-  output: 'export',
+function App() {
+  return (
+    <HashRouter>
+      {/* your routes */}
+    </HashRouter>
+  );
 }
 ```
 
-*Create React App:*
-Add to `package.json`:
-```json
-"homepage": "https://yourusername.github.io/repo-name"
-```
+**Vue Router:**
+```javascript
+import { createRouter, createWebHashHistory } from 'vue-router'
 
-**Custom domain users:** If using a custom domain (like `yourname.me`), you don't need base path configuration!
+const router = createRouter({
+  history: createWebHashHistory(),
+  routes: [/* your routes */]
+})
+```
 
 </details>
 
 <details>
-  <summary><strong>Changes aren't showing up on my live site?</strong></summary>
+<summary><strong>CSS or Images Not Loading?</strong></summary>
 
-**Check these in order:**
+Make sure your asset paths are relative, not absolute:
 
-1. **Did your workflow run?** Go to the Actions tab—if it failed, fix the error first
-2. **Browser cache:** Hard refresh with Ctrl+Shift+R (Windows) or Cmd+Shift+R (Mac)
-3. **Try incognito mode** to rule out caching completely
-4. **Check the deployment time:** Workflows take 1-3 minutes to complete
-5. **Correct branch:** Make sure you're pushing to the branch that triggers your workflow (usually `main`)
+**HTML:**
+```html
+<!-- ✓ Good -->
+<link rel="stylesheet" href="./styles.css">
+<img src="./images/photo.jpg">
 
-**Pro tip:** Add `?v=1` (then `?v=2`, etc.) to your URL to bypass cache during testing: `yourname.me?v=1`
+<!-- ✗ Avoid -->
+<link rel="stylesheet" href="/styles.css">
+<img src="/images/photo.jpg">
+```
+
+**React/Vue:**
+```javascript
+// ✓ Good
+import './App.css'
+import logo from './assets/logo.png'
+
+// ✗ Avoid
+import '/App.css'
+```
+
+**Check the browser console (F12)** for 404 errors to see which files aren't loading.
 
 </details>
 
-## Helpful Resources
+## Resources
 
-- [GitHub Pages Official Docs](https://docs.github.com/en/pages) - Official documentation
-- [GitHub Student Pack](https://education.github.com/pack) - Explore all your free benefits
-- [Namecheap DNS Guide](https://www.namecheap.com/support/knowledgebase/article.aspx/319/2237/how-can-i-set-up-an-a-address-record-for-my-domain/) - DNS configuration help
+- [GitHub Pages Docs](https://docs.github.com/en/pages)
+- [GitHub Student Pack](https://education.github.com/pack) (100+ free tools)
+- [Namecheap DNS Guide](https://www.namecheap.com/support/knowledgebase/article.aspx/9645/2208/how-do-i-link-my-domain-to-github-pages/)
 
-<div className="next-steps-box">
-  <h3>What's Next?</h3>
-  <ul>
-    <li>Add a contact form with EmailJS or Formspree</li>
-    <li>Track visitors with Google Analytics</li>
-    <li>Optimize for SEO with meta tags and sitemap</li>
-    <li>Add a blog with Astro, Jekyll, or Hugo</li>
-  </ul>
-</div>
+**Note:** Your `.me` domain is free for year 1, then ~$20-25/year to renew.
 
-*Your .me domain is free for the first year through GitHub Student Pack. Renewal is typically $20-25/year.*
+*Questions? Leave a comment below or visit the [GitHub Community Forum](https://github.community/)!*
