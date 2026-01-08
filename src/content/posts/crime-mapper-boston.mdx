@@ -1,601 +1,313 @@
 ---
 title: "CrimeMapper-Boston: A Production-Grade Crime Forecasting System"
-date: "2025-01-27"
-description: "Building a comprehensive machine learning system for crime prediction using Facebook Prophet, featuring district-based forecasting, spatial hotspot analysis, and production-grade evaluation metrics."
+date: "01-07-2026"
+excerpt: "Building a comprehensive machine learning system for crime prediction using Facebook Prophet, featuring district-based forecasting, spatial hotspot analysis, and production-grade evaluation metrics."
+readTime: "20 min read"
+category: "Data Science"
+slug: "crime-mapper-boston"
 tags: ["machine-learning", "time-series", "prophet", "data-science", "python", "streamlit", "geospatial-analysis"]
 featured: true
 ---
 
-import { Callout } from 'nextra/components'
+How can we predict where crimes will happen to help cities allocate police resources better? That's the question behind **CrimeMapper-Boston**, a machine learning system that forecasts crime counts for each police district in Boston and finds crime hotspots.
 
-# CrimeMapper-Boston: A Production-Grade Crime Forecasting System
-
-How do you predict crime patterns to optimize resource allocation across a major metropolitan area? This question drove the development of **CrimeMapper-Boston**, a production-grade machine learning system that forecasts crime counts at the district level and identifies spatial hotspots for specific crime types.
-
-Built using Facebook's Prophet time-series forecasting framework, this system processes **174,421 crime records** spanning **824 days** across **14 police districts** in Boston, delivering actionable insights for data-driven public safety planning.
-
-## The Challenge
-
-Crime prediction presents unique challenges: irregular patterns, seasonal variations, holiday effects, and the need for interpretable forecasts that can inform real-world decision-making. Traditional approaches often fail to capture the complex temporal dynamics and spatial clustering inherent in urban crime data.
-
-Our solution addresses these challenges through:
-
-- **District-specific modeling** to capture localized patterns
-- **Comprehensive evaluation** with multiple metrics and baseline comparisons
-- **Spatial clustering analysis** to identify crime hotspots
-- **Production-grade practices** including proper train/test splits and retraining workflows
-- **Interactive visualization** for stakeholders and decision-makers
-
-## Technical Architecture
-
-### Data Pipeline
-
-The system integrates with the [Boston.gov CKAN Data API](https://data.boston.gov/api/3/action/datastore_search) to automatically fetch and update crime incident data. The pipeline includes:
-
-```python
-# Automated data update process
-def update_data(incremental=True):
-    """
-    Fetch latest crime data from Boston.gov API.
-    Supports incremental updates to minimize API calls.
-    """
-    api_url = "https://data.boston.gov/api/3/action/datastore_search"
-    resource_id = "b973d8cb-eeb2-4e7e-99da-c92938efc9c0"
-    
-    # Fetch data with pagination support
-    # Merge with offense codes for categorization
-    # Validate and clean geographic coordinates
-    # Generate metadata for tracking
-```
-
-**Data Characteristics:**
-- **Total Records**: 174,421 incidents
-- **Date Range**: January 1, 2023 - April 4, 2025
-- **Districts**: 14 police districts (A1, A7, A15, B2, B3, C6, C11, D4, D14, E5, E13, E18, External, UNKNOWN)
-- **Update Frequency**: Automated incremental updates via API
-
-### Modeling Stack
-
-The forecasting system leverages **Facebook Prophet**, an additive time-series model designed for business forecasting with built-in support for:
-
-- **Yearly seasonality**: Captures annual patterns (e.g., summer vs. winter crime rates)
-- **Weekly seasonality**: Identifies day-of-week patterns (e.g., weekend spikes)
-- **Holiday effects**: Incorporates US federal holidays that affect crime patterns
-- **Trend detection**: Automatically identifies long-term increases or decreases
-- **Uncertainty quantification**: Provides confidence intervals for all predictions
-
-```python
-from prophet import Prophet
-
-# Configure Prophet model with seasonality and holidays
-model = Prophet(
-    yearly_seasonality=True,   # Capture annual patterns
-    weekly_seasonality=True,    # Capture weekly patterns
-    daily_seasonality=False,    # Excluded to prevent overfitting
-    holidays=us_federal_holidays  # Include holiday effects
-)
-
-# Fit model on training data
-model.fit(training_data)
-
-# Generate forecasts with uncertainty intervals
-forecast = model.predict(future_dataframe)
-```
-
-**Backend**: The system uses `cmdstanpy` as the Stan backend, providing robust Bayesian inference for model parameters.
-
-### Evaluation Framework
-
-A comprehensive evaluation framework ensures model reliability and transparency:
-
-**Four Complementary Metrics:**
-1. **MAE (Mean Absolute Error)**: Average absolute difference between predicted and actual values
-2. **RMSE (Root Mean Square Error)**: Penalizes larger errors more heavily
-3. **MAPE (Mean Absolute Percentage Error)**: Relative error as percentage, enabling cross-district comparison
-4. **Coverage**: Percentage of actual values within prediction intervals (validates uncertainty calibration)
-
-**Baseline Comparisons:**
-Each district's Prophet model is compared against three baseline methods:
-- **Naive Forecast**: Uses the last observed value
-- **7-Day Moving Average**: Uses the average of the last 7 days
-- **30-Day Moving Average**: Uses the average of the last 30 days
-
-This comparison ensures the sophisticated Prophet model provides genuine value over simple heuristics.
-
-### Spatial Analysis
-
-For crime-type analysis, the system employs **DBSCAN** (Density-Based Spatial Clustering) to identify geographic hotspots:
-
-```python
-from sklearn.cluster import DBSCAN
-
-# Cluster crime incidents by geographic proximity
-dbscan = DBSCAN(
-    eps=0.0001,        # ~11 meters radius
-    min_samples=20,    # Minimum incidents per cluster
-    metric='haversine' # Great-circle distance
-)
-
-clusters = dbscan.fit_predict(coordinates)
-```
-
-This identifies areas where specific crime types cluster together, enabling targeted interventions and resource allocation.
-
-## Methodology Deep Dive
-
-### Training Process
-
-The system implements industry-standard machine learning practices with a three-phase approach:
-
-**Phase 1: Initial Training (80% of data)**
-- Models train on 80% of available historical data
-- Learn district-specific crime patterns and seasonality
-- Capture holiday effects and long-term trends
-
-**Phase 2: Evaluation (15% of data)**
-- Trained models evaluated on held-out test set
-- Comprehensive metrics calculated (MAE, RMSE, MAPE, Coverage)
-- Baseline comparisons performed
-- Performance warnings generated for underperforming districts
-
-**Phase 3: Production Retraining (95% of data)**
-- After validation, models retrained on **all available data** (train + test)
-- Ensures production forecasts utilize maximum historical information
-- Typically improves accuracy by 2-5% over evaluation model
-
-```python
-# Dynamic date splitting based on available data
-def split_data_dynamically(df, train_ratio=0.8, test_ratio=0.15):
-    """
-    Automatically split data based on date range.
-    Ensures forecasts always use the most recent data.
-    """
-    total_days = (df['DATE'].max() - df['DATE'].min()).days
-    train_end = df['DATE'].min() + timedelta(days=int(total_days * train_ratio))
-    test_end = train_end + timedelta(days=int(total_days * test_ratio))
-    
-    train_data = df[df['DATE'] <= train_end]
-    test_data = df[(df['DATE'] > train_end) & (df['DATE'] <= test_end)]
-    
-    return train_data, test_data
-```
-
-### Holiday Effects
-
-US federal holidays significantly impact crime patterns. The system incorporates:
-
-- New Year's Day
-- Memorial Day
-- Independence Day (July 4th)
-- Labor Day
-- Thanksgiving
-- Christmas
-
-Prophet automatically learns how each holiday affects crime rates in each district, enabling accurate predictions during holiday periods.
-
-### Outlier Detection and Handling
-
-Extreme outliers (e.g., protests, riots, major incidents) can skew model predictions. The system uses z-score capping:
-
-```python
-def detect_and_handle_outliers(df, threshold=3):
-    """
-    Cap outliers at 3 standard deviations to prevent skewing.
-    """
-    mean = df['y'].mean()
-    std = df['y'].std()
-    
-    outliers = np.abs(df['y'] - mean) > threshold * std
-    
-    # Cap outliers at threshold
-    df.loc[outliers, 'y'] = np.where(
-        df.loc[outliers, 'y'] > mean,
-        mean + threshold * std,
-        mean - threshold * std
-    )
-    
-    return df, outliers.sum()
-```
-
-This maintains data integrity while improving model stability.
-
-## Key Metrics & Results
-
-### Overall Performance
-
-<Callout type="info" emoji="📊">
-**System-Wide Performance**: The forecasting system demonstrates strong performance across all districts, with an average improvement of **14.3%** over naive baseline forecasts.
-</Callout>
-
-| Metric | Average Value | Interpretation |
-|--------|--------------|----------------|
-| **MAE** | 3.38 crimes/day | Average prediction error |
-| **RMSE** | 4.29 crimes/day | Penalizes large errors |
-| **MAPE** | 35.85% | Relative error percentage |
-| **Coverage** | 75.2% | Prediction interval calibration |
-
-### District Performance Analysis
-
-The evaluation reveals significant variation in model performance across districts:
-
-**Top Performing Districts** (substantial improvement over baseline):
-
-| District | Improvement | MAE | Key Insight |
-|----------|------------|-----|------------|
-| **C6** | 59.9% | 3.89 crimes/day | Highly predictable patterns with strong seasonality |
-| **E13** | 59.8% | 3.19 crimes/day | Clear weekly and yearly trends |
-| **A1** | 59.2% | 4.68 crimes/day | Strong holiday effects captured |
-
-These districts exhibit predictable crime patterns with strong seasonal trends, making Prophet highly effective.
-
-**Solid Performers** (good improvement):
-
-| District | Improvement | MAE |
-|----------|------------|-----|
-| **B2** | 17.7% | 5.47 crimes/day |
-| **E18** | 15.3% | 3.00 crimes/day |
-| **B3** | 9.9% | 3.55 crimes/day |
-
-**Marginal Performers** (minimal improvement):
-
-| District | Improvement | MAE | Reason |
-|----------|------------|-----|--------|
-| **D14** | 3.6% | 3.68 crimes/day | Relatively stable crime rates |
-| **D4** | 1.7% | 5.60 crimes/day | Simple methods work reasonably well |
-
-**Districts Requiring Caution** (performing worse than baseline):
-
-| District | Improvement | MAE | Analysis |
-|----------|------------|-----|----------|
-| **A15** | -6.9% | 1.83 crimes/day | Highly irregular patterns |
-| **C11** | -6.7% | 5.53 crimes/day | Insufficient historical patterns |
-| **External** | -24.2% | 0.40 crimes/day | Very sparse data with gaps |
-| **UNKNOWN** | -32.5% | 0.46 crimes/day | Limited and irregular data |
-
-For these districts, the dashboard automatically displays performance warnings, and simple baseline methods may be more reliable than Prophet forecasts.
-
-### Understanding Improvement Metrics
-
-The **14.3% average improvement over naive baseline** means Prophet models predict crime counts with 14.3% less error compared to the simplest possible forecasting method.
-
-**Example Calculation (District A1):**
-- Naive Baseline MAE: 11.46 crimes/day (just using last value)
-- Prophet Model MAE: 4.68 crimes/day (using patterns, seasonality, holidays)
-- Improvement: (11.46 - 4.68) / 11.46 × 100% = **59.2% improvement**
-
-This means Prophet's predictions are 59.2% more accurate than simply using the last observed value.
-
-**Interpretation Guide:**
-- **Positive improvement (>10%)**: Prophet significantly outperforms simple methods → Use Prophet!
-- **Near-zero improvement (0-10%)**: Prophet and baseline are similar → Crime is very stable
-- **Negative improvement (<0%)**: Baseline outperforms Prophet → Crime patterns are too irregular for Prophet to learn effectively
-
-## Technical Highlights
-
-### Industry-Standard ML Practices
-
-The system implements production-grade machine learning workflows:
-
-1. **Proper Data Splitting**: Train/test/production splits prevent data leakage
-2. **Comprehensive Evaluation**: Multiple metrics provide different perspectives on performance
-3. **Baseline Comparisons**: Ensures models add value over simple heuristics
-4. **Automated Warnings**: Flags districts where forecasts may be unreliable
-5. **Model Versioning**: Separate initial (evaluation) and final (production) models
-6. **Uncertainty Quantification**: Confidence intervals enable risk-aware decision-making
-
-### Evaluation Metrics Implementation
-
-```python
-def evaluate_model_comprehensive(test_df, forecast_df):
-    """
-    Comprehensive evaluation with four complementary metrics.
-    """
-    merged = pd.merge(test_df, forecast_df[['ds', 'yhat', 'yhat_lower', 'yhat_upper']], 
-                     on='ds', how='inner')
-    
-    y_true = merged['y'].values
-    y_pred = merged['yhat'].values
-    
-    # Calculate metrics
-    mae = mean_absolute_error(y_true, y_pred)
-    rmse = np.sqrt(mean_squared_error(y_true, y_pred))
-    mape = mean_absolute_percentage_error(y_true, y_pred) * 100
-    
-    # Coverage: percentage within prediction interval
-    coverage = np.mean(
-        (y_true >= merged['yhat_lower']) & 
-        (y_true <= merged['yhat_upper'])
-    )
-    
-    return {
-        'mae': mae,
-        'rmse': rmse,
-        'mape': mape,
-        'coverage': coverage
-    }
-```
-
-### Baseline Comparison Logic
-
-```python
-def baseline_forecast(train_df, test_df):
-    """
-    Generate naive baseline forecasts for comparison.
-    """
-    # Naive: use last observed value
-    last_value = train_df['y'].iloc[-1]
-    naive_forecast = [last_value] * len(test_df)
-    
-    # 7-day MA: average of last 7 days
-    ma7_forecast = train_df['y'].tail(7).mean()
-    
-    # 30-day MA: average of last 30 days
-    ma30_forecast = train_df['y'].tail(30).mean()
-    
-    return {
-        'naive': naive_forecast,
-        'ma7': ma7_forecast,
-        'ma30': ma30_forecast
-    }
-```
-
-### Automated Performance Warnings
-
-The system automatically identifies districts where models perform worse than baselines:
-
-```python
-if improvement_pct < 0:
-    warning_message = f"""
-    ⚠️ Performance Alert: Model performs {abs(improvement_pct):.1f}% worse than naive baseline.
-    
-    Possible reasons:
-    - Crime patterns are highly irregular
-    - Insufficient historical data
-    - Recent changes in crime patterns
-    
-    Recommendation: Use forecasts with caution for this district.
-    """
-```
-
-## Visualizations & Outputs
-
-### District Forecast Visualizations
-
-The system generates comprehensive forecast visualizations showing:
-
-- **Historical data**: Actual crime counts (black dots)
-- **Predicted values**: Model forecasts (solid line)
-- **Confidence intervals**: Uncertainty bounds (shaded area)
-- **Future forecasts**: 2-month predictions beyond historical data
-
-![Forecast Visualization](/images/newplot.jpeg)
-
-*Forecasted crime counts showing predicted values with upper and lower confidence bounds. The model captures consistent periodic patterns with relatively narrow confidence intervals.*
-
-### Actual vs. Predicted Comparison
-
-Performance evaluation includes scatter plots comparing actual vs. predicted values during the test period:
-
-![Actual vs Predicted](/images/newplot-2.jpeg)
-
-*Actual vs. predicted crime counts for the testing period. The model captures overall trends, with some deviations during spikes or drops in crime activity.*
-
-### Spatial Hotspot Maps
-
-DBSCAN clustering identifies geographic hotspots for specific crime types:
-
-![Hotspot Density Map](/images/density.png)
-
-*Geospatial map highlighting identified crime hotspots. Areas like Newbury Street show high cluster density for shoplifting, aligning with its status as a shopping district.*
-
-### Time Series Component Analysis
-
-Forecast components reveal underlying patterns:
-
-![Time Series Components](/images/time-series.png)
-
-*Time series decomposition showing trend, weekly, and yearly components. This breakdown enables understanding of long-term changes, weekly patterns, and seasonal influences.*
-
-## Impact & Applications
-
-### Resource Allocation
-
-District-level forecasts enable data-driven resource allocation:
-
-- **Staffing decisions**: Anticipate high-crime periods to ensure adequate coverage
-- **Budget planning**: Forecast resource needs months in advance
-- **Strategic deployment**: Identify districts requiring additional attention
-
-### Data-Driven Policy Making
-
-Comprehensive evaluation metrics provide transparency for policymakers:
-
-- **Model reliability**: Clear indicators of forecast confidence
-- **Baseline comparisons**: Demonstrate value over simple methods
-- **Performance warnings**: Highlight districts where forecasts may be unreliable
-
-### Community Safety Planning
-
-Spatial hotspot analysis supports targeted interventions:
-
-- **Crime-type specific**: Identify locations where specific crimes cluster
-- **Geographic targeting**: Focus resources on high-density areas
-- **Preventive measures**: Anticipate future crime patterns
-
-### Equitable Resource Distribution
-
-District-specific modeling ensures localized patterns are captured:
-
-- **Avoids one-size-fits-all**: Each district has its own model
-- **Localized insights**: Understand district-specific trends
-- **Fair allocation**: Data-driven approach reduces bias
-
-## Technical Stack
-
-### Core Technologies
-
-- **Language**: Python 3.10-3.12
-- **ML Framework**: Facebook Prophet 1.1.6
-- **Backend**: cmdstanpy 1.1.0 (Stan probabilistic programming)
-- **Evaluation**: scikit-learn 1.3.0
-- **Data Processing**: Pandas 2.0.3, NumPy 1.26.4
-
-### Visualization & Dashboard
-
-- **Interactive Dashboard**: Streamlit 1.25.0
-- **Plotting**: Plotly 5.14.1, Matplotlib 3.9.2
-- **Geospatial**: GeoPandas 1.0.1+, Folium 0.15.0+
-- **Basemaps**: Contextily 1.6.2
-
-### Infrastructure
-
-- **Data Updates**: Automated API integration via `requests`
-- **Configuration**: YAML-based config management
-- **Automation**: Makefile for streamlined workflows
-- **Model Persistence**: Joblib for model serialization
-
-## Code Examples
-
-### Model Training Configuration
-
-```python
-from prophet import Prophet
-import pandas as pd
-
-# Load and preprocess data
-train_data = load_and_preprocess_data(district='A1')
-train_data = train_data.rename(columns={'DATE': 'ds', 'COUNT': 'y'})
-
-# Configure Prophet model
-model = Prophet(
-    yearly_seasonality=True,      # Capture annual patterns
-    weekly_seasonality=True,       # Capture weekly patterns
-    daily_seasonality=False,       # Excluded to prevent overfitting
-    holidays=us_federal_holidays,  # Include holiday effects
-    interval_width=0.80            # 80% confidence intervals
-)
-
-# Fit model
-model.fit(train_data)
-
-# Generate future dataframe
-future = model.make_future_dataframe(periods=60)  # 60 days ahead
-forecast = model.predict(future)
-```
-
-### Comprehensive Evaluation
-
-```python
-from sklearn.metrics import mean_absolute_error, mean_squared_error
-
-def evaluate_with_baselines(test_df, forecast_df, train_df):
-    """
-    Evaluate model and compare against baselines.
-    """
-    # Merge test and forecast data
-    merged = pd.merge(test_df, forecast_df[['ds', 'yhat']], on='ds')
-    
-    # Calculate Prophet metrics
-    mae_prophet = mean_absolute_error(merged['y'], merged['yhat'])
-    
-    # Calculate baseline metrics
-    last_value = train_df['y'].iloc[-1]
-    mae_naive = mean_absolute_error(merged['y'], [last_value] * len(merged))
-    
-    # Calculate improvement
-    improvement = (mae_naive - mae_prophet) / mae_naive * 100
-    
-    return {
-        'mae_prophet': mae_prophet,
-        'mae_naive': mae_naive,
-        'improvement_pct': improvement
-    }
-```
-
-### Data Preprocessing Pipeline
-
-```python
-def load_and_preprocess_data():
-    """
-    Load crime data and merge with offense codes.
-    """
-    # Load crime incidents
-    crime_df = pd.read_csv('data/Boston Data.csv', parse_dates=['OCCURRED_ON_DATE'])
-    
-    # Load offense codes
-    offense_codes = pd.read_excel('data/RMS Offense Codes.xlsx')
-    
-    # Merge datasets
-    merged = crime_df.merge(offense_codes, on='OFFENSE_CODE', how='left')
-    
-    # Aggregate to daily counts by district
-    daily_counts = merged.groupby(['DISTRICT', 'OCCURRED_ON_DATE']).size().reset_index(name='COUNT')
-    daily_counts = daily_counts.rename(columns={'OCCURRED_ON_DATE': 'DATE'})
-    
-    # Validate data
-    validate_data(daily_counts)
-    
-    return daily_counts
-```
-
-## Lessons Learned & Future Work
-
-### Key Insights
-
-1. **Baseline Comparisons Are Essential**: Without comparing against simple methods, it's impossible to know if sophisticated models add value. Some districts have such stable crime patterns that naive forecasts work nearly as well.
-
-2. **Comprehensive Evaluation Matters**: A single metric (e.g., MAE) doesn't tell the full story. RMSE penalizes large errors, MAPE enables cross-district comparison, and Coverage validates uncertainty quantification.
-
-3. **Irregular Patterns Are Challenging**: Districts with highly irregular crime patterns (e.g., A15, C11) may perform worse than baselines. This is valuable information—it indicates these districts need different approaches or more data.
-
-4. **Production Retraining Improves Accuracy**: Retraining on 95% of data (vs. 80% for evaluation) typically improves production forecast accuracy by 2-5%. This validates the importance of using all available data for production.
-
-5. **Spatial Analysis Complements Temporal Forecasting**: Combining time-series forecasting with spatial clustering provides a more complete picture of crime patterns.
-
-### Potential Enhancements
-
-**Socio-Economic Integration:**
-- Incorporate demographic data (income, education, employment)
-- Include neighborhood characteristics (population density, land use)
-- Model relationships between socio-economic factors and crime
-
-**Real-Time Updates:**
-- Stream processing for near-real-time predictions
-- Automated retraining on new data
-- Alert system for significant forecast changes
-
-**Advanced Modeling:**
-- Ensemble methods combining multiple forecasting approaches
-- Deep learning models (LSTM, Transformer) for complex patterns
-- Multi-variate models incorporating external factors (weather, events)
-
-**Enhanced Visualization:**
-- Interactive maps with drill-down capabilities
-- Animated time-series visualizations
-- Comparative dashboards across districts
-
-**Operational Integration:**
-- API endpoints for programmatic access
-- Integration with police dispatch systems
-- Mobile applications for field officers
-
-## Conclusion
-
-CrimeMapper-Boston demonstrates how production-grade machine learning practices can transform raw crime data into actionable insights. By combining sophisticated time-series forecasting with comprehensive evaluation, spatial analysis, and interactive visualization, the system provides a foundation for data-driven public safety planning.
-
-The **14.3% average improvement** over naive baselines, combined with transparent performance metrics and automated warnings, ensures stakeholders can make informed decisions with appropriate confidence levels. The district-specific approach captures localized patterns while the spatial clustering analysis enables targeted interventions.
-
-This project showcases the importance of:
-- **Rigorous evaluation** with multiple metrics and baseline comparisons
-- **Production-grade practices** including proper data splitting and retraining
-- **Transparency** through automated warnings and comprehensive documentation
-- **Practical application** with interactive dashboards and actionable forecasts
-
-As cities continue to embrace data-driven approaches to public safety, systems like CrimeMapper-Boston provide the technical foundation for more equitable, effective, and transparent resource allocation.
+The system analyzes **174,421 crime records** from **14 police districts** over **824 days**, using Facebook's Prophet forecasting model to predict future crime patterns.
 
 ---
 
-**Project Repository**: [GitHub](https://github.com/yourusername/CrimeMapper-Boston)  
-**Data Source**: [Boston.gov CKAN Data API](https://data.boston.gov/api/3/action/datastore_search)  
-**Technologies**: Python, Prophet, Streamlit, GeoPandas, DBSCAN
+## What Problem Does This Solve?
 
+Predicting crime is hard because:
+- Crime patterns change over time (more in summer, less in winter)
+- Different areas have different patterns
+- Holidays and special events affect crime rates
+- We need predictions that are accurate enough to make real decisions
+
+Our solution creates a separate forecasting model for each district, compares predictions against simple baselines, and identifies geographic hotspots where specific crimes cluster together.
+
+---
+
+## How It Works
+
+### The Data
+
+The system automatically pulls crime data from the [Boston.gov API](https://data.boston.gov/api/3/action/datastore_search). Every crime incident includes:
+- When it happened (date and time)
+- Where it happened (district and coordinates)
+- What type of crime it was
+
+**Key Numbers:**
+- **174,421 total incidents**
+- **14 police districts** (A1, A7, A15, B2, B3, C6, C11, D4, D14, E5, E13, E18, plus External and UNKNOWN)
+- **824 days** of data (January 2023 - April 2025)
+
+### The Forecasting Model
+
+We use **Facebook Prophet**, a time-series forecasting tool designed for business applications. Prophet automatically finds patterns like:
+- **Weekly patterns**: More crime on weekends vs weekdays
+- **Yearly patterns**: Summer vs winter differences
+- **Holiday effects**: How holidays like July 4th affect crime
+- **Long-term trends**: Is crime increasing or decreasing over time?
+
+Each district gets its own model trained on that district's historical data. This means District A1's model learns A1's specific patterns, which might be very different from District C6's patterns.
+
+### How We Evaluate Performance
+
+We don't just train a model and hope it works. We test it thoroughly:
+
+1. **Split the data**: Use 80% for training, 15% for testing, keep 5% as buffer
+2. **Train the model**: Learn patterns from the training data
+3. **Test the model**: See how well it predicts the test period
+4. **Compare to baselines**: Check if our model beats simple methods like "just use yesterday's number"
+5. **Retrain for production**: After testing, retrain on all data (95%) for better predictions
+
+**Four Metrics We Track:**
+- **MAE (Mean Absolute Error)**: Average prediction error in crimes per day
+- **RMSE**: Penalizes large errors more
+- **MAPE**: Error as a percentage (helps compare districts)
+- **Coverage**: How often actual values fall within our prediction ranges
+
+**Baseline Comparisons:**
+We compare our Prophet model against three simple methods:
+- **Naive**: Just use yesterday's crime count
+- **7-Day Average**: Use the average of the last 7 days
+- **30-Day Average**: Use the average of the last 30 days
+
+This tells us if our sophisticated model actually adds value, or if simple methods work just as well.
+
+### Finding Crime Hotspots
+
+For specific crime types (like shoplifting), we use **DBSCAN clustering** to find geographic hotspots. This groups nearby crimes together, identifying areas where a particular crime type happens frequently.
+
+For example, shoplifting clusters heavily around shopping areas like Newbury Street, which makes sense. This helps target interventions to the right places.
+
+---
+
+## Results
+
+### Overall Performance
+
+The system shows **14.3% average improvement** over the simplest baseline method (just using yesterday's number). Here's what that means:
+
+| Metric | Average Value | What It Means |
+|--------|--------------|---------------|
+| **MAE** | 3.38 crimes/day | On average, predictions are off by about 3 crimes per day |
+| **RMSE** | 4.29 crimes/day | Large errors are penalized more |
+| **MAPE** | 35.85% | Relative error percentage |
+| **Coverage** | 75.2% | Actual values fall within our prediction ranges 75% of the time |
+
+### Best Performing Districts
+
+Some districts have very predictable patterns. Our model performs best in:
+
+| District | Improvement | MAE | Why It Works Well |
+|----------|------------|-----|------------------|
+| **C6** | 59.9% | 3.89 crimes/day | Strong seasonal patterns |
+| **E13** | 59.8% | 3.19 crimes/day | Clear weekly and yearly trends |
+| **A1** | 59.2% | 4.68 crimes/day | Holiday effects are well-captured |
+
+These districts have consistent patterns that Prophet can learn effectively.
+
+### Districts That Need Caution
+
+Some districts have irregular patterns that are harder to predict:
+
+| District | Improvement | MAE | Why It's Hard |
+|----------|------------|-----|---------------|
+| **A15** | -6.9% | 1.83 crimes/day | Highly irregular patterns |
+| **C11** | -6.7% | 5.53 crimes/day | Not enough historical patterns |
+| **External** | -24.2% | 0.40 crimes/day | Very sparse data |
+
+For these districts, the dashboard shows warnings that simple baseline methods might work better than our Prophet model. This transparency is important—we tell users when forecasts might be unreliable.
+
+### Understanding "Improvement"
+
+When we say "14.3% improvement," here's what that means:
+
+**Example (District A1):**
+- Simple baseline: Predict 11.46 crimes/day (just use yesterday's number)
+- Our Prophet model: Predicts 4.68 crimes/day (using learned patterns)
+- Improvement: (11.46 - 4.68) / 11.46 = **59.2% better**
+
+So Prophet's predictions are 59% more accurate than just guessing yesterday's number will repeat.
+
+---
+
+## Technical Highlights
+
+### Production-Grade Practices
+
+This isn't just a quick prototype. We follow industry best practices:
+
+1. **Proper data splitting**: Never test on training data
+2. **Multiple evaluation metrics**: One metric doesn't tell the whole story
+3. **Baseline comparisons**: Always check if simple methods work just as well
+4. **Automated warnings**: Flag unreliable forecasts automatically
+5. **Model retraining**: Use all available data for production forecasts
+6. **Uncertainty quantification**: Provide confidence intervals, not just point predictions
+
+### Key Code: Model Training
+
+```python
+from prophet import Prophet
+
+# Configure the model
+model = Prophet(
+    yearly_seasonality=True,   # Learn annual patterns
+    weekly_seasonality=True,    # Learn weekly patterns
+    daily_seasonality=False,   # Don't overfit to daily noise
+    holidays=us_federal_holidays  # Include holiday effects
+)
+
+# Train on historical data
+model.fit(training_data)
+
+# Generate predictions
+forecast = model.predict(future_dates)
+```
+
+### Key Code: Evaluation
+
+```python
+# Calculate how well we did
+mae = mean_absolute_error(actual_values, predictions)
+
+# Compare to baseline
+baseline_mae = mean_absolute_error(actual_values, [last_value] * len(actual_values))
+
+# Calculate improvement
+improvement = (baseline_mae - mae) / baseline_mae * 100
+```
+
+---
+
+## Visualizations
+
+### Forecast Charts
+
+The system generates charts showing:
+- Historical crime counts (black dots)
+- Predicted values (blue line)
+- Confidence intervals (shaded area)
+- Future forecasts (2 months ahead)
+
+![Forecast Visualization](/images/newplot.jpeg)
+
+*Example forecast showing predicted crime counts with confidence intervals*
+
+### Performance Comparison
+
+We compare actual vs predicted values to see how well the model performs:
+
+![Actual vs Predicted](/images/newplot-2.jpeg)
+
+*Actual vs predicted crime counts during the test period*
+
+### Hotspot Maps
+
+For specific crime types, we create maps showing where crimes cluster:
+
+![Hotspot Density Map](/images/density.png)
+
+*Geographic hotspots for shoplifting crimes. Notice the high density around shopping areas.*
+
+### Time Series Components
+
+The model breaks down patterns into components:
+
+![Time Series Components](/images/time-series.png)
+
+*Decomposition showing trend, weekly patterns, and yearly seasonality*
+
+---
+
+## Real-World Impact
+
+### Resource Allocation
+
+City planners can use district-level forecasts to:
+- **Plan staffing**: Know when to have more officers on duty
+- **Budget planning**: Forecast resource needs months ahead
+- **Strategic deployment**: Identify districts needing extra attention
+
+### Data-Driven Decisions
+
+The comprehensive evaluation metrics help policymakers:
+- Understand model reliability
+- See which districts have reliable forecasts
+- Know when to be cautious about predictions
+
+### Targeted Interventions
+
+Hotspot analysis helps focus resources:
+- Identify specific locations where crimes cluster
+- Target interventions to high-density areas
+- Plan preventive measures based on predicted patterns
+
+## Technical Stack
+
+**Core Technologies:**
+- Python 3.10-3.12
+- Facebook Prophet 1.1.6 (forecasting)
+- scikit-learn 1.3.0 (evaluation)
+- Pandas & NumPy (data processing)
+
+**Visualization:**
+- Streamlit 1.25.0 (interactive dashboard)
+- Plotly 5.14.1 (charts)
+- GeoPandas & Folium (maps)
+
+**Infrastructure:**
+- Automated API updates
+- YAML configuration
+- Makefile automation
+- Model persistence with Joblib
+
+---
+
+## Lessons Learned
+
+1. **Baseline comparisons are essential**: Without comparing to simple methods, you can't tell if your complex model actually helps.
+
+2. **Multiple metrics matter**: One metric doesn't tell the whole story. MAE, RMSE, MAPE, and Coverage each reveal different aspects of performance.
+
+3. **Irregular patterns are hard**: Some districts have unpredictable patterns. That's valuable information—it tells us these areas need different approaches.
+
+4. **More data helps**: Retraining on 95% of data (vs 80% for testing) improves production forecasts by 2-5%.
+
+5. **Spatial + temporal = better**: Combining time-series forecasting with geographic clustering gives a more complete picture.
+
+---
+
+## Future Improvements
+
+**Potential Enhancements:**
+- Add demographic data (income, education) to understand underlying factors
+- Real-time updates as new crimes are reported
+- More advanced models (deep learning, ensembles)
+- Better visualizations (interactive maps, animations)
+- API endpoints for programmatic access
+
+---
+
+## Conclusion
+
+CrimeMapper-Boston shows how proper machine learning practices can turn raw crime data into useful predictions. The **14.3% average improvement** over simple baselines, combined with transparent metrics and automated warnings, helps cities make better decisions about public safety.
+
+By creating separate models for each district and comparing against baselines, we ensure the system adds real value. The spatial hotspot analysis helps target interventions where they'll have the most impact.
+
+This project demonstrates:
+- **Rigorous evaluation** with multiple metrics
+- **Production-grade practices** with proper data handling
+- **Transparency** through automated warnings
+- **Practical application** with interactive dashboards
+
+As cities embrace data-driven public safety, systems like this provide the foundation for more effective and equitable resource allocation.
+
+---
+
+**Project Repository**: <a href="https://github.com/Shangmin-Chen/Crime-Analytics-Forecasting-Platform" target="_blank" rel="noopener noreferrer">Github</a>
+
+**Data Source**: <a href="https://data.boston.gov/dataset/crime-incident-reports-august-2015-to-date-source-new-system/resource/b973d8cb-eeb2-4e7e-99da-c92938efc9c0" target="_blank" rel="noopener noreferrer">Boston.gov Crime Data</a>
+
+**Technologies**: Python, Prophet, Streamlit, GeoPandas, DBSCAN
