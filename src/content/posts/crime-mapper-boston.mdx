@@ -1,10 +1,11 @@
 ---
 title: "Crime Mapper Boston: Crime Forecasting System"
-date: "01-24-2026"
+date: "2026-01-24"
 excerpt: "Building a comprehensive machine learning system for crime prediction using Facebook Prophet, featuring district-based forecasting, spatial hotspot analysis, and production-grade evaluation metrics."
 readTime: "15 min read"
 category: "Project"
 slug: "crime-mapper-boston"
+technologies: ["Python", "Streamlit", "Facebook Prophet", "Scikit-learn", "GeoPandas", "Plotly", "Folium", "Contextily"]
 ---
 
 ## Background
@@ -37,7 +38,7 @@ The system automatically pulls crime data from the [Boston.gov API](https://data
 - What type of crime it was
 
 **Key Numbers:**
-- **174,421 total incidents**
+- **204,356 total incidents**
 - **14 police districts** (A1, A7, A15, B2, B3, C6, C11, D4, D14, E5, E13, E18, plus External and UNKNOWN)
 - **824 days** of data (January 2023 - April 2025)
 
@@ -250,6 +251,7 @@ Hotspot analysis helps focus resources:
 - GeoPandas & Folium (maps)
 
 **Infrastructure:**
+- Self-hosted server deployment (crime-mapper.shangmin.me)
 - Automated API updates
 - YAML configuration
 - Makefile automation
@@ -292,6 +294,6 @@ As cities embrace data-driven public safety, systems like this provide the found
 
 ---
 
-**Project Repository**: [GitHub](https://github.com/yourusername/CrimeMapper-Boston)  
+**Project Repository**: [CrimeMapper-Boston](https://github.com/Shangmin-Chen/CrimeMapper-Boston)
+**Live Demo**: [crime-mapper.shangmin.me](https://crime-mapper.shangmin.me)
 **Data Source**: [Boston.gov CKAN Data API](https://data.boston.gov/api/3/action/datastore_search)  
-**Technologies**: Python, Prophet, Streamlit, GeoPandas, DBSCAN

@@ -1,7 +1,7 @@
 import React from 'react';
 import { scrollToSection } from '../utils/scrollUtils';
-import { skills } from '../data/skills';
 import { aboutData } from '../data/aboutData';
+import { skills } from '../data/skills';
 import Tag from './ui/Tag';
 import Button from './ui/Button';
 

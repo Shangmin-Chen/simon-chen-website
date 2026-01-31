@@ -8,3 +8,4 @@ export const aboutData = {
   buttonAction: "codeforces",
   skillsTitle: "Skills"
 };
+

@@ -1,13 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { MDXProvider } from '@mdx-js/react';
 import { postsBySlug } from '../data/posts';
 import { MDXComponents } from './mdx/MDXComponents';
 import Button from './ui/Button';
+import Tag from './ui/Tag';
 
 const BlogPost = () => {
   const { slug } = useParams();
   const post = postsBySlug[slug];
+
+  // Scroll to top when component mounts or slug changes
+  useEffect(() => {
+    if (window.lenis) {
+      window.lenis.scrollTo(0, { immediate: true });
+    } else {
+      window.scrollTo(0, 0);
+    }
+  }, [slug]);
 
   if (!post) {
     return (
@@ -47,6 +57,13 @@ const BlogPost = () => {
               <span>•</span>
               <span>{post.category}</span>
             </div>
+            {post.technologies && post.technologies.length > 0 && (
+              <div className="blog-post-technologies">
+                {post.technologies.map((tech, techIndex) => (
+                  <Tag key={techIndex} variant="tech">{tech}</Tag>
+                ))}
+              </div>
+            )}
           </header>
           
           <div className="blog-post-content">

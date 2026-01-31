@@ -1,6 +1,6 @@
 export const experiences = [
   {
-    title: "Software Engineer",
+    title: "Software Engineer Fellowship",
     company: "BU Spark!",
     period: "September 2024 - December 2024",
     description: "Developed full-stack food waste platform using Django, JavaScript, and SQLite, connecting 500+ students and reducing campus waste by 10%. Built RESTful API with sub-100ms query times and deployed via CI/CD pipelines on Heroku. Implemented Auth0 authentication and Django security middleware, ensuring zero security incidents. Accelerated release by 1 week using Agile methodology in team of 5, contributing to 7 iterations.",
@@ -14,3 +14,4 @@ export const experiences = [
     technologies: ["Microsoft Deployment Toolkit", "Windows 11", "NAS", "CrowdStrike", "System Administration"]
   }
 ];
+

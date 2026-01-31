@@ -9,21 +9,21 @@ const Hero = () => {
   };
 
   return (
-    <section className="hero">
+    <section className="hero" aria-label="Introduction">
       <div className="hero-content">
         <h1 className="hero-title">
           {heroData.greeting} <span className="highlight">{heroData.name}</span>
         </h1>
-        <p className="hero-subtitle">
+        <h2 className="hero-subtitle">
           {heroData.subtitle}
-        </p>
+        </h2>
         <p className="hero-description">
           {heroData.description}
         </p>
         <div className="hero-buttons">
-          {heroData.buttons.map((button, index) => (
+          {heroData.buttons.map((button) => (
             <Button 
-              key={index}
+              key={button.action}
               variant={button.variant} 
               onClick={() => handleScrollToSection(button.action)}
             >

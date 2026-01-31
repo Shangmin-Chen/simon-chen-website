@@ -8,3 +8,4 @@ export const skills = [
   "Full-Stack Development",
   "Git"
 ];
+

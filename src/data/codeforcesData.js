@@ -23,3 +23,4 @@ export const codeforcesData = {
     rank: "Rank:"
   }
 };
+

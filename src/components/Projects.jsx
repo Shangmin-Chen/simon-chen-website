@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { projects } from '../data/projects';
 import Card from './ui/Card';
 import Tag from './ui/Tag';
@@ -13,11 +14,6 @@ const Projects = () => {
             <Card key={index} variant="default">
               <h3 className="project-title">{project.title}</h3>
               <p className="project-description">{project.description}</p>
-              <div className="project-technologies">
-                {project.technologies.map((tech, techIndex) => (
-                  <Tag key={techIndex} variant="tech">{tech}</Tag>
-                ))}
-              </div>
               <div className="project-links">
                 <a href={project.github} target="_blank" rel="noopener noreferrer" className="project-link">
                   GitHub
@@ -26,6 +22,11 @@ const Projects = () => {
                   <a href={project.demo} target="_blank" rel="noopener noreferrer" className="project-link">
                     Live Demo
                   </a>
+                )}
+                {project.blog && (
+                  <Link to={`/blog/${project.blog}`} className="project-link">
+                    Read More
+                  </Link>
                 )}
               </div>
             </Card>

@@ -5,6 +5,7 @@ excerpt: "A deep dive into building Whisperrr, a full-stack audio transcription 
 readTime: "15 min read"
 category: "AI"
 slug: "whisperrr"
+"technologies": ["Java Spring Boot", "Python FastAPI", "React", "TypeScript", "Docker", "Faster Whisper", "Tailwind CSS", "Uvicorn", "Maven"]
 ---
 
 ## Background
@@ -121,6 +122,7 @@ graph TB
 - Uvicorn as ASGI server
 
 **Infrastructure:**
+- Self-hosted server deployment (whisperrr.shangmin.me)
 - Docker & Docker Compose for containerization
 - Nginx for reverse proxy (production)
 - Stateless architecture (no database required)
@@ -500,6 +502,15 @@ async def transcribe_audio(
 
 ## Deployment & Infrastructure
 
+### Self-Hosted Server Deployment
+
+Whisperrr is deployed on a self-hosted server at **whisperrr.shangmin.me** with the following configuration:
+
+- **Gunicorn/Nginx**: Reverse proxy and static file serving
+- **Docker Compose**: Containerized services for easy deployment
+- **SSL/TLS**: Secure HTTPS encryption
+- **Resource Management**: Optimized CPU and memory allocation for AI processing
+
 ### Docker Compose Setup
 
 Whisperrr can be deployed using Docker Compose with a single command:
@@ -590,7 +601,7 @@ docker compose down
 - Custom vocabulary support
 - Speaker diarization
 
-### Potential Improvements
+### Future Improvements
 
 - **Multi-Worker Support**: Redis for shared job state
 - **Horizontal Scaling**: Multiple Python service replicas
@@ -616,7 +627,7 @@ The project showcases expertise in:
 - AI/ML integration (Faster Whisper, CTranslate2)
 - System architecture and design
 - Performance optimization
-- Production deployment
+- Production deployment on self-hosted server
 
 ### Key Takeaways
 
@@ -628,8 +639,7 @@ The project showcases expertise in:
 
 ### Project Links
 
-- **GitHub Repository**: [Link to repository]
-- **Live Demo**: [Link to demo]
-- **Documentation**: [Link to docs]
+**GitHub Repository**: [Whisperrr](https://github.com/Shangmin-Chen/Whisperrr)
+**Live Demo**: [whisperrr.shangmin.me](https://whisperrr.shangmin.me)
 
 
