@@ -1,8 +1,12 @@
 {
-  "name": "simon-chen.com",
+  "name": "simon-chen-website",
   "version": "0.1.0",
   "private": true,
   "homepage": "https://simon-chen.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Shangmin-Chen/simon-chen-website.git"
+  },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
     "@mdx-js/react": "^3.1.1",
