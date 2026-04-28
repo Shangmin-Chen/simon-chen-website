@@ -1,8 +1,8 @@
 # Simon Chen - Portfolio Website
 
-A modern, responsive portfolio website built with React, featuring smooth animations, contact form integration, and containerized deployment with Docker.
+A modern, responsive portfolio website built with React and Vite, featuring smooth animations, contact form integration via a lightweight Cloudflare Worker, and static hosting on Cloudflare.
 
-> **Note**: This README documents a migration from GitHub Pages to a self-hosted setup. The website is now hosted locally on a home server and exposed to the internet using Cloudflare Tunnels.
+> **Note**: This README documents a migration from GitHub Pages. The site can be served from **Cloudflare Workers** (worker + static assets) or exposed via **Cloudflare Tunnel** if you self-host elsewhere.
 
 ## 🚀 Live Demo
 
@@ -10,165 +10,59 @@ Visit the live website: [https://simon-chen.com](https://simon-chen.com)
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: React 19.1.0, JavaScript (ES6+)
+- **Frontend**: React 19.1.0, JavaScript (ES6+), Vite
 - **Styling**: CSS3 with custom animations
-- **Email Service**: EmailJS for client-side email functionality
+- **Email**: EmailJS invoked from a Cloudflare Worker (`src/worker.js`); the browser only calls `POST /api/contact`
 - **Smooth Scrolling**: Lenis for enhanced user experience
-- **Containerization**: Docker with multi-stage builds
-- **Web Server**: Nginx for production serving
+- **Hosting**: Cloudflare Workers + Assets (`wrangler.jsonc`)
 
-## 🐳 Quick Start with Docker
+## 💻 Local development
 
-### Prerequisites:
-- [Docker](https://www.docker.com/get-started) (version 20.10+)
-- Docker Compose V2 (included with Docker Desktop, or install separately)
+Prerequisites: [Node.js](https://nodejs.org/) 20+ (recommended).
 
-### Option 1: Using Docker Compose (Recommended)
-
-1. **Clone the Repository**
+1. **Clone and install**
    ```bash
    git clone https://github.com/shangmin-chen/simon-chen-website
-   cd Shangmin-Chen.github.io
+   cd simon-chen-website
+   npm install
    ```
 
-2. **Set Environment Variables (Optional)**
-
-   If you need EmailJS functionality, create a `.env` file:
-   ```env
-   REACT_APP_EMAILJS_SERVICE_ID=your_service_id_here
-   REACT_APP_EMAILJS_TEMPLATE_ID=your_template_id_here
-   REACT_APP_EMAILJS_PUBLIC_KEY=your_public_key_here
-   ```
-
-3. **Build and Run**
+2. **Run the Vite dev server**
    ```bash
-   docker compose up -d --build
+   npm run dev
    ```
+   Opens at [http://localhost:3000](http://localhost:3000).
 
-4. **Access the Application**
-   
-   Open your browser and navigate to [http://localhost:3000](http://localhost:3000)
+3. **Contact form (optional)**: Copy `.dev.vars.example` to `.dev.vars`, add your EmailJS values, then in a second terminal run `npm run dev:worker` so `/api` requests proxy to the worker.
 
-## 🏗️ Docker Architecture
+## 📧 EmailJS setup
 
-The Docker setup uses a **multi-stage build** for optimal image size and performance:
-
-### Stage 1: Builder
-- Uses `node:20-alpine` as base image
-- Installs dependencies with `npm ci`
-- Builds the React application
-- Creates optimized production bundle
-
-### Stage 2: Production
-- Uses `nginx:alpine` as base image (lightweight)
-- Copies built static files from builder stage
-- Configures nginx for:
-  - React Router support (SPA routing)
-  - Gzip compression
-  - Static asset caching
-  - Security headers
-
-### Features:
-- ✅ **Small Image Size**: Multi-stage build reduces final image size
-- ✅ **Production Ready**: Optimized nginx configuration
-- ✅ **Health Checks**: Built-in health monitoring
-- ✅ **SPA Support**: Proper routing for React Router
-- ✅ **Performance**: Gzip compression and asset caching
-- ✅ **Security**: Security headers configured
-
-## 📧 EmailJS Setup
-
-If you need the contact form to work, you'll need to configure EmailJS:
-
-1. **Create EmailJS Account**
-   - Sign up at [EmailJS](https://www.emailjs.com/)
-   - Verify your email address
-
-2. **Create Email Service and Template**
-   - Follow the EmailJS setup guide in `pre-migration.md`
-   - Get your Service ID, Template ID, and Public Key
-
-3. **Pass Environment Variables**
-   
-   **For Docker Compose:**
-   - Add variables to `.env` file
-   - Uncomment `args` section in `docker-compose.yml`
-   
-   **For Docker Build:**
-   - Use `--build-arg` flags when building
-   - Or create a `.env` file and use it with build args
+1. **Create an EmailJS account** at [EmailJS](https://www.emailjs.com/) and set up a service + template.
+2. **Worker environment**: Set `EMAILJS_SERVICE_ID`, `EMAILJS_TEMPLATE_ID`, and `EMAILJS_PUBLIC_KEY` as Worker secrets in the Cloudflare dashboard or with `wrangler secret put …`. For local testing, use `.dev.vars` (see `.dev.vars.example`).
+3. **Origin allowlist**: Restrict allowed origins in the EmailJS dashboard for your domain(s).
 
 ## 🔧 Configuration
 
-### Port Configuration
-
-To change the port mapping, modify `docker-compose.yml`:
-```yaml
-ports:
-  - "3000:3000"  # Change YOUR_PORT to desired port
-```
-
-### Nginx Configuration
-
-The nginx configuration is in `nginx.conf`. You can customize:
-- Server settings
-- Compression settings
-- Cache policies
-- Security headers
-
-After modifying, rebuild the image:
-```bash
-docker compose build --no-cache
-```
+- **Dev server port**: `server.port` in `vite.config.js` (default `3000`).
+- **API proxy during `npm run dev`**: `server.proxy['/api']` in `vite.config.js` targets `wrangler dev` on port `8787`.
 
 ## 🚀 Deployment
 
-### Current Hosting Setup
+Build and deploy the Worker plus static assets to Cloudflare:
 
-The website is currently hosted on a **home server** and exposed to the internet using **Cloudflare Tunnels**. This setup provides:
-- Secure tunneling without exposing ports directly to the internet
-- DDoS protection and security features from Cloudflare
-- Free SSL/TLS certificates
-- No need for static IP or port forwarding
-
-### Alternative Deployment Options
-
-The Docker container can also be deployed to various cloud platforms:
-
-**Docker Hub:**
 ```bash
-# Tag the image
-docker tag shangmin-portfolio yourusername/shangmin-portfolio
-
-# Push to Docker Hub
-docker push yourusername/shangmin-portfolio
+npm run deploy
 ```
 
-**AWS ECS, Google Cloud Run, Azure Container Instances:**
-- Use the Dockerfile directly
-- Platforms will build and deploy automatically
+This runs `vite build` then `wrangler deploy`. Ensure Worker secrets are set in your Cloudflare account for the `simon-chen-website` worker (or whatever name you use in `wrangler.jsonc`).
 
-**VPS/Server:**
-```bash
-# On your server
-docker pull yourusername/shangmin-portfolio
-docker run -d -p 80:80 --name portfolio shangmin-portfolio
-```
+## 📚 Additional resources
 
-### Environment Variables in Production
-
-For production deployments, pass environment variables at build time:
-- Use build args during image build
-- Or use platform-specific secret management
-- Never commit sensitive keys to the repository
-
-## 📚 Additional Resources
-
-- [Docker Documentation](https://docs.docker.com/)
-- [Docker Compose Documentation](https://docs.docker.com/compose/)
-- [React Documentation](https://reactjs.org/)
-- [Nginx Documentation](https://nginx.org/en/docs/)
-- [EmailJS Documentation](https://www.emailjs.com/docs/)
+- [Cloudflare Workers](https://developers.cloudflare.com/workers/)
+- [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/)
+- [Vite](https://vite.dev/)
+- [React](https://react.dev/)
+- [EmailJS](https://www.emailjs.com/docs/)
 
 ## 📄 License
 

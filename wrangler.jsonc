@@ -2,11 +2,11 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "simon-chen-website",
   "compatibility_date": "2026-04-28",
+  "main": "./src/worker.js",
   "assets": {
     "directory": "./build",
-    "not_found_handling": "single-page-application"
+    "not_found_handling": "single-page-application",
+    "binding": "ASSETS"
   },
-  "observability": {
-    "enabled": true
-  }
+  "observability": { "enabled": true }
 }
