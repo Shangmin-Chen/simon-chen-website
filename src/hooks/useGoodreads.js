@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
+import { goodreadsData } from '../data/goodreadsData';
 
-const HANDLE = 'simonlovestocode';
-const CACHE_KEY = `cf-data:${HANDLE}`;
+const CACHE_KEY = `goodreads:${goodreadsData.userId}:${goodreadsData.shelf}`;
 
 // Cache shared across every mount in this page session so re-opening the
 // preview is instant and never refires the API. `memoryCache` survives
@@ -26,27 +26,23 @@ function writeSessionCache(data) {
   }
 }
 
-async function fetchCodeforces() {
-  const [contestsRes, infoRes] = await Promise.all([
-    fetch(`https://codeforces.com/api/user.rating?handle=${HANDLE}`),
-    fetch(`https://codeforces.com/api/user.info?handles=${HANDLE}`),
-  ]);
-  const contestsData = await contestsRes.json();
-  const infoData = await infoRes.json();
+async function fetchBooks() {
+  // Same-origin proxy (Cloudflare Worker) — Goodreads only exposes an
+  // RSS feed and it isn't CORS-enabled, so the Worker parses it to JSON.
+  const res = await fetch('/api/goodreads');
+  if (!res.ok) {
+    throw new Error('Failed to fetch shelf');
+  }
+  const data = await res.json();
 
-  if (contestsData.status !== 'OK') {
-    throw new Error('Failed to fetch contest history');
+  if (!data || !Array.isArray(data.books)) {
+    throw new Error('Failed to fetch shelf');
   }
 
-  const contests = [...contestsData.result].sort(
-    (a, b) => b.ratingUpdateTimeSeconds - a.ratingUpdateTimeSeconds
-  );
-  const userInfo = infoData.status === 'OK' ? infoData.result?.[0] ?? null : null;
-
-  return { contests, userInfo };
+  return { books: data.books };
 }
 
-const useCodeforcesData = () => {
+const useGoodreads = () => {
   const cached = memoryCache ?? readSessionCache();
   const [data, setData] = useState(cached);
   const [loading, setLoading] = useState(!cached);
@@ -66,7 +62,7 @@ const useCodeforcesData = () => {
     setError(null);
 
     // Dedupe concurrent mounts onto a single request.
-    inflight = inflight ?? fetchCodeforces();
+    inflight = inflight ?? fetchBooks();
     inflight
       .then((result) => {
         memoryCache = result;
@@ -92,11 +88,10 @@ const useCodeforcesData = () => {
   }, []);
 
   return {
-    contests: data?.contests ?? [],
-    userInfo: data?.userInfo ?? null,
+    books: data?.books ?? [],
     loading,
     error,
   };
 };
 
-export default useCodeforcesData;
+export default useGoodreads;

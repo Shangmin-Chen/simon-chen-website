@@ -3,7 +3,7 @@ export const projects = [
     title: 'Audio Transcription Platform',
     titleParts: { before: '', em: 'Whisperrr', after: ' — multi-language audio transcription platform' },
     description:
-      'A full-stack microservices platform for multi-language audio transcription, featuring real-time processing and 4x faster performance than OpenAI Whisper.',
+      'Built because I was tired of slow transcription tools. Microservices on Spring Boot + FastAPI, React frontend. Hits 4× the throughput of vanilla Whisper. Ships, runs, does the thing.',
     tags: ['Spring-Boot', 'FastAPI', 'React', 'Docker'],
     meta: { year: '2025', role: 'Solo', status: 'Live' },
     github: 'https://github.com/Shangmin-Chen/Whisperrr',
@@ -18,7 +18,7 @@ export const projects = [
       after: ' — analytics & forecasting',
     },
     description:
-      "A machine learning system that forecasts crime patterns and identifies hotspots across Boston's police districts using time-series analysis and geospatial clustering.",
+      "ML system that forecasts crime patterns across Boston's police districts. Prophet for time-series, GeoPandas for clustering. Genuinely interesting problem — crime data has strong seasonality and you can see it clearly in the graphs.",
     tags: ['Python', 'Prophet', 'GeoPandas', 'FastAPI'],
     meta: { year: '2026', role: 'ML engineer', status: 'Open source' },
     github: 'https://github.com/shangmin-chen/CrimeMapper-Boston',
@@ -33,7 +33,7 @@ export const projects = [
       after: ' — food waste reduction',
     },
     description:
-      'A web platform connecting students with leftover food from campus events, reducing waste while supporting food-insecure students through community connection.',
+      'Web platform connecting students with leftover food from campus events. Fought food waste, helped food-insecure students, and proved that unsexy-sounding projects can actually matter. Still live on campus.',
     tags: ['Django', 'Auth0', 'Google Maps', 'Python'],
     meta: { year: '2026', role: 'Full-stack', status: 'Live' },
     github: 'https://github.com/Shangmin-Chen/Spark-Bytes',

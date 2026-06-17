@@ -52,10 +52,10 @@
 
 .error-message {
   background-color: transparent;
-  color: #e74c3c;
+  color: var(--error-color);
   padding: 1rem 0;
   border-radius: 0;
   margin-top: 1rem;
   text-align: left;
-  border-bottom: 1px solid #e74c3c;
+  border-bottom: 1px solid var(--error-color);
 }

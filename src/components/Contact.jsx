@@ -112,13 +112,13 @@ const Contact = () => {
             </Button>
             
             {submitStatus === 'success' && (
-              <div className="success-message">
+              <div className="success-message" role="alert">
                 {contactData.messages.success}
               </div>
             )}
-            
+
             {submitStatus === 'error' && (
-              <div className="error-message">
+              <div className="error-message" role="alert">
                 {errorMessage}
               </div>
             )}
