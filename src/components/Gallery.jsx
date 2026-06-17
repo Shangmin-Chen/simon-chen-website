@@ -1,19 +1,47 @@
-import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
-import { galleryData } from '../data/galleryData';
+import React, {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import useGallery from '../hooks/useGallery';
+import { galleryConfig, imageUrl } from '../data/galleryData';
 
 const SWIPE_THRESHOLD = 50; // px before a drag counts as a swipe
 
 const Gallery = () => {
-  const { slides, note } = galleryData;
+  const { featured, loading, error } = useGallery();
+
+  // Resolve the featured album's photos into carousel slides (R2 URLs).
+  const slides = useMemo(
+    () =>
+      (featured?.photos ?? []).map((photo) => ({
+        ...photo,
+        src: imageUrl(photo.full),
+      })),
+    [featured]
+  );
   const count = slides.length;
+  const note = featured?.note ?? galleryConfig.note;
+
   const [index, setIndex] = useState(0);
   const viewportRef = useRef(null);
   const dragRef = useRef({ active: false, startX: 0, dx: 0, pointerId: null });
   const [dragX, setDragX] = useState(0);
   const baseId = useId();
 
+  // Reset to the first frame whenever the active album changes.
+  useEffect(() => {
+    setIndex(0);
+  }, [featured?.id]);
+
   const go = useCallback(
-    (next) => setIndex(((next % count) + count) % count),
+    (next) => {
+      if (count === 0) return;
+      setIndex(((next % count) + count) % count);
+    },
     [count]
   );
   const prev = useCallback(() => go(index - 1), [go, index]);
@@ -72,7 +100,116 @@ const Gallery = () => {
   }, [next, prev]);
 
   const pad = (n) => String(n + 1).padStart(2, '0');
-  const active = slides[index];
+  const active = slides[index] ?? slides[0];
+
+  let body;
+  if (loading) {
+    body = <p className="cf-preview-msg cf-loading-msg">{galleryConfig.messages.loading}</p>;
+  } else if (error) {
+    body = (
+      <p className="cf-preview-msg cf-error-msg">
+        {galleryConfig.messages.error} {error}
+      </p>
+    );
+  } else if (count === 0) {
+    body = <p className="cf-preview-msg">{galleryConfig.messages.empty}</p>;
+  } else {
+    body = (
+      <div
+        className="carousel reveal"
+        role="group"
+        aria-roledescription="carousel"
+        aria-label={featured?.title ? `${featured.title} photo gallery` : 'Photo gallery'}
+      >
+        <div
+          ref={viewportRef}
+          className="carousel-viewport"
+          tabIndex={0}
+          onKeyDown={onKeyDown}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          aria-label={`Slide ${index + 1} of ${count}. Use left and right arrow keys to navigate.`}
+        >
+          <div
+            className="carousel-track"
+            style={{
+              transform: `translateX(calc(${-index * 100}% + ${dragX}px))`,
+              transition: dragRef.current.active
+                ? 'none'
+                : 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+          >
+            {slides.map((slide, i) => (
+              <figure
+                className="carousel-slide"
+                key={slide.full}
+                id={`${baseId}-slide-${i}`}
+                role="group"
+                aria-roledescription="slide"
+                aria-label={`${i + 1} of ${count}`}
+                aria-hidden={i !== index}
+              >
+                <div className="carousel-frame">
+                  <img
+                    src={slide.src}
+                    alt={slide.alt}
+                    loading={i === 0 ? 'eager' : 'lazy'}
+                    draggable={false}
+                    width="1200"
+                    height="800"
+                  />
+                </div>
+              </figure>
+            ))}
+          </div>
+        </div>
+
+        <div className="carousel-bar">
+          <figcaption className="carousel-caption" aria-live="polite">
+            <span className="carousel-cap-text">{active.caption}</span>
+            {active.location && (
+              <span className="carousel-cap-loc">{active.location}</span>
+            )}
+          </figcaption>
+
+          <div className="carousel-controls">
+            <button
+              type="button"
+              className="carousel-btn"
+              onClick={prev}
+              aria-label="Previous photo"
+            >
+              ←
+            </button>
+            <span className="carousel-counter" aria-hidden="true">
+              {pad(index)} / {pad(count - 1)}
+            </span>
+            <button
+              type="button"
+              className="carousel-btn"
+              onClick={next}
+              aria-label="Next photo"
+            >
+              →
+            </button>
+          </div>
+        </div>
+
+        <div className="carousel-dots" aria-label="Choose photo">
+          {slides.map((slide, i) => (
+            <button
+              type="button"
+              key={slide.full}
+              className={`carousel-dot ${i === index ? 'is-active' : ''}`}
+              aria-label={`Go to photo ${i + 1}: ${slide.caption}`}
+              aria-current={i === index ? 'true' : undefined}
+              onClick={() => go(i)}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <section id="gallery" className="section">
@@ -86,100 +223,7 @@ const Gallery = () => {
 
         <div className="gallery-grid">
           <div className="mono-label reveal">{note}</div>
-
-          <div
-            className="carousel reveal"
-            role="group"
-            aria-roledescription="carousel"
-            aria-label="Photo gallery"
-          >
-            <div
-              ref={viewportRef}
-              className="carousel-viewport"
-              tabIndex={0}
-              onKeyDown={onKeyDown}
-              onPointerDown={onPointerDown}
-              onPointerMove={onPointerMove}
-              aria-label={`Slide ${index + 1} of ${count}. Use left and right arrow keys to navigate.`}
-            >
-              <div
-                className="carousel-track"
-                style={{
-                  transform: `translateX(calc(${-index * 100}% + ${dragX}px))`,
-                  transition: dragRef.current.active
-                    ? 'none'
-                    : 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-                }}
-              >
-                {slides.map((slide, i) => (
-                  <figure
-                    className="carousel-slide"
-                    key={slide.src}
-                    id={`${baseId}-slide-${i}`}
-                    role="group"
-                    aria-roledescription="slide"
-                    aria-label={`${i + 1} of ${count}`}
-                    aria-hidden={i !== index}
-                  >
-                    <div className="carousel-frame">
-                      <img
-                        src={slide.src}
-                        alt={slide.alt}
-                        loading={i === 0 ? 'eager' : 'lazy'}
-                        draggable={false}
-                        width="1200"
-                        height="800"
-                      />
-                    </div>
-                  </figure>
-                ))}
-              </div>
-            </div>
-
-            <div className="carousel-bar">
-              <figcaption className="carousel-caption" aria-live="polite">
-                <span className="carousel-cap-text">{active.caption}</span>
-                {active.location && (
-                  <span className="carousel-cap-loc">{active.location}</span>
-                )}
-              </figcaption>
-
-              <div className="carousel-controls">
-                <button
-                  type="button"
-                  className="carousel-btn"
-                  onClick={prev}
-                  aria-label="Previous photo"
-                >
-                  ←
-                </button>
-                <span className="carousel-counter" aria-hidden="true">
-                  {pad(index)} / {pad(count - 1)}
-                </span>
-                <button
-                  type="button"
-                  className="carousel-btn"
-                  onClick={next}
-                  aria-label="Next photo"
-                >
-                  →
-                </button>
-              </div>
-            </div>
-
-            <div className="carousel-dots" aria-label="Choose photo">
-              {slides.map((slide, i) => (
-                <button
-                  type="button"
-                  key={slide.src}
-                  className={`carousel-dot ${i === index ? 'is-active' : ''}`}
-                  aria-label={`Go to photo ${i + 1}: ${slide.caption}`}
-                  aria-current={i === index ? 'true' : undefined}
-                  onClick={() => go(i)}
-                />
-              ))}
-            </div>
-          </div>
+          {body}
         </div>
       </div>
     </section>

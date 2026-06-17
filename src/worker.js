@@ -1,6 +1,7 @@
 const GITHUB_USERNAME = 'Shangmin-Chen';
 const GOODREADS_USER_ID = '141302044';
 const GOODREADS_SHELF = 'currently-reading';
+const GALLERY_MANIFEST_URL = 'https://images.simon-chen.com/gallery.json';
 
 // Pull the inner text of a single XML tag, unwrapping CDATA and trimming.
 function extractTag(block, tag) {
@@ -120,6 +121,48 @@ export default {
           headers: {
             'Content-Type': 'application/json',
             'Cache-Control': 'public, max-age=3600',
+          },
+        });
+        ctx.waitUntil(cache.put(cacheKey, response.clone()));
+        return response;
+      } catch {
+        return new Response(JSON.stringify({ error: 'Fetch failed' }), {
+          status: 502,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
+    // Proxy the gallery manifest (gallery.json) from the public R2 domain so
+    // the client stays same-origin (no CORS) and the manifest is edge-cached.
+    // Short TTL so photo/caption edits propagate without a redeploy.
+    if (url.pathname === '/api/gallery' && request.method === 'GET') {
+      const cache = caches.default;
+      const cacheKey = new Request(new URL('/api/gallery', url.origin), request);
+
+      const hit = await cache.match(cacheKey);
+      if (hit) return hit;
+
+      try {
+        const upstream = await fetch(GALLERY_MANIFEST_URL, {
+          headers: { Accept: 'application/json' },
+        });
+
+        if (!upstream.ok) {
+          return new Response(
+            JSON.stringify({ error: 'Upstream error', status: upstream.status }),
+            {
+              status: 502,
+              headers: { 'Content-Type': 'application/json' },
+            }
+          );
+        }
+
+        const response = new Response(await upstream.text(), {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'public, max-age=300',
           },
         });
         ctx.waitUntil(cache.put(cacheKey, response.clone()));

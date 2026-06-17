@@ -1,0 +1,33 @@
+{
+  "galleries": [
+    {
+      "id": "frames",
+      "title": "Frames",
+      "featured": true,
+      "note": "A few frames",
+      "photos": [
+        {
+          "full": "frames/frame-01-full.jpg",
+          "thumb": "frames/frame-01-thumb.jpg",
+          "alt": "Layered warm dunes under a low sun",
+          "caption": "Golden hour, somewhere quiet",
+          "location": "Boston, MA"
+        },
+        {
+          "full": "frames/frame-02-full.jpg",
+          "thumb": "frames/frame-02-thumb.jpg",
+          "alt": "Concentric arcs radiating from a dark center",
+          "caption": "Long exposure of the harbor lights",
+          "location": "Seaport"
+        },
+        {
+          "full": "frames/frame-03-full.jpg",
+          "thumb": "frames/frame-03-thumb.jpg",
+          "alt": "Halftone dot gradient fading across the frame",
+          "caption": "Printmaking studio, close up",
+          "location": "Studio"
+        }
+      ]
+    }
+  ]
+}
