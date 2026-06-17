@@ -26,6 +26,13 @@
 
 /* Utility Styles */
 @import './utils/responsive.css';
+@import './utils/scroll-reveal.css';
+
+/* Component Styles (continued) */
+@import './components/now.css';
+@import './components/github.css';
+@import './components/goodreads.css';
+@import './components/gallery.css';
 
 /* Mdx Styles */
 @import './components/mdx.css';

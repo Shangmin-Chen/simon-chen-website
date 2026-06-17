@@ -7,7 +7,7 @@ export const experiences = [
     company: 'GIGAbase',
     location: 'Shanghai, China',
     period: 'February 2026 -- Present',
-    description: 'Full-stack development across a React/Vite frontend and a Ruby on Rails backend, with Sidekiq, RabbitMQ, and Redis powering async jobs and messaging on PostgreSQL and AWS. Work includes integrating and processing feeds from external data providers.',
+    description: 'Full-stack across Vite/React and a Ruby on Rails backend — the kind of stack where you touch everything from schema design to the deploy pipeline. Sidekiq, RabbitMQ, Redis for the async jobs nobody wants to debug at 2am. Processing external data feeds, shipping features, repeat.',
     technologies: [],
   },
   {
@@ -19,7 +19,7 @@ export const experiences = [
     location: 'New York, NY',
     period: 'September 2025 -- Present',
     description:
-      'Migrating esports platform to Next.js with Supabase backend. Designing PostgreSQL schema for 500+ matches across 20+ teams. Achieved 75% reduction in page load time on Cloudflare Pages.',
+      'Migrated an esports platform to Next.js + Supabase. Designed the PostgreSQL schema for 500+ matches across 20+ teams from scratch. Cut page load time by 75% on Cloudflare Pages — turns out the original setup had some strong opinions about speed, and they were all wrong.',
     technologies: [
       'Next.js',
       'Supabase',
@@ -39,7 +39,7 @@ export const experiences = [
     location: 'Boston, MA',
     period: 'September 2024 -- December 2024',
     description:
-      'Developed food waste reduction platform with Django + Auth0 authentication and QR code delivery. Integrated Google Maps API for event discovery. Deployed production application managing 100+ campus events.',
+      'Built Spark Bytes — a platform that matched students with leftover food from campus events. Django backend, Auth0 auth, QR code pickup. It ran 100+ events and actually got used by real people, which is the best compliment a side project can receive.',
     technologies: [
       'Django',
       'Auth0',
@@ -60,7 +60,7 @@ export const experiences = [
     location: 'Boston, MA',
     period: 'January 2024 - July 2025',
     description:
-      'Automated software deployment for 100+ devices, reducing deployment time by 40%. Managed 200+ user accounts, boosting system uptime by 15%. Enhanced endpoint security, resolving 20+ tickets/week.',
+      'IT consultant for BU Engineering — automated deployments for 100+ devices, managed 200+ user accounts, closed 20+ tickets a week. Taught me more about how systems actually fail in the real world than any CS class did.',
     technologies: [
       'Microsoft Deployment Toolkit',
       'Windows 11',

@@ -1,0 +1,88 @@
+/* Scroll Reveal */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+  transition-delay: var(--delay, 0ms);
+}
+
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Hero entrance */
+
+@keyframes hero-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero-title-v2 {
+  animation: hero-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: 0.05s;
+}
+
+.hero-lede-v2 {
+  animation: hero-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: 0.22s;
+}
+
+.hero-buttons {
+  animation: hero-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: 0.38s;
+}
+
+.hero-meta {
+  animation: hero-rise 0.7s ease both;
+  animation-delay: 0.55s;
+}
+
+/* "life." breathes gently after it enters */
+@keyframes accent-breathe {
+  0%, 100% { font-variation-settings: "opsz" 144, "SOFT" 50; }
+  50%       { font-variation-settings: "opsz" 144, "SOFT" 100; }
+}
+
+.hero-title-v2 em.accent {
+  animation:
+    hero-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both 0.05s,
+    accent-breathe 7s ease-in-out infinite 1.6s;
+}
+
+/* ------------------------------------------------------------------ */
+/* Respect prefers-reduced-motion                                       */
+/* Disable all entrance animations and continuous effects.             */
+/* Force .reveal elements visible so content is not hidden.            */
+/* ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  /* Scroll-reveal: skip the fade/slide transition and show immediately */
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .reveal.revealed {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Hero entrance animations */
+  .hero-title-v2,
+  .hero-lede-v2,
+  .hero-buttons,
+  .hero-meta {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  /* "life." accent — stop the infinite breathe and the entrance */
+  .hero-title-v2 em.accent {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}

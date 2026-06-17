@@ -5,8 +5,8 @@ import { projects } from '../data/projects';
 const Projects = () => (
   <section id="projects" className="section">
     <div className="container">
-      <div className="section-head">
-        <div className="mono-label num">§ 03</div>
+      <div className="section-head reveal">
+        <div className="mono-label num">§ 04</div>
         <h2>
           Work <em>— recent</em>
         </h2>
@@ -19,7 +19,7 @@ const Projects = () => (
         </div>
         <div className="work-list">
           {projects.map((project) => (
-            <article key={project.github} className="work-item">
+            <article key={project.github} className="work-item reveal">
               <div>
                 <h3 className="title">
                   {project.titleParts.before}

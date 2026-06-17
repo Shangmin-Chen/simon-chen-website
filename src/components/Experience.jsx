@@ -17,8 +17,8 @@ const Experience = () => {
   return (
     <section id="experience" className="section">
       <div className="container">
-        <div className="section-head">
-          <div className="mono-label num">§ 02</div>
+        <div className="section-head reveal">
+          <div className="mono-label num">§ 03</div>
           <h2>
             Experience <em>— selected</em>
           </h2>
@@ -30,7 +30,7 @@ const Experience = () => {
             const panelId = `${baseId}-panel-${index}`;
             const triggerId = `${baseId}-trigger-${index}`;
             return (
-              <li key={rowKey} className="exp-row">
+              <li key={rowKey} className="exp-row reveal" style={{ '--delay': `${index * 60}ms` }}>
                 <div className="mono-label">{exp.mono}</div>
                 <div className="exp-middle">
                   <div className="role">

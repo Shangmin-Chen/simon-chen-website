@@ -1,0 +1,54 @@
+/* GitHub contribution squares — warm-palette take on the activity grid */
+
+.gh-cal {
+  --gh-cell: 11px;
+  --gh-gap: 3px;
+  --gh-empty: color-mix(in srgb, var(--border-color) 55%, transparent);
+  display: flex;
+  gap: var(--gh-gap);
+  margin-top: 0.25rem;
+  padding-bottom: 4px;
+  overflow-x: auto;
+}
+
+.gh-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gh-gap);
+}
+
+.gh-cell {
+  flex: 0 0 auto;
+  width: var(--gh-cell);
+  height: var(--gh-cell);
+  border-radius: 2px;
+  background: var(--gh-empty);
+}
+
+.gh-cell--empty {
+  background: transparent;
+}
+
+.gh-cell.lvl-0 { background: var(--gh-empty); }
+.gh-cell.lvl-1 { background: color-mix(in srgb, var(--accent-color) 28%, transparent); }
+.gh-cell.lvl-2 { background: color-mix(in srgb, var(--accent-color) 52%, transparent); }
+.gh-cell.lvl-3 { background: color-mix(in srgb, var(--accent-color) 76%, transparent); }
+.gh-cell.lvl-4 { background: var(--accent-color); }
+
+.gh-preview-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.85rem;
+}
+
+.gh-total {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-tertiary);
+}

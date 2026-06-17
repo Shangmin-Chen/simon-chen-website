@@ -1,56 +1,41 @@
 /**
- * Utility functions for smooth scrolling with Lenis
+ * Utility functions for smooth scrolling using the native scroll API.
  */
 
 /**
- * Scroll to a specific section using Lenis smooth scroll
+ * Returns true when the user has opted into reduced motion.
+ * @returns {boolean}
+ */
+const prefersReducedMotion = () =>
+  typeof window !== 'undefined' &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ~--nav-height at 18px root (4.5rem); leaves room below the fixed navbar.
+const NAV_OFFSET = 81;
+
+/**
+ * Scroll to a specific section.
+ * Uses instant scrolling when reduced motion is preferred.
  * @param {string} sectionId - The ID of the section to scroll to
- * @param {object} options - Additional scroll options
  */
-export const scrollToSection = (sectionId, options = {}) => {
-  const defaultOptions = {
-    offset: -81, // ~--nav-height at 18px root (4.5rem)
-    duration: 1.5,
-    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
-  };
+export const scrollToSection = (sectionId) => {
+  const element = document.getElementById(sectionId);
+  if (!element) return;
 
-  const scrollOptions = { ...defaultOptions, ...options };
-
-  if (window.lenis) {
-    window.lenis.scrollTo(`#${sectionId}`, scrollOptions);
-  } else {
-    // Fallback to native smooth scroll
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  }
+  const top = element.getBoundingClientRect().top + window.scrollY - NAV_OFFSET;
+  window.scrollTo({
+    top,
+    behavior: prefersReducedMotion() ? 'instant' : 'smooth',
+  });
 };
 
 /**
- * Scroll to top of the page
- * @param {object} options - Additional scroll options
+ * Scroll to top of the page.
+ * Uses instant scrolling when reduced motion is preferred.
  */
-export const scrollToTop = (options = {}) => {
-  const defaultOptions = {
-    duration: 1.2,
-    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
-  };
-
-  const scrollOptions = { ...defaultOptions, ...options };
-
-  if (window.lenis) {
-    window.lenis.scrollTo(0, scrollOptions);
-  } else {
-    // Fallback to native smooth scroll
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-};
-
-/**
- * Check if Lenis is available
- * @returns {boolean} - True if Lenis is available
- */
-export const isLenisAvailable = () => {
-  return typeof window !== 'undefined' && window.lenis;
+export const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: prefersReducedMotion() ? 'instant' : 'smooth',
+  });
 };

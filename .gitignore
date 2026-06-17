@@ -11,6 +11,10 @@
 # production
 /build
 
+# local tooling
+/.wrangler
+/.claude
+
 # misc
 .DS_Store
 .env
