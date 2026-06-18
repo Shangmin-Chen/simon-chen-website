@@ -1,30 +1,30 @@
 {
   "galleries": [
     {
-      "id": "shanghai",
-      "title": "Shanghai",
+      "id": "shanghai-study-abroad",
+      "title": "Shanghai Study Abroad",
       "featured": true,
-      "note": "Shanghai",
+      "note": "Shanghai Study Abroad Spring 2026",
       "photos": [
         {
           "full": "shanghai/shanghai_01-full.jpg",
           "thumb": "shanghai/shanghai_01-thumb.jpg",
           "alt": "Shanghai, photo 1",
-          "caption": "",
+          "caption": "First day in Shanghai, visited the city center and the Bund",
           "location": "Shanghai"
         },
         {
           "full": "shanghai/shanghai_02-full.jpg",
           "thumb": "shanghai/shanghai_02-thumb.jpg",
           "alt": "Shanghai, photo 2",
-          "caption": "",
-          "location": "Shanghai"
+          "caption": "Guilin Fieldtrip; view from the top of Ruyi Mountain, overseeing the Li River",
+          "location": "Guilin"
         },
         {
           "full": "shanghai/shanghai_03-full.jpg",
           "thumb": "shanghai/shanghai_03-thumb.jpg",
           "alt": "Shanghai, photo 3",
-          "caption": "",
+          "caption": "Guilin Fieldtrip; view from outside",
           "location": "Shanghai"
         },
         {
@@ -66,6 +66,69 @@
           "full": "shanghai/shanghai_09-full.jpg",
           "thumb": "shanghai/shanghai_09-thumb.jpg",
           "alt": "Shanghai, photo 9",
+          "caption": "",
+          "location": "Shanghai"
+        },
+        {
+          "full": "shanghai/shanghai_10-full.jpg",
+          "thumb": "shanghai/shanghai_10-thumb.jpg",
+          "alt": "Shanghai, photo 10",
+          "caption": "",
+          "location": "Shanghai"
+        },
+        {
+          "full": "shanghai/shanghai_11-full.jpg",
+          "thumb": "shanghai/shanghai_11-thumb.jpg",
+          "alt": "Shanghai, photo 11",
+          "caption": "",
+          "location": "Shanghai"
+        },
+        {
+          "full": "shanghai/shanghai_12-full.jpg",
+          "thumb": "shanghai/shanghai_12-thumb.jpg",
+          "alt": "Shanghai, photo 12",
+          "caption": "",
+          "location": "Shanghai"
+        },
+        {
+          "full": "shanghai/shanghai_13-full.jpg",
+          "thumb": "shanghai/shanghai_13-thumb.jpg",
+          "alt": "Shanghai, photo 13",
+          "caption": "",
+          "location": "Shanghai"
+        },
+        {
+          "full": "shanghai/shanghai_14-full.jpg",
+          "thumb": "shanghai/shanghai_14-thumb.jpg",
+          "alt": "Shanghai, photo 14",
+          "caption": "",
+          "location": "Shanghai"
+        },
+        {
+          "full": "shanghai/shanghai_15-full.jpg",
+          "thumb": "shanghai/shanghai_15-thumb.jpg",
+          "alt": "Shanghai, photo 15",
+          "caption": "",
+          "location": "Shanghai"
+        },
+        {
+          "full": "shanghai/shanghai_16-full.jpg",
+          "thumb": "shanghai/shanghai_16-thumb.jpg",
+          "alt": "Shanghai, photo 16",
+          "caption": "",
+          "location": "Shanghai"
+        },
+        {
+          "full": "shanghai/shanghai_17-full.jpg",
+          "thumb": "shanghai/shanghai_17-thumb.jpg",
+          "alt": "Shanghai, photo 17",
+          "caption": "",
+          "location": "Shanghai"
+        },
+        {
+          "full": "shanghai/shanghai_18-full.jpg",
+          "thumb": "shanghai/shanghai_18-thumb.jpg",
+          "alt": "Shanghai, photo 18",
           "caption": "",
           "location": "Shanghai"
         }
