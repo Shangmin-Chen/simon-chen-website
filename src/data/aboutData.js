@@ -1,10 +1,10 @@
 export const aboutData = {
   paragraphs: [
-    "I graduated from Boston University with a CS degree. By trade I'm a software engineer — I care about systems that scale, interfaces that don't waste your time, and whatever's happening at the frontier of AI agents.",
-    "Outside of work: poker nights with friends (still working on the bluffing), lifting, and being the guy who sends reels to the group chat at midnight. I also read more literature than most people expect from someone who writes code for a living.",
+    "A new grad from from Boston University with a CS degree. I love shipping code.",
+    "Outside of writing code, I love hanging out with friends and helping others. I also love reading literature, which may strange coming from someone who writes code for a living.",
   ],
   projectsSentence:
-    "On the technical side I mostly build full-stack apps, but lately I've been deep in agent frameworks, MCP servers, and tool-use pipelines.",
+    "On the technical side, I amOn the technical side I mostly build full-stack apps, but lately I've been deep in agent frameworks, MCP servers, and tool-use pipelines.",
   codeforcesSentence:
     'I practice competitive programming on Codeforces for fun — yes, actually for fun.',
   closing:

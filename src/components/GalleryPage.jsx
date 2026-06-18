@@ -10,7 +10,7 @@ const AlbumIndex = ({ galleries }) => (
     {galleries.map((album) => {
       const cover = album.photos?.[0];
       return (
-        <Link to={`/gallery/${album.id}`} className="album-card reveal" key={album.id}>
+        <Link to={`/gallery/${album.id}`} className="album-card" key={album.id}>
           <div className="album-card-cover">
             {cover && <img src={imageUrl(cover.thumb)} alt={cover.alt || ''} loading="lazy" />}
           </div>
@@ -37,7 +37,7 @@ const AlbumView = ({ album }) => {
         {photos.map((photo, i) => (
           <button
             type="button"
-            className="photo-grid-item reveal"
+            className="photo-grid-item"
             key={photo.full}
             onClick={() => setLightboxIndex(i)}
             aria-label={`Open photo ${i + 1}: ${photo.caption || ''}`}

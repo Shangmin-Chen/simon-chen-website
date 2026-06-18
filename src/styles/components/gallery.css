@@ -13,9 +13,9 @@
 
 .carousel {
   min-width: 0; /* allow the track to shrink inside the grid */
-  /* Cap the featured carousel so it reads as an editorial frame rather than
-     filling the whole content column on wide screens. */
-  max-width: 600px;
+  /* Scale with the content column but keep an editorial cap on very wide
+     screens so it never sprawls. */
+  max-width: min(880px, 100%);
 }
 
 /* "All galleries →" link under the featured carousel */
@@ -68,7 +68,9 @@
 
 .carousel-frame {
   position: relative;
-  aspect-ratio: 3 / 2;
+  /* Height-driven (not a fixed 3:2 box) so it scales with the viewport and
+     gives mixed portrait/landscape photos a comfortable, consistent stage. */
+  height: clamp(420px, 64vh, 680px);
   overflow: hidden;
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
