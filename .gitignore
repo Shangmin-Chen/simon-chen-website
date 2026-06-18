@@ -15,6 +15,9 @@
 /.wrangler
 /.claude
 
+# resized gallery images staged for R2 upload
+/gallery-dist
+
 # misc
 .DS_Store
 .env

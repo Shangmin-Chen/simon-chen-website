@@ -1,31 +1,73 @@
 {
   "galleries": [
     {
-      "id": "frames",
-      "title": "Frames",
+      "id": "shanghai",
+      "title": "Shanghai",
       "featured": true,
-      "note": "A few frames",
+      "note": "Shanghai",
       "photos": [
         {
-          "full": "frames/frame-01-full.jpg",
-          "thumb": "frames/frame-01-thumb.jpg",
-          "alt": "Layered warm dunes under a low sun",
-          "caption": "Golden hour, somewhere quiet",
-          "location": "Boston, MA"
+          "full": "shanghai/shanghai_01-full.jpg",
+          "thumb": "shanghai/shanghai_01-thumb.jpg",
+          "alt": "Shanghai, photo 1",
+          "caption": "",
+          "location": "Shanghai"
         },
         {
-          "full": "frames/frame-02-full.jpg",
-          "thumb": "frames/frame-02-thumb.jpg",
-          "alt": "Concentric arcs radiating from a dark center",
-          "caption": "Long exposure of the harbor lights",
-          "location": "Seaport"
+          "full": "shanghai/shanghai_02-full.jpg",
+          "thumb": "shanghai/shanghai_02-thumb.jpg",
+          "alt": "Shanghai, photo 2",
+          "caption": "",
+          "location": "Shanghai"
         },
         {
-          "full": "frames/frame-03-full.jpg",
-          "thumb": "frames/frame-03-thumb.jpg",
-          "alt": "Halftone dot gradient fading across the frame",
-          "caption": "Printmaking studio, close up",
-          "location": "Studio"
+          "full": "shanghai/shanghai_03-full.jpg",
+          "thumb": "shanghai/shanghai_03-thumb.jpg",
+          "alt": "Shanghai, photo 3",
+          "caption": "",
+          "location": "Shanghai"
+        },
+        {
+          "full": "shanghai/shanghai_04-full.jpg",
+          "thumb": "shanghai/shanghai_04-thumb.jpg",
+          "alt": "Shanghai, photo 4",
+          "caption": "",
+          "location": "Shanghai"
+        },
+        {
+          "full": "shanghai/shanghai_05-full.jpg",
+          "thumb": "shanghai/shanghai_05-thumb.jpg",
+          "alt": "Shanghai, photo 5",
+          "caption": "",
+          "location": "Shanghai"
+        },
+        {
+          "full": "shanghai/shanghai_06-full.jpg",
+          "thumb": "shanghai/shanghai_06-thumb.jpg",
+          "alt": "Shanghai, photo 6",
+          "caption": "",
+          "location": "Shanghai"
+        },
+        {
+          "full": "shanghai/shanghai_07-full.jpg",
+          "thumb": "shanghai/shanghai_07-thumb.jpg",
+          "alt": "Shanghai, photo 7",
+          "caption": "",
+          "location": "Shanghai"
+        },
+        {
+          "full": "shanghai/shanghai_08-full.jpg",
+          "thumb": "shanghai/shanghai_08-thumb.jpg",
+          "alt": "Shanghai, photo 8",
+          "caption": "",
+          "location": "Shanghai"
+        },
+        {
+          "full": "shanghai/shanghai_09-full.jpg",
+          "thumb": "shanghai/shanghai_09-thumb.jpg",
+          "alt": "Shanghai, photo 9",
+          "caption": "",
+          "location": "Shanghai"
         }
       ]
     }
