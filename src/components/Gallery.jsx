@@ -6,13 +6,14 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { Link } from 'react-router-dom';
 import useGallery from '../hooks/useGallery';
 import { galleryConfig, imageUrl } from '../data/galleryData';
 
 const SWIPE_THRESHOLD = 50; // px before a drag counts as a swipe
 
 const Gallery = () => {
-  const { featured, loading, error } = useGallery();
+  const { galleries, featured, loading, error } = useGallery();
 
   // Resolve the featured album's photos into carousel slides (R2 URLs).
   const slides = useMemo(
@@ -223,7 +224,14 @@ const Gallery = () => {
 
         <div className="gallery-grid">
           <div className="mono-label reveal">{note}</div>
-          {body}
+          <div className="gallery-main">
+            {body}
+            {!loading && !error && galleries.length > 0 && (
+              <Link to="/gallery" className="gallery-all reveal">
+                All galleries →
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </section>

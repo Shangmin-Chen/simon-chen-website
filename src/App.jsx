@@ -14,6 +14,7 @@ import Contact from './components/Contact';
 import { useScrollReveal } from './hooks/useScrollReveal';
 
 const BlogPost = lazy(() => import('./components/BlogPost'));
+const GalleryPage = lazy(() => import('./components/GalleryPage'));
 
 function App() {
   useScrollReveal();
@@ -39,6 +40,8 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/blog/:slug" element={<Suspense fallback={null}><BlogPost /></Suspense>} />
+            <Route path="/gallery" element={<Suspense fallback={null}><GalleryPage /></Suspense>} />
+            <Route path="/gallery/:albumId" element={<Suspense fallback={null}><GalleryPage /></Suspense>} />
           </Routes>
         </div>
       </Router>
