@@ -13,7 +13,7 @@ const InstagramPreview = () => {
           maxWidth: '50ch'
         }}
       >
-        follow me on instagram!
+        Follow me on instagram!
       </div>
       <div className="ig-preview-foot">
         <a
