@@ -19,6 +19,12 @@ export const contactData = {
       value: "github.com/Shangmin-Chen",
       href: "https://github.com/Shangmin-Chen",
       external: true
+    },
+    {
+      label: "Instagram",
+      value: "instagram.com/the.simonchen",
+      href: "https://www.instagram.com/the.simonchen/",
+      external: true
     }
   ],
   formFields: [

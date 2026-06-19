@@ -218,7 +218,7 @@ const Gallery = () => {
         <div className="section-head reveal">
           <div className="mono-label num">§ 07</div>
           <h2>
-            Gallery <em>— frames</em>
+            Recent Frames <em>— selected</em>
           </h2>
         </div>
 
@@ -228,7 +228,7 @@ const Gallery = () => {
             {body}
             {!loading && !error && galleries.length > 0 && (
               <Link to="/gallery" className="gallery-all reveal">
-                All galleries →
+                Full gallery →
               </Link>
             )}
           </div>

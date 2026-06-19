@@ -18,24 +18,31 @@
   max-width: min(880px, 100%);
 }
 
-/* "All galleries →" link under the featured carousel */
+/* "Full gallery →" link under the featured carousel */
 .gallery-all {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  margin-top: 24px;
+  gap: 8px;
+  margin-top: 28px;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--text-secondary);
+  letter-spacing: 0.12em;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  padding: 12px 24px;
+  border-radius: 99px;
   text-decoration: none;
-  transition: color 0.2s, gap 0.2s;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  background: transparent;
 }
 
 .gallery-all:hover {
   color: var(--accent-color);
-  gap: 10px;
+  border-color: var(--accent-color);
+  background: var(--hover-bg);
+  gap: 12px;
+  transform: translateY(-1px);
 }
 
 .carousel-viewport {

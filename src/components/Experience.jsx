@@ -20,7 +20,7 @@ const Experience = () => {
         <div className="section-head reveal">
           <div className="mono-label num">§ 03</div>
           <h2>
-            Experience <em>— selected</em>
+            Experience <em>— curated</em>
           </h2>
         </div>
         <ul className="exp-list">
@@ -31,23 +31,27 @@ const Experience = () => {
             const triggerId = `${baseId}-trigger-${index}`;
             return (
               <li key={rowKey} className="exp-row reveal" style={{ '--delay': `${index * 60}ms` }}>
-                <div className="mono-label">{exp.mono}</div>
-                <div className="exp-middle">
-                  <div className="role">
-                    {exp.title} <em>· {exp.roleEm}</em>
-                  </div>
-                  <button
-                    type="button"
-                    id={triggerId}
-                    className="exp-toggle"
-                    aria-expanded={isExpanded}
-                    aria-controls={panelId}
-                    onClick={() => toggle(rowKey)}
-                  >
-                    {isExpanded ? 'Less' : 'More'}
-                  </button>
-                </div>
-                <div className="where">{exp.where}</div>
+                <button
+                  type="button"
+                  id={triggerId}
+                  className="exp-header-btn"
+                  aria-expanded={isExpanded}
+                  aria-controls={panelId}
+                  onClick={() => toggle(rowKey)}
+                >
+                  <span className="mono-label">{exp.mono}</span>
+                  <span className="exp-middle">
+                    <span className="role">
+                      {exp.title} <em>· {exp.roleEm}</em>
+                    </span>
+                  </span>
+                  <span className="where">
+                    {exp.where}
+                    <span className="exp-expand-hint" aria-hidden="true">
+                      {isExpanded ? '−' : '+'}
+                    </span>
+                  </span>
+                </button>
                 <div
                   id={panelId}
                   role="region"
