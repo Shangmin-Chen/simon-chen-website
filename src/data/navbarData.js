@@ -26,7 +26,7 @@ export const navbarData = {
       sectionId: "gallery"
     },
     {
-      label: "Let's chat",
+      label: "Let's Chat",
       sectionId: "contact"
     }
   ]

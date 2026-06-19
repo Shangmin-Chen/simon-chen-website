@@ -19,7 +19,7 @@ const Blog = () => {
         <div className="section-head reveal">
           <div className="mono-label num">§ 06</div>
           <h2>
-            Writing <em>— Blogs</em>
+            Writing <em>- Blogs</em>
           </h2>
         </div>
         <div className="blog-grid">

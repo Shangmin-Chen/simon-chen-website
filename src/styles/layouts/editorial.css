@@ -100,28 +100,17 @@
   color: var(--accent-color);
 }
 
-.exp-header-btn {
+.exp-header {
   display: grid;
   grid-template-columns: 120px 1fr auto;
   gap: 32px;
   width: 100%;
-  background: none;
-  border: none;
   padding: 28px 0;
   align-items: baseline;
-  text-align: left;
-  cursor: pointer;
-  font-family: inherit;
   color: inherit;
-  transition: color 0.2s;
 }
 
-.exp-header-btn:focus-visible {
-  outline: 2px solid var(--accent-color);
-  outline-offset: -4px;
-}
-
-.exp-header-btn .role {
+.exp-header .role {
   font-size: clamp(1.4rem, 3vw, 2rem);
   font-weight: 400;
   line-height: 1.15;
@@ -129,14 +118,14 @@
   color: var(--text-primary);
 }
 
-.exp-header-btn .role em {
+.exp-header .role em {
   font-style: italic;
   color: var(--text-secondary);
   font-weight: 300;
   transition: color 0.3s;
 }
 
-.exp-header-btn .where {
+.exp-header .where {
   font-size: 0.85rem;
   color: var(--text-secondary);
   text-align: right;
@@ -147,19 +136,6 @@
   align-items: center;
   justify-content: flex-end;
   gap: 12px;
-}
-
-.exp-expand-hint {
-  font-family: var(--font-mono);
-  font-size: 0.9rem;
-  color: var(--text-muted);
-  width: 1.5ch;
-  text-align: center;
-  transition: color 0.2s;
-}
-
-.exp-header-btn:hover .exp-expand-hint {
-  color: var(--accent-color);
 }
 
 @media (min-width: 601px) {
@@ -219,12 +195,12 @@
   .exp-row:hover {
     padding-left: 0;
   }
-  .exp-header-btn {
+  .exp-header {
     grid-template-columns: 1fr;
     gap: 6px;
     padding: 20px 0;
   }
-  .exp-header-btn .where {
+  .exp-header .where {
     text-align: left;
     justify-content: flex-start;
   }

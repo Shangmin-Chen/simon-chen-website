@@ -8,7 +8,7 @@ const Projects = () => (
       <div className="section-head reveal">
         <div className="mono-label num">§ 04</div>
         <h2>
-          Projects <em>— recent</em>
+          Projects <em>- Recent</em>
         </h2>
       </div>
       <div className="work-grid">

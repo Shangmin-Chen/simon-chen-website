@@ -7,7 +7,7 @@ export const experiences = [
     company: 'RESET Standard',
     location: 'Shanghai, China',
     period: 'February 2026 -- June 2026',
-    description: 'Full-stack across Vite and a Ruby on Rails backend. From schema design to the deploy pipeline. Sidekiq, RabbitMQ, Redis for the async jobs. Processing external data providers, and shipping features.',
+    description: 'Full-stack development using React (Vite) and Ruby on Rails. From schema design to the deploy pipeline. Sidekiq, RabbitMQ, Redis for the async jobs. Processing external data providers, and shipping features.',
     technologies: [
       "React",
       "Ruby",

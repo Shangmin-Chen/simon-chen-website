@@ -10,7 +10,7 @@ const About = () => {
         <div className="section-head reveal">
           <div className="mono-label num">§ 01</div>
           <h2>
-            About <em>— me</em>
+            About <em>- Me</em>
           </h2>
         </div>
         <div className="about-grid">

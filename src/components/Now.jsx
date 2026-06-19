@@ -24,7 +24,7 @@ const Now = () => {
         <div className="section-head reveal">
           <div className="mono-label num">§ 02</div>
           <h2>
-            Now <em>— currently</em>
+            Now <em>- Currently</em>
           </h2>
         </div>
         <div className="now-grid">
