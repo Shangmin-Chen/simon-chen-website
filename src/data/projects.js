@@ -12,7 +12,7 @@ export const projects = [
   },
   {
     title: "Hermes' Letters",
-    titleParts: { before: '', em: "Hermes' Letters", after: ' — invite-only fire-and-forget letter sending platform' },
+    titleParts: { before: '', em: "Hermes' Letters", after: ' — invite only letter sending platform' },
     description:
       'An invite-only online letter sending platform for friends. Senders compose letters locked behind personal security questions; letters burn on open and can only be claimed once, offering a complete fire-and-forget experience.',
     tags: ['Next.js', 'React', 'Supabase', 'Postgres', 'Drizzle-ORM', 'Tailwind-CSS'],
