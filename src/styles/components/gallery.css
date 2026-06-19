@@ -97,7 +97,7 @@
 /* Caption + controls row */
 .carousel-bar {
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 24px;
   margin-top: 20px;
