@@ -34,6 +34,11 @@ export const nowData = {
       label: 'Sending',
       value: 'Too many reels',
       sub: 'To my friends, with zero regrets.',
+      expand: 'instagram',
+      handle: {
+        text: '@the.simonchen',
+        url: 'https://www.instagram.com/the.simonchen/',
+      },
     },
   ],
   note: 'Updated Jun 2026',
