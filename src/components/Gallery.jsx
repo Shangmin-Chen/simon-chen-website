@@ -218,7 +218,7 @@ const Gallery = () => {
         <div className="section-head reveal">
           <div className="mono-label num">§ 07</div>
           <h2>
-            Recent Frames <em>— selected</em>
+            Recent Frames <em>- Selected</em>
           </h2>
         </div>
 

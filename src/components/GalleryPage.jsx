@@ -99,7 +99,7 @@ const GalleryPage = () => {
                 ← All galleries
               </Link>
               <h2>
-                {album.title} <em>— frames</em>
+                {album.title} <em>- Frames</em>
               </h2>
             </>
           ) : (
@@ -108,7 +108,7 @@ const GalleryPage = () => {
                 ← Back home
               </Link>
               <h2>
-                Gallery <em>— albums</em>
+                Gallery <em>- Albums</em>
               </h2>
             </>
           )}
