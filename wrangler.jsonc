@@ -8,10 +8,5 @@
     "not_found_handling": "single-page-application",
     "binding": "ASSETS"
   },
-  "send_email": [
-    {
-      "name": "SEND_EMAIL"
-    }
-  ],
   "observability": { "enabled": true }
 }
