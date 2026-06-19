@@ -13,7 +13,7 @@ const InstagramPreview = () => {
           maxWidth: '50ch'
         }}
       >
-        Sharing too many reels daily with my friends (mostly cat videos and developer humor) with zero regrets.
+        follow me on instagram!
       </div>
       <div className="ig-preview-foot">
         <a
