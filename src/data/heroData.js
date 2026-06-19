@@ -3,7 +3,7 @@ export const heroData = {
   headlineBeforeEm: 'with a ',
   headlineEm: 'passion.',
   lede:
-    "CS new grad from BU. I love shipping code, reading, working out, and sending reels.",
+    "CS new grad from BU. I love shipping code, reading, working out, and hanging out with friends!",
   metaLines: ['Based in NYC, NY', 'Boston University New Grad', 'Open to opportunities'],
   buttons: [
     {
