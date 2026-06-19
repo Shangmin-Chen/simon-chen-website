@@ -15,7 +15,7 @@ const Projects = () => (
         <div className="mono-label"></div>
         <div className="work-list">
           {projects.map((project) => (
-            <article key={project.github} className="work-item reveal">
+            <article key={project.title} className="work-item reveal">
               <div>
                 <h3 className="title">
                   {project.titleParts.before}
