@@ -228,7 +228,7 @@ const Gallery = () => {
             {body}
             {!loading && !error && galleries.length > 0 && (
               <Link to="/gallery" className="gallery-all reveal">
-                Full gallery →
+                View full gallery →
               </Link>
             )}
           </div>
