@@ -20,17 +20,6 @@ const About = () => {
               <p key={index}>{paragraph}</p>
             ))}
             <p>{aboutData.projectsSentence}</p>
-            <p>
-              {aboutData.codeforcesSentence.split('Codeforces')[0]}
-              <a
-                href="https://codeforces.com/profile/simonlovestocode"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Codeforces
-              </a>
-              {aboutData.codeforcesSentence.split('Codeforces').slice(1).join('Codeforces')}
-            </p>
             <p>{aboutData.closing}</p>
             <div className="skills">
               <h3>{aboutData.skillsTitle}</h3>

@@ -3,7 +3,7 @@ export const nowData = {
     {
       label: 'Reading',
       value: 'Goodreads',
-      sub: 'currently on the nightstand, pulled live',
+      sub: 'currently on the nightstand, pulled live.',
       expand: 'goodreads',
       handle: {
         text: '@simon-chen',
@@ -13,7 +13,7 @@ export const nowData = {
     {
       label: 'Competing',
       value: 'Codeforces',
-      sub: 'for fun, actually',
+      sub: 'Occasionally, for fun. ',
       expand: 'codeforces',
       handle: {
         text: '@simonlovestocode',
@@ -22,8 +22,8 @@ export const nowData = {
     },
     {
       label: 'Building',
-      value: 'MCP server tooling',
-      sub: 'agent orchestration experiments, mostly breaking things',
+      value: "Hermes' Letters",
+      sub: 'An app I made to send meaningful letters to my friends.',
       expand: 'github',
       handle: {
         text: '@Shangmin-Chen',
@@ -33,7 +33,7 @@ export const nowData = {
     {
       label: 'Sending',
       value: 'Too many reels',
-      sub: 'to the group chat, zero regrets',
+      sub: 'To my friends, with zero regrets.',
     },
   ],
   note: 'Updated Jun 2026',

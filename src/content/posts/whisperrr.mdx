@@ -2,46 +2,32 @@
 title: "Whisperrr: Multi-Language Audio Transcription Platform"
 date: "2025-12-14"
 excerpt: "A deep dive into building Whisperrr, a full-stack audio transcription platform powered by Faster Whisper, featuring instant results, multi-language support, and production-ready architecture."
-readTime: "15 min read"
+readTime: "5 min read"
 category: "AI"
 slug: "whisperrr"
-"technologies": ["Java Spring Boot", "Python FastAPI", "React", "TypeScript", "Docker", "Faster Whisper", "Tailwind CSS", "Uvicorn", "Maven"]
+technologies: ["Java Spring Boot", "Python FastAPI", "React", "TypeScript", "Docker", "Faster Whisper", "Tailwind CSS", "Uvicorn", "Maven"]
 ---
 
-## Background
+## Overview
 
-This project started when my brother came across a challenge when trying to transcribe an audio file for his high school assignment. The assignment needed him to interview our mom, who isn't a fluent english speaker, and the interview was conducted in chinese.
+**Whisperrr** is a stateless, production-ready audio transcription platform designed for high-throughput speech-to-text conversion. By leveraging [Faster-Whisper](https://github.com/SYSTRAN/faster-whisper) (CTranslate2), Whisperrr achieves up to **4x the transcription speed** of standard OpenAI Whisper, offering instant, database-free results across **99+ languages**.
 
-Soon my brother came to me with an headache as he is having trouble transcribing Chinese audio into english, and every service online either does not have multi-language support, or is behind a pay wall.
+> **Note:** Built as a stateless tool to bypass the overhead of database management, persistent queues, and long polling.
 
-So naturally as an awesome big brother, I did some research and was able to transcribe the audio with openai's tool [whisper](https://github.com/openai/whisper).
+---
 
-The cli tool worked, and the problem was solved, but it was really slow. The transcription time with whisper was around the same time as the audio file length.
+## Key Features
 
-Then comes Whisperrr, a full stack audio transcription platform that is 4x the speed of openai whipser, built with **spring boot**, **react**, and **faster-whisper**.
-
-
-## Project Overview
-
-**Whisperrr** is a production-ready, full-stack audio transcription platform that transforms audio content into accurate, searchable text using state-of-the-art AI technology. Built with modern technologies including Spring Boot, FastAPI, and React TypeScript, Whisperrr leverages [Faster-Whisper](https://github.com/SYSTRAN/faster-whisper) to provide high-quality speech-to-text conversion that's up to **4x faster than OpenAI's Whisper** with significantly less memory usage.
-
-### The Problem It Solves
-
-Traditional transcription services often require:
-- Complex database setup and migrations
-- Job queuing systems with polling mechanisms
-- Persistent storage overhead
-- Long wait times for results
-
-Whisperrr eliminates these complexities by providing **instant transcription results** with a stateless architecture that requires no database, no job queuing, and no polling. Simply upload a file and get results immediately.
+- **Stateless Architecture**: No databases, no job queues, no polling. Transcription results are streamed back instantly upon completion.
+- **99+ Language Support**: Automatic language detection and translation capabilities for multi-lingual audio inputs.
+- **Precision Timestamps**: Segment-level start/end timestamps formatted for immediate video editing or subtitle generation.
+- **Model Scalability**: Supports dynamic model sizing from `tiny` (32x real-time) to `large-v3` for maximum accuracy.
 
 ---
 
 ## Technical Architecture
 
-Whisperrr follows a clean three-tier architecture that separates concerns and enables independent scaling of each component.
-
-### System Architecture
+Whisperrr separates concerns into a high-performance three-tier design:
 
 ```mermaid
 graph TB
@@ -64,582 +50,43 @@ graph TB
     SpringBoot -->|HTTP Proxy| FastAPI
     FastAPI -->|AI Processing| Whisper
     
-    style React fill:#61dafb
-    style SpringBoot fill:#6db33f
-    style FastAPI fill:#009688
-    style Whisper fill:#ff6b6b
+    style React fill:#61dafb,stroke:#333,stroke-width:1px
+    style SpringBoot fill:#6db33f,stroke:#333,stroke-width:1px
+    style FastAPI fill:#009688,stroke:#333,stroke-width:1px
+    style Whisper fill:#ff6b6b,stroke:#333,stroke-width:1px
 ```
 
-### Service Responsibilities
-
-#### 1. React Frontend (Client Layer)
-- **Technology**: React 18 + TypeScript + Tailwind CSS
-- **Responsibilities**:
-  - Drag-and-drop file upload interface
-  - Real-time transcription results display
-  - Segment-level timestamp visualization
-  - Model and language selection
-  - Responsive design for mobile and desktop
-
-#### 2. Spring Boot API (Proxy Layer)
-- **Technology**: Spring Boot 3 + Java 21
-- **Responsibilities**:
-  - RESTful API endpoints for client communication
-  - File upload validation and preprocessing
-  - HTTP connection pooling to Python service
-  - CORS configuration and security
-  - Centralized error handling and response formatting
-
-#### 3. Python Service (Processing Layer)
-- **Technology**: FastAPI + Python 3.12 + Faster Whisper
-- **Responsibilities**:
-  - Whisper model management and caching
-  - Audio file preprocessing and validation
-  - High-quality speech-to-text transcription
-  - Multiple model size support (tiny to large-v3)
-  - 99+ language support with automatic detection
-
-### Technology Stack
-
-**Frontend:**
-- React 18 with TypeScript for type safety
-- Tailwind CSS for rapid, responsive styling
-- React Query for server state management
-- Axios for HTTP communication
-- React Dropzone for file uploads
-
-**Backend:**
-- Spring Boot 3 with Java 21 (LTS)
-- Apache HttpClient5 with connection pooling
-- Spring Boot Actuator for monitoring
-- Maven for dependency management
-
-**AI Service:**
-- FastAPI for modern async Python web framework
-- Faster Whisper (faster-whisper) for transcription
-- CTranslate2 for optimized inference engine
-- Pydantic for data validation
-- Uvicorn as ASGI server
-
-**Infrastructure:**
-- Self-hosted server deployment (whisperrr.shangmin.me)
-- Docker & Docker Compose for containerization
-- Nginx for reverse proxy (production)
-- Stateless architecture (no database required)
+- **Client**: React 18 / TypeScript / Tailwind CSS drag-and-drop dashboard.
+- **Proxy Gateway**: Spring Boot 3 / Java 21 managing validation, connection pooling, and error handling.
+- **AI Worker**: FastAPI / Python 3.12 running Faster Whisper over CTranslate2 (supporting CPU/GPU quantization).
 
 ---
 
-## Key Features & Capabilities
+## Performance & Benchmarks
 
-### Instant Transcription
+### Connection Pooling Optimization
+Implementing Apache HttpClient5 connection pooling yielded drastic response gains:
 
-Unlike traditional transcription services that require job queuing and polling, Whisperrr provides **instant results**. The stateless architecture processes files directly and returns transcription results immediately upon completion.
+| Metric | Before Optimization | After Optimization | Performance Gain |
+| :--- | :--- | :--- | :--- |
+| **Poll Latency** | 50-100ms | 10-30ms | **70% reduction** |
+| **Connection Overhead** | High | Low | **90% reduction** |
+| **Success Rate** | 85% | 99.9% | **Eliminated 404 timeouts** |
+| **Memory Leakage** | Linear Growth | Stable | **Eviction resolved** |
 
-### Multi-Language Support
+### Execution Performance
+CTranslate2 execution speed comparison:
 
-Whisperrr supports **99+ languages** with automatic language detection. The system can detect the language automatically or accept manual language specification for improved accuracy.
-
-**Supported Languages Include:**
-- English, Spanish, French, German, Italian, Portuguese
-- Chinese (Mandarin, Cantonese), Japanese, Korean
-- Arabic, Hindi, Russian, and 90+ more languages
-
-### Multiple Audio Formats
-
-Whisperrr accepts a wide variety of audio formats, making it compatible with files from different sources and recording devices.
-
-**Supported Formats:**
-- MP3
-- WAV
-- M4A
-- FLAC
-- OGG
-- WMA
-
-**Limitations:**
-- Maximum file size: 50MB
-- Audio-only files (no video)
-
-### Segment-Level Timestamping
-
-One of Whisperrr's standout features is **precise segment-level timestamping**. Each transcribed segment includes:
-
-- **Start time** in seconds (float precision)
-- **End time** in seconds (float precision)
-- **Formatted display** in MM:SS format (e.g., "00:15 - 00:23")
-- **Segment text** with time alignment
-
-**Use Cases:**
-- Video editing and synchronization
-- Creating subtitles and captions (SRT/VTT ready)
-- Audio analysis and annotation
-- Content indexing and search
-- Educational content with time markers
-
-### Model Selection
-
-Users can choose from multiple Whisper model sizes based on their needs for speed vs. accuracy:
-
-| Model | Size | Speed | Accuracy | Best For |
-|-------|------|-------|----------|----------|
-| `tiny` | 39 MB | ~32x realtime | Basic | Quick drafts |
-| `base` | 74 MB | ~16x realtime | Good | General use (default) |
-| `small` | 244 MB | ~6x realtime | Better | Balanced quality/speed |
-| `medium` | 769 MB | ~2x realtime | High | Important content |
-| `large` | 1550 MB | ~1x realtime | Highest | Maximum accuracy |
-| `large-v2` | 1550 MB | ~1x realtime | Highest | Latest large model |
-| `large-v3` | 1550 MB | ~1x realtime | Highest | Latest large model |
+| Model Size | Processing Speed | Memory Footprint | Recommended Use Case |
+| :--- | :--- | :--- | :--- |
+| `tiny` | ~32x real-time | ~100 MB | Fast drafts |
+| `base` | ~16x real-time | ~200 MB | General transcription |
+| `small` | ~6x real-time | ~500 MB | Balanced quality |
+| `large-v3` | ~1x real-time | ~3 GB | Maximum accuracy |
 
 ---
 
-## Performance Metrics & Benchmarks
+## Project Links
 
-### Speed Comparison: Faster Whisper vs OpenAI Whisper
-
-Faster Whisper provides **up to 4x faster** transcription speeds compared to OpenAI's Whisper while using **less memory**. This is achieved through CTranslate2, an optimized inference engine that supports both CPU and GPU acceleration.
-
-**Performance Characteristics:**
-- Powered by CTranslate2 inference engine
-- Optimized for both CPU and GPU
-- Efficient memory usage
-- Real-time processing capabilities
-
-### Model Performance Metrics
-
-| Model Size | Processing Speed | Memory Usage | Use Case |
-|------------|-----------------|--------------|----------|
-| `tiny` | ~32x realtime | ~100 MB | Quick drafts, low accuracy needs |
-| `base` | ~16x realtime | ~200 MB | General use, balanced performance |
-| `small` | ~6x realtime | ~500 MB | Better accuracy, moderate speed |
-| `medium` | ~2x realtime | ~1.5 GB | High accuracy, slower processing |
-| `large` | ~1x realtime | ~3 GB | Maximum accuracy, real-time speed |
-
-### Connection Pooling Improvements
-
-After implementing Apache HttpClient5 with connection pooling, we achieved significant performance improvements:
-
-| Metric | Before | After | Improvement |
-|-------|--------|-------|-------------|
-| Poll Request Latency | 50-100ms | 10-30ms | **70% faster** |
-| Connection Overhead | High | Low | **90% reduction** |
-| Success Rate | 85% | 99.9% | **Eliminated 404s** |
-| Memory Growth | Linear | Stable | Cleanup working |
-
-**Configuration:**
-- Max 20 connections, 10 per route
-- 60-second keepalive
-- 30-second idle eviction
-
-### Job Success Rate Improvements
-
-| Scenario | Before | After |
-|----------|--------|-------|
-| Short Audio (< 1min) | 95% | 100% |
-| Medium Audio (1-5min) | 80% | 100% |
-| Long Audio (> 5min) | 60% | 100% |
-
-### Docker vs Native Performance
-
-While Docker provides excellent containerization, native execution offers better performance:
-
-| Metric | Local (Native) | Docker (Dev) | Docker (Prod) |
-|--------|---------------|--------------|---------------|
-| CPU Performance | 100% | 50-80% | 70-90% |
-| File I/O | 100% | 2-10% | 80-90% |
-| Memory Access | 100% | 90-95% | 90-95% |
-| Network Latency | less than 1ms | 2-5ms | 2-5ms |
-| **Overall Speed** | **100%** | **30-60%** | **70-85%** |
-
-**Recommendation:** For maximum performance, run the Python service natively while keeping backend/frontend containerized.
-
----
-
-## Technical Deep Dive
-
-### Faster Whisper Implementation
-
-Faster Whisper is a reimplementation of OpenAI's Whisper using CTranslate2, a fast inference engine for Transformer models. Key optimizations include:
-
-**1. CTranslate2 Engine:**
-- Optimized C++ implementation
-- Supports CPU and GPU acceleration
-- Quantization support (int8, float16)
-- Efficient memory management
-
-**2. Model Caching:**
-- Singleton pattern for model management
-- Thread-safe model loading
-- Efficient memory reuse across requests
-
-**3. Async Processing:**
-- ThreadPoolExecutor for concurrent requests
-- Non-blocking request handling
-- Proper resource cleanup
-
-### Stateless Architecture Design
-
-The stateless design was a deliberate architectural choice to simplify deployment and improve performance:
-
-**Benefits:**
-- No database setup required
-- No connection pooling overhead
-- No transaction management complexity
-- Easier horizontal scaling
-- Reduced failure points
-
-**Trade-offs:**
-- No persistent job history
-- No user accounts or saved transcriptions
-- Each request is independent
-
-**Future Considerations:**
-- Optional database for history tracking
-- Redis for shared state in multi-worker setups
-- User authentication and persistence
-
-### Error Handling Strategy
-
-Comprehensive error handling is implemented at every layer:
-
-**Frontend:**
-- Network error retry with exponential backoff
-- Real-time validation feedback
-- Graceful degradation with user-friendly messages
-- Error boundaries to prevent app crashes
-
-**Backend:**
-- Global exception handler for consistent responses
-- Custom exception hierarchy
-- Bean validation with detailed messages
-- Proper error propagation and logging
-
-**Python Service:**
-- Custom exception hierarchy
-- Automatic resource cleanup on errors
-- Retry logic for transient failures
-- Graceful degradation
-
-### Security Considerations
-
-**Input Validation:**
-- Comprehensive validation at all entry points
-- Strict file type checking
-- Size limits (50MB max)
-- Audio format validation
-
-**CORS Configuration:**
-- Specific whitelist of trusted domains
-- Limited HTTP methods
-- Restricted header set
-- Configurable credential support
-
-**Error Information:**
-- Sanitized error messages (no sensitive data)
-- Comprehensive logging for monitoring
-- Rate limiting ready (can be added)
-
----
-
-## Development Highlights
-
-### Architecture Decisions
-
-**1. Three-Tier Separation:**
-The decision to separate frontend, backend proxy, and AI processing into distinct services enables:
-- Independent scaling of each component
-- Technology flexibility (React, Spring Boot, FastAPI)
-- Clear separation of concerns
-- Easier maintenance and updates
-
-**2. Stateless Design:**
-Choosing a stateless architecture simplified deployment significantly by eliminating database requirements, connection management overhead, and persistent storage needs. This is detailed in the Stateless Architecture Design section above.
-
-**3. Faster Whisper Over OpenAI Whisper:**
-Selecting Faster Whisper provided:
-- 4x faster processing
-- Lower memory usage
-- Better CPU/GPU optimization
-- Open-source implementation
-
-### Optimization Strategies
-
-The key optimization strategies implemented include connection pooling (detailed in Performance Metrics section), model caching, and async processing (both detailed in the Faster Whisper Implementation section above).
-
-### Production-Ready Features
-
-- **Health Check Endpoints**: `/health` endpoints for all services
-- **Comprehensive Logging**: Structured logging with correlation IDs
-- **Error Handling**: Global exception handlers with proper HTTP status codes
-- **CORS Configuration**: Secure cross-origin resource sharing
-- **File Validation**: Strict validation at multiple layers
-- **Monitoring**: Spring Boot Actuator for metrics and monitoring
-- **Docker Support**: Complete containerization with Docker Compose
-
----
-
-## Code Examples
-
-### API Usage
-
-**Upload and Transcribe Audio:**
-
-```bash
-curl -X POST http://localhost:7331/api/audio/transcribe \
-  -F "audioFile=@recording.mp3" \
-  -F "model=base" \
-  -F "language=en"
-```
-
-**Response:**
-
-```json
-{
-  "status": "COMPLETED",
-  "transcription": "Hello, this is a test transcription.",
-  "language": "en",
-  "segments": [
-    {
-      "text": "Hello, this is a test transcription.",
-      "startTime": 0.0,
-      "endTime": 3.5
-    }
-  ],
-  "processingTime": 0.8
-}
-```
-
-### Frontend Integration
-
-**React Hook for Transcription:**
-
-```typescript
-import { useTranscription } from '@/hooks/useTranscription'
-
-function TranscriptionComponent() {
-  const { 
-    transcribe, 
-    isLoading, 
-    result, 
-    error 
-  } = useTranscription()
-
-  const handleUpload = async (file: File) => {
-    await transcribe(file, { model: 'base', language: 'en' })
-  }
-
-  return (
-    <div>
-      {isLoading && <Loading />}
-      {result && <ResultsView result={result} />}
-      {error && <ErrorMessage error={error} />}
-    </div>
-  )
-}
-```
-
-### Backend Service Implementation
-
-**Spring Boot Service:**
-
-```java
-@Service
-public class AudioServiceImpl implements AudioService {
-    
-    private final RestClient restClient;
-    
-    public TranscriptionResultResponse transcribe(
-        MultipartFile audioFile, 
-        String model, 
-        String language
-    ) {
-        // Validate file
-        validateAudioFile(audioFile);
-        
-        // Forward to Python service
-        TranscriptionResponse response = restClient.post()
-            .uri("/transcribe")
-            .body(createRequest(audioFile, model, language))
-            .retrieve()
-            .body(TranscriptionResponse.class);
-        
-        // Map and return response
-        return mapToResultResponse(response);
-    }
-}
-```
-
-### Python Service Implementation
-
-**FastAPI Endpoint:**
-
-```python
-@app.post("/transcribe", response_model=TranscriptionResponse)
-async def transcribe_audio(
-    file: UploadFile = File(...),
-    model: str = "base",
-    language: Optional[str] = None
-):
-    # Validate file
-    validate_audio_file(file)
-    
-    # Preprocess audio
-    audio_path = await preprocess_audio(file)
-    
-    try:
-        # Transcribe using WhisperService
-        result = await whisper_service.transcribe(
-            audio_path, 
-            model=model, 
-            language=language
-        )
-        return result
-    finally:
-        # Cleanup
-        cleanup_temp_file(audio_path)
-```
-
----
-
-## Deployment & Infrastructure
-
-### Self-Hosted Server Deployment
-
-Whisperrr is deployed on a self-hosted server at **whisperrr.shangmin.me** with the following configuration:
-
-- **Gunicorn/Nginx**: Reverse proxy and static file serving
-- **Docker Compose**: Containerized services for easy deployment
-- **SSL/TLS**: Secure HTTPS encryption
-- **Resource Management**: Optimized CPU and memory allocation for AI processing
-
-### Docker Compose Setup
-
-Whisperrr can be deployed using Docker Compose with a single command:
-
-```bash
-# Start all services
-docker compose up -d
-
-# View logs
-docker compose logs -f
-
-# Stop services
-docker compose down
-```
-
-**Service Ports:**
-- Frontend: `http://localhost:3737`
-- Backend API: `http://localhost:7331`
-- Python Service: `http://localhost:5001`
-
-### Production Considerations
-
-**1. Resource Allocation:**
-- Python Service: 4 CPUs, 8GB RAM (for model loading)
-- Backend: 1 CPU, 1GB RAM
-- Frontend: Static files served via Nginx
-
-**2. Performance Optimization:**
-- Use production Docker Compose (no volume mounts)
-- Enable VirtioFS for faster file I/O
-- Increase shared memory (`shm_size: 4gb`)
-- Use tmpfs for temporary files
-
-**3. Monitoring:**
-- Health check endpoints for all services
-- Spring Boot Actuator metrics
-- Structured logging with correlation IDs
-- Docker stats monitoring
-
-### Performance Tuning
-
-**For Maximum Performance:**
-
-1. **Run Python Service Natively:**
-   ```bash
-   cd python-service
-   python3 -m venv venv
-   source venv/bin/activate
-   pip install -r requirements.txt
-   uvicorn app.main:app --host 0.0.0.0 --port 5001
-   ```
-
-2. **Use Production Docker Compose:**
-   ```bash
-   docker compose -f docker-compose.prod.yml up
-   ```
-
-3. **Optimize Docker Desktop:**
-   - Enable VirtioFS
-   - Allocate 8+ CPUs and 12+ GB RAM
-   - Use tmpfs for temporary files
-
----
-
-## Future Enhancements
-
-### Planned Features
-
-**1. Export Options:**
-- Download transcriptions in SRT, VTT, TXT, JSON formats
-- Batch export capabilities
-- Custom formatting options
-
-**2. Batch Processing:**
-- Upload and process multiple files simultaneously
-- Progress tracking for batch jobs
-- Batch result export
-
-**3. Enhanced Features:**
-- Confidence scores for segments
-- Manual language selection in UI
-- Model selection UI improvements
-- Processing history (optional database)
-
-**4. Advanced Capabilities:**
-- WebSocket streaming for real-time updates
-- GPU acceleration support
-- Custom vocabulary support
-- Speaker diarization
-
-### Future Improvements
-
-- **Multi-Worker Support**: Redis for shared job state
-- **Horizontal Scaling**: Multiple Python service replicas
-- **Monitoring**: Prometheus/Grafana metrics
-- **Load Balancing**: Nginx reverse proxy configuration
-- **Authentication**: User accounts and API keys
-- **Rate Limiting**: Protection against abuse
-
----
-
-## Conclusion
-
-Whisperrr demonstrates how modern AI technology can be integrated into a production-ready, full-stack application. By leveraging Faster Whisper's optimized inference engine and a clean stateless architecture, we've created a platform that provides:
-
-- **Instant transcription results** without polling or job queues
-- **4x faster processing** compared to standard Whisper implementations
-- **99+ language support** with automatic detection
-- **Production-ready features** including error handling, monitoring, and security
-- **Simplified deployment** with no database requirements
-
-The project showcases expertise in:
-- Full-stack development (React, Spring Boot, FastAPI)
-- AI/ML integration (Faster Whisper, CTranslate2)
-- System architecture and design
-- Performance optimization
-- Production deployment on self-hosted server
-
-### Key Takeaways
-
-1. **Stateless architectures** can significantly simplify deployment while maintaining performance
-2. **Faster Whisper** provides substantial speed improvements over standard implementations
-3. **Connection pooling** and optimization strategies can yield 70%+ performance improvements
-4. **Three-tier separation** enables independent scaling and technology flexibility
-5. **Production-ready features** (error handling, monitoring, security) are essential from the start
-
-### Project Links
-
-**GitHub Repository**: [Whisperrr](https://github.com/Shangmin-Chen/Whisperrr)
-**Live Demo**: [whisperrr.shangmin.me](https://whisperrr.shangmin.me)
-
-
+- **GitHub Repository**: [Whisperrr](https://github.com/Shangmin-Chen/Whisperrr)
+- **Live Demo (Deprecated)**: [whisperrr.shangmin.me](https://whisperrr.shangmin.me) (Note: Live hosting is currently offline/deprecated)

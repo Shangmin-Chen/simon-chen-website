@@ -7,7 +7,7 @@ export const postsMeta = [
     date: '2025-12-14',
     excerpt:
       'A deep dive into building Whisperrr, a full-stack audio transcription platform powered by Faster Whisper, featuring instant results, multi-language support, and production-ready architecture.',
-    readTime: '15 min read',
+    readTime: '5 min read',
     category: 'AI',
     slug: 'whisperrr',
     technologies: [
@@ -20,7 +20,7 @@ export const postsMeta = [
     date: '2026-01-24',
     excerpt:
       'Building a comprehensive machine learning system for crime prediction using Facebook Prophet, featuring district-based forecasting, spatial hotspot analysis, and production-grade evaluation metrics.',
-    readTime: '15 min read',
+    readTime: '4 min read',
     category: 'Project',
     slug: 'crime-mapper-boston',
     technologies: [
@@ -33,22 +33,12 @@ export const postsMeta = [
     date: '2026-01-31',
     excerpt:
       'A deep dive into building Spark Bytes, a full-stack web platform connecting Boston University students with leftover food from campus events, featuring dual authentication, QR code check-ins, interactive maps, and a mission to reduce food waste.',
-    readTime: '15 min read',
+    readTime: '5 min read',
     category: 'Web Development',
     slug: 'spark-bytes',
     technologies: [
       'Django', 'JavaScript', 'SQLite', 'Auth0',
       'Google Maps API', 'Server-Side Rendering', 'Self-hosted Deployment',
     ],
-  },
-  {
-    title: 'Host Your Website For Free',
-    date: '2026-01-03',
-    excerpt:
-      'Get a free .me domain through GitHub Education and host your website on GitHub Pages. Simple, step-by-step guide for students.',
-    readTime: '10 min read',
-    category: 'Tutorial',
-    slug: 'free-website-namecheap-github-pages',
-    technologies: [],
   },
 ];
