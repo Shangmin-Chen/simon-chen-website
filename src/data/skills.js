@@ -4,8 +4,9 @@ export const skills = [
   "Python",
   "Node.js",
   "Machine Learning",
+  "Rust",
   "AI Integration",
   "Full-Stack Development",
-  "Git"
+  "Git",
 ];
 

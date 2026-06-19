@@ -1,0 +1,57 @@
+/* Goodreads currently-reading shelf — compact cover list */
+
+.gr-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-top: 0.25rem;
+  padding: 0;
+  list-style: none;
+}
+
+.gr-book {
+  display: flex;
+  gap: 0.8rem;
+  align-items: flex-start;
+}
+
+.gr-cover {
+  flex: 0 0 auto;
+  width: 44px;
+  height: auto;
+  border-radius: 3px;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--text-primary) 18%, transparent);
+}
+
+.gr-book-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding-top: 0.1rem;
+}
+
+.gr-book-title {
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.gr-book-title:hover {
+  color: var(--accent-color);
+}
+
+.gr-book-author {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-tertiary);
+}
+
+.gr-preview-foot {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.85rem;
+}

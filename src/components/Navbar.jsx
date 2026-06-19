@@ -26,6 +26,17 @@ const Navbar = () => {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [isMenuOpen]);
 
+  // Close mobile menu when viewport widens past 768px so the backdrop/scroll-lock
+  // cannot persist at desktop widths where the hamburger button is hidden.
+  useEffect(() => {
+    const mql = window.matchMedia('(min-width: 769px)');
+    const handleWidthChange = (e) => {
+      if (e.matches) setIsMenuOpen(false);
+    };
+    mql.addEventListener('change', handleWidthChange);
+    return () => mql.removeEventListener('change', handleWidthChange);
+  }, []);
+
   const handleScrollToSection = (sectionId) => {
     if (location.pathname !== '/') {
       navigate('/');

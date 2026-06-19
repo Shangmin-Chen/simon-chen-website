@@ -11,6 +11,13 @@
 # production
 /build
 
+# local tooling
+/.wrangler
+/.claude
+
+# resized gallery images staged for R2 upload
+/gallery-dist
+
 # misc
 .DS_Store
 .env
@@ -23,3 +30,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# images (to be put onto R2)
+/gallery

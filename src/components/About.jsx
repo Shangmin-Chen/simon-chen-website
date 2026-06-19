@@ -7,30 +7,19 @@ const About = () => {
   return (
     <section id="about" className="section">
       <div className="container">
-        <div className="section-head">
+        <div className="section-head reveal">
           <div className="mono-label num">§ 01</div>
           <h2>
             About <em>— me</em>
           </h2>
         </div>
         <div className="about-grid">
-          <div className="mono-label">Note</div>
-          <div className="body">
+          <div className="mono-label reveal">Note</div>
+          <div className="body reveal" style={{ '--delay': '80ms' }}>
             {aboutData.paragraphs.map((paragraph, index) => (
               <p key={index}>{paragraph}</p>
             ))}
             <p>{aboutData.projectsSentence}</p>
-            <p>
-              {aboutData.codeforcesSentence.split('Codeforces')[0]}
-              <a
-                href="https://codeforces.com/profile/simonlovestocode"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Codeforces
-              </a>
-              {aboutData.codeforcesSentence.split('Codeforces').slice(1).join('Codeforces')}
-            </p>
             <p>{aboutData.closing}</p>
             <div className="skills">
               <h3>{aboutData.skillsTitle}</h3>

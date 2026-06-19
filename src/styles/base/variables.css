@@ -14,8 +14,8 @@
   --bg-tertiary: #e8e2d8;
   --text-primary: #1a1a1a;
   --text-secondary: #4a4a4a;
-  --text-muted: #9a9080;
-  --text-tertiary: #7a7268;
+  --text-muted: #6f6655; /* darkened from #9a9080 → ≥4.5:1 on #f5f1ea */
+  --text-tertiary: #6b6158; /* darkened from #7a7268 → 5.37:1 on #f5f1ea (WCAG AA) */
   --border-color: #d8d0c0;
   --border-light: #e5dfd4;
   --accent-color: #c8442a;
@@ -37,8 +37,8 @@
   --bg-tertiary: #e8e2d8;
   --text-primary: #1a1a1a;
   --text-secondary: #4a4a4a;
-  --text-muted: #9a9080;
-  --text-tertiary: #7a7268;
+  --text-muted: #6f6655; /* darkened from #9a9080 → ≥4.5:1 on #f5f1ea */
+  --text-tertiary: #6b6158; /* darkened from #7a7268 → 5.37:1 on #f5f1ea (WCAG AA) */
   --border-color: #d8d0c0;
   --border-light: #e5dfd4;
   --accent-color: #c8442a;
@@ -60,8 +60,8 @@
   --bg-tertiary: #32302b;
   --text-primary: #ede6d6;
   --text-secondary: #b8afa0;
-  --text-muted: #8a8278;
-  --text-tertiary: #6a6258;
+  --text-muted: #9e9789; /* lightened from #8a8278 → ≥4.5:1 on #22211d */
+  --text-tertiary: #90867d; /* lightened from #6a6258 → 4.52:1 on #22211d (WCAG AA) */
   --border-color: #3d3a34;
   --border-light: #34322e;
   --accent-color: #e87555;

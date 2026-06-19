@@ -19,7 +19,7 @@ const FormField = ({
       {label && (
         <label htmlFor={name}>
           {label}
-          {required && <span style={{ color: '#e74c3c' }}> *</span>}
+          {required && <span style={{ color: 'var(--error-color)' }}> *</span>}
         </label>
       )}
       {isTextarea ? (

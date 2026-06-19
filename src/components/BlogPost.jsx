@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useEffect, useState, lazy, Suspense } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { MDXProvider } from '@mdx-js/react';
 import { postsBySlug } from '../data/posts';
 import { MDXComponents } from './mdx/MDXComponents';
@@ -8,16 +8,20 @@ import Tag from './ui/Tag';
 
 const BlogPost = () => {
   const { slug } = useParams();
+  const navigate = useNavigate();
   const post = postsBySlug[slug];
+  const [PostContent, setPostContent] = useState(null);
 
-  // Scroll to top when component mounts or slug changes
   useEffect(() => {
-    if (window.lenis) {
-      window.lenis.scrollTo(0, { immediate: true });
-    } else {
-      window.scrollTo(0, 0);
-    }
+    window.scrollTo(0, 0);
   }, [slug]);
+
+  useEffect(() => {
+    if (!post?.loadComponent) return;
+    post.loadComponent().then((Component) => {
+      setPostContent(() => Component);
+    });
+  }, [post]);
 
   if (!post) {
     return (
@@ -26,7 +30,7 @@ const BlogPost = () => {
           <div className="blog-post-not-found">
             <h1>Post Not Found</h1>
             <p>The blog post you're looking for doesn't exist.</p>
-            <Button variant="primary" onClick={() => window.location.href = '/'}>Back to Home</Button>
+            <Button variant="primary" onClick={() => navigate('/')}>Back to Home</Button>
           </div>
         </div>
       </div>
@@ -35,14 +39,12 @@ const BlogPost = () => {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
     });
   };
-
-  const PostContent = post.Component;
 
   return (
     <div className="blog-post-container">
@@ -65,15 +67,19 @@ const BlogPost = () => {
               </div>
             )}
           </header>
-          
+
           <div className="blog-post-content">
-            <MDXProvider components={MDXComponents}>
-              <PostContent />
-            </MDXProvider>
+            {PostContent ? (
+              <MDXProvider components={MDXComponents}>
+                <PostContent />
+              </MDXProvider>
+            ) : (
+              <p style={{ color: 'var(--text-muted)' }}>Loading…</p>
+            )}
           </div>
-          
+
           <footer className="blog-post-footer">
-            <Button variant="secondary" onClick={() => window.location.href = '/'}>← Back to Home</Button>
+            <Button variant="secondary" onClick={() => navigate('/')}>← Back to Home</Button>
           </footer>
         </article>
       </div>

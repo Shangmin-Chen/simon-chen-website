@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
+import { githubData } from '../data/githubData';
 
-const HANDLE = 'simonlovestocode';
-const CACHE_KEY = `cf-data:${HANDLE}`;
+const USERNAME = githubData.username;
+const CACHE_KEY = `gh-contrib:${USERNAME}`;
 
 // Cache shared across every mount in this page session so re-opening the
 // preview is instant and never refires the API. `memoryCache` survives
@@ -26,27 +27,27 @@ function writeSessionCache(data) {
   }
 }
 
-async function fetchCodeforces() {
-  const [contestsRes, infoRes] = await Promise.all([
-    fetch(`https://codeforces.com/api/user.rating?handle=${HANDLE}`),
-    fetch(`https://codeforces.com/api/user.info?handles=${HANDLE}`),
-  ]);
-  const contestsData = await contestsRes.json();
-  const infoData = await infoRes.json();
+async function fetchContributions() {
+  // Same-origin proxy (Cloudflare Worker) — avoids browser CORS against the
+  // upstream contributions API and serves an edge-cached response.
+  const res = await fetch('/api/github-contributions');
+  if (!res.ok) {
+    throw new Error('Failed to fetch contributions');
+  }
+  const data = await res.json();
 
-  if (contestsData.status !== 'OK') {
-    throw new Error('Failed to fetch contest history');
+  if (!data || !Array.isArray(data.contributions)) {
+    throw new Error('Failed to fetch contributions');
   }
 
-  const contests = [...contestsData.result].sort(
-    (a, b) => b.ratingUpdateTimeSeconds - a.ratingUpdateTimeSeconds
-  );
-  const userInfo = infoData.status === 'OK' ? infoData.result?.[0] ?? null : null;
+  const total =
+    data.total?.lastYear ??
+    Object.values(data.total ?? {}).reduce((sum, n) => sum + n, 0);
 
-  return { contests, userInfo };
+  return { days: data.contributions, total };
 }
 
-const useCodeforcesData = () => {
+const useGithubContributions = () => {
   const cached = memoryCache ?? readSessionCache();
   const [data, setData] = useState(cached);
   const [loading, setLoading] = useState(!cached);
@@ -66,7 +67,7 @@ const useCodeforcesData = () => {
     setError(null);
 
     // Dedupe concurrent mounts onto a single request.
-    inflight = inflight ?? fetchCodeforces();
+    inflight = inflight ?? fetchContributions();
     inflight
       .then((result) => {
         memoryCache = result;
@@ -92,11 +93,11 @@ const useCodeforcesData = () => {
   }, []);
 
   return {
-    contests: data?.contests ?? [],
-    userInfo: data?.userInfo ?? null,
+    days: data?.days ?? [],
+    total: data?.total ?? 0,
     loading,
-    error,
+    error
   };
 };
 
-export default useCodeforcesData;
+export default useGithubContributions;

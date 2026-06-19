@@ -1,12 +1,11 @@
 export const aboutData = {
   paragraphs: [
-    "I'm a student at Boston University studying computer science. I care about systems that hold up under load, interfaces that don't waste your time, and the frontier of AI agents.",
+    "A new grad from from Boston University with a CS degree. I love shipping code.",
+    "Outside of shipping projects, I love hanging out with friends and helping others. I also love reading, which may strange coming from someone who writes code for a living.",
   ],
   projectsSentence:
-    'Mainly, I build full-stack applications, but my recent interest lies in tinkering with the latest agent frameworks, MCP servers, and tool-use pipelines.',
-  codeforcesSentence:
-    'I like to practice competitive programming on Codeforces for fun.',
+    "I ship products end to end, visit my projects section to see some of the cool things I've built!",
   closing:
-    "Always down to talk about agents, infra, or anything in between. Feel free to reach out!",
+    "I love making connections, reach out about anything!",
   skillsTitle: 'Skills',
 };

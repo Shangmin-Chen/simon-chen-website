@@ -16,7 +16,12 @@ const Blog = () => {
   return (
     <section id="blog" className="section">
       <div className="container">
-        <h2 className="section-title">Blogs</h2>
+        <div className="section-head reveal">
+          <div className="mono-label num">§ 06</div>
+          <h2>
+            Writing <em>— Blogs</em>
+          </h2>
+        </div>
         <div className="blog-grid">
           {posts.map((post, index) => (
             <Card key={post.slug || index} variant="blog">

@@ -1,31 +1,30 @@
-// Import all MDX files from the posts directory
-const postModules = import.meta.glob('../content/posts/*.mdx', { eager: true });
+import { postsMeta } from './postsMeta';
 
-// Transform the imported modules into a posts array
-const posts = Object.values(postModules).map((module) => {
-  // Each MDX file exports frontmatter as a named export
-  const frontmatter = module.frontmatter || {};
-  const Component = module.default;
-  
-  return {
-    ...frontmatter,
-    Component
-  };
+// Lazy MDX loaders — content only downloads when a blog post is visited
+const postModules = import.meta.glob('../content/posts/*.mdx');
+
+// Map slug → lazy loader
+const loaderBySlug = {};
+Object.entries(postModules).forEach(([path, loader]) => {
+  // Extract slug from path: '../content/posts/whisperrr.mdx' → 'whisperrr'
+  const filename = path.split('/').pop().replace('.mdx', '');
+  loaderBySlug[filename] = loader;
 });
 
-// Sort posts by date (newest first)
-posts.sort((a, b) => {
-  const dateA = new Date(a.date);
-  const dateB = new Date(b.date);
-  return dateB - dateA;
-});
+// Combine static metadata with lazy content loader
+const posts = postsMeta
+  .map((meta) => ({
+    ...meta,
+    loadComponent: loaderBySlug[meta.slug]
+      ? () => loaderBySlug[meta.slug]().then((m) => m.default)
+      : null,
+  }))
+  .sort((a, b) => new Date(b.date) - new Date(a.date));
 
-// Create a map for O(1) lookup by slug
+// O(1) lookup by slug
 const postsBySlug = {};
 posts.forEach((post) => {
-  if (post.slug) {
-    postsBySlug[post.slug] = post;
-  }
+  if (post.slug) postsBySlug[post.slug] = post;
 });
 
 export { posts, postsBySlug };

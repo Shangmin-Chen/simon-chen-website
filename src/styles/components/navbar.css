@@ -156,10 +156,13 @@ html.dark .nav-backdrop {
   background: rgba(0, 0, 0, 0.45);
 }
 
-.nav-backdrop--visible {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
+/* Only allow the backdrop to become visible at mobile widths. */
+@media (max-width: 768px) {
+  .nav-backdrop--visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
 }
 
 @media (max-width: 768px) {

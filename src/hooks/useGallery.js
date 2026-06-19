@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 
-const HANDLE = 'simonlovestocode';
-const CACHE_KEY = `cf-data:${HANDLE}`;
+const CACHE_KEY = 'gallery:manifest';
 
-// Cache shared across every mount in this page session so re-opening the
-// preview is instant and never refires the API. `memoryCache` survives
+// Cache shared across every mount in this page session so navigating back to
+// the gallery is instant and never refires the request. `memoryCache` survives
 // remounts; `sessionStorage` survives reloads within the same tab session.
 let memoryCache = null;
 let inflight = null;
@@ -26,27 +25,24 @@ function writeSessionCache(data) {
   }
 }
 
-async function fetchCodeforces() {
-  const [contestsRes, infoRes] = await Promise.all([
-    fetch(`https://codeforces.com/api/user.rating?handle=${HANDLE}`),
-    fetch(`https://codeforces.com/api/user.info?handles=${HANDLE}`),
-  ]);
-  const contestsData = await contestsRes.json();
-  const infoData = await infoRes.json();
+async function fetchManifest() {
+  // Same-origin proxy (Cloudflare Worker) — fetches gallery.json from the
+  // public R2 domain and edge-caches it, so the client stays same-origin
+  // (no CORS) and we don't refetch from R2 on every visit.
+  const res = await fetch('/api/gallery');
+  if (!res.ok) {
+    throw new Error('Failed to load gallery');
+  }
+  const data = await res.json();
 
-  if (contestsData.status !== 'OK') {
-    throw new Error('Failed to fetch contest history');
+  if (!data || !Array.isArray(data.galleries)) {
+    throw new Error('Failed to load gallery');
   }
 
-  const contests = [...contestsData.result].sort(
-    (a, b) => b.ratingUpdateTimeSeconds - a.ratingUpdateTimeSeconds
-  );
-  const userInfo = infoData.status === 'OK' ? infoData.result?.[0] ?? null : null;
-
-  return { contests, userInfo };
+  return { galleries: data.galleries };
 }
 
-const useCodeforcesData = () => {
+const useGallery = () => {
   const cached = memoryCache ?? readSessionCache();
   const [data, setData] = useState(cached);
   const [loading, setLoading] = useState(!cached);
@@ -66,7 +62,7 @@ const useCodeforcesData = () => {
     setError(null);
 
     // Dedupe concurrent mounts onto a single request.
-    inflight = inflight ?? fetchCodeforces();
+    inflight = inflight ?? fetchManifest();
     inflight
       .then((result) => {
         memoryCache = result;
@@ -91,12 +87,10 @@ const useCodeforcesData = () => {
     };
   }, []);
 
-  return {
-    contests: data?.contests ?? [],
-    userInfo: data?.userInfo ?? null,
-    loading,
-    error,
-  };
+  const galleries = data?.galleries ?? [];
+  const featured = galleries.find((g) => g.featured) ?? galleries[0] ?? null;
+
+  return { galleries, featured, loading, error };
 };
 
-export default useCodeforcesData;
+export default useGallery;

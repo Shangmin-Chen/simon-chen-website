@@ -6,6 +6,10 @@ export const navbarData = {
       sectionId: "about"
     },
     {
+      label: "Now",
+      sectionId: "now"
+    },
+    {
       label: "Experience",
       sectionId: "experience"
     },
@@ -14,12 +18,12 @@ export const navbarData = {
       sectionId: "projects"
     },
     {
-      label: "Codeforces",
-      sectionId: "codeforces"
+      label: "Writing",
+      sectionId: "blog"
     },
     {
-      label: "Blogs",
-      sectionId: "blog"
+      label: "Gallery",
+      sectionId: "gallery"
     },
     {
       label: "Let's chat",

@@ -5,21 +5,17 @@ import { projects } from '../data/projects';
 const Projects = () => (
   <section id="projects" className="section">
     <div className="container">
-      <div className="section-head">
-        <div className="mono-label num">§ 03</div>
+      <div className="section-head reveal">
+        <div className="mono-label num">§ 04</div>
         <h2>
-          Work <em>— recent</em>
+          Projects <em>— recent</em>
         </h2>
       </div>
       <div className="work-grid">
-        <div className="mono-label">
-          Projects
-          <br />
-          2024 — 2026
-        </div>
+        <div className="mono-label"></div>
         <div className="work-list">
           {projects.map((project) => (
-            <article key={project.github} className="work-item">
+            <article key={project.title} className="work-item reveal">
               <div>
                 <h3 className="title">
                   {project.titleParts.before}
@@ -49,14 +45,16 @@ const Projects = () => (
                       Case study →
                     </Link>
                   )}
-                  <a
-                    className="read"
-                    href={project.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    GitHub →
-                  </a>
+                  {project.github && (
+                    <a
+                      className="read"
+                      href={project.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      GitHub →
+                    </a>
+                  )}
                   {project.demo && (
                     <a
                       className="read"
