@@ -3,6 +3,7 @@ import { nowData } from '../data/nowData';
 import CodeforcesPreview from './CodeforcesPreview';
 import GitHubPreview from './GitHubPreview';
 import GoodreadsPreview from './GoodreadsPreview';
+import InstagramPreview from './InstagramPreview';
 
 const Now = () => {
   const [expanded, setExpanded] = useState(() => new Set());
@@ -63,6 +64,7 @@ const Now = () => {
                         {isExpanded && item.expand === 'codeforces' && <CodeforcesPreview />}
                         {isExpanded && item.expand === 'github' && <GitHubPreview />}
                         {isExpanded && item.expand === 'goodreads' && <GoodreadsPreview />}
+                        {isExpanded && item.expand === 'instagram' && <InstagramPreview />}
                       </div>
                     )}
                   </div>
