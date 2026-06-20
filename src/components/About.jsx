@@ -2,6 +2,7 @@ import React from 'react';
 import { aboutData } from '../data/aboutData';
 import { skills } from '../data/skills';
 import Tag from './ui/Tag';
+import { scrollToSection } from '../utils/scrollUtils';
 
 const About = () => {
   return (
@@ -19,7 +20,19 @@ const About = () => {
             {aboutData.paragraphs.map((paragraph, index) => (
               <p key={index}>{paragraph}</p>
             ))}
-            <p>{aboutData.projectsSentence}</p>
+            <p>
+              I build cool apps, explore my{' '}
+              <a
+                href="#projects"
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToSection('projects');
+                }}
+              >
+                projects section
+              </a>{' '}
+              to see my work!
+            </p>
             <p>{aboutData.closing}</p>
             <div className="skills">
               <h3>{aboutData.skillsTitle}</h3>

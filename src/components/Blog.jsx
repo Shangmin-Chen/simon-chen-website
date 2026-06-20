@@ -17,7 +17,7 @@ const Blog = () => {
     <section id="blog" className="section">
       <div className="container">
         <div className="section-head reveal">
-          <div className="mono-label num">§ 06</div>
+          <div className="mono-label num">§ 05</div>
           <h2>
             Writing <em>- Blogs</em>
           </h2>

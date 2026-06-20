@@ -18,6 +18,7 @@
 @import './components/navbar.css';
 @import './components/theme-toggle.css';
 @import './components/about.css';
+@import './components/hero-avatar.css';
 @import './components/experience.css';
 @import './components/projects.css';
 @import './components/blog.css';

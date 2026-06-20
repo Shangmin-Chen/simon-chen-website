@@ -154,7 +154,7 @@ const Gallery = () => {
                   <img
                     src={slide.src}
                     alt={slide.alt}
-                    loading={i === 0 ? 'eager' : 'lazy'}
+                    loading="eager"
                     draggable={false}
                     width="1200"
                     height="800"
@@ -216,7 +216,7 @@ const Gallery = () => {
     <section id="gallery" className="section">
       <div className="container">
         <div className="section-head reveal">
-          <div className="mono-label num">§ 07</div>
+          <div className="mono-label num">§ 06</div>
           <h2>
             Recent Frames <em>- Selected</em>
           </h2>
