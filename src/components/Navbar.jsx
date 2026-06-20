@@ -38,19 +38,17 @@ const Navbar = () => {
   }, []);
 
   const handleScrollToSection = (sectionId) => {
-    // Release scroll lock immediately to prevent browser from blocking scroll
-    document.body.style.overflow = '';
     setIsMenuOpen(false);
 
     if (location.pathname !== '/') {
       navigate('/');
       setTimeout(() => {
         scrollToSection(sectionId);
-      }, 150);
+      }, 350);
     } else {
       setTimeout(() => {
         scrollToSection(sectionId);
-      }, 50);
+      }, 300);
     }
   };
 
