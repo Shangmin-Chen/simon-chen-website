@@ -12,7 +12,7 @@ const AlbumIndex = ({ galleries }) => (
       return (
         <Link to={`/gallery/${album.id}`} className="album-card" key={album.id}>
           <div className="album-card-cover">
-            {cover && <img src={imageUrl(cover.thumb)} alt={cover.alt || ''} loading="lazy" />}
+            {cover && <img src={imageUrl(cover.thumb)} alt={cover.alt || ''} loading="eager" />}
           </div>
           <div className="album-card-meta">
             <span className="album-card-title">{album.title}</span>
@@ -42,7 +42,7 @@ const AlbumView = ({ album }) => {
             onClick={() => setLightboxIndex(i)}
             aria-label={`Open photo ${i + 1}: ${photo.caption || ''}`}
           >
-            <img src={imageUrl(photo.thumb)} alt={photo.alt} loading="lazy" />
+            <img src={imageUrl(photo.thumb)} alt={photo.alt} loading="eager" />
           </button>
         ))}
       </div>
@@ -92,12 +92,18 @@ const GalleryPage = () => {
     <section className="section gallery-page">
       <div className="container">
         <div className="gallery-page-head reveal">
-          <div className="mono-label num">§ 07</div>
+          <div className="mono-label num">§ 06</div>
           {album ? (
             <>
-              <Link to="/gallery" className="gallery-back">
-                ← All galleries
-              </Link>
+              <div className="gallery-back-container">
+                <Link to="/#gallery" className="gallery-back">
+                  ← Back home
+                </Link>
+                <span className="gallery-back-separator">|</span>
+                <Link to="/gallery" className="gallery-back">
+                  All galleries
+                </Link>
+              </div>
               <h2>
                 {album.title} <em>- Frames</em>
               </h2>

@@ -235,6 +235,20 @@
   margin-bottom: 40px;
 }
 
+.gallery-back-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  align-self: flex-start;
+}
+
+.gallery-back-separator {
+  color: var(--border-color);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  user-select: none;
+}
+
 .gallery-back {
   font-family: var(--font-mono);
   font-size: 0.72rem;

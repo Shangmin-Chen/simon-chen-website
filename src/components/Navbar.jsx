@@ -38,15 +38,20 @@ const Navbar = () => {
   }, []);
 
   const handleScrollToSection = (sectionId) => {
+    // Release scroll lock immediately to prevent browser from blocking scroll
+    document.body.style.overflow = '';
+    setIsMenuOpen(false);
+
     if (location.pathname !== '/') {
       navigate('/');
       setTimeout(() => {
         scrollToSection(sectionId);
-      }, 100);
+      }, 150);
     } else {
-      scrollToSection(sectionId);
+      setTimeout(() => {
+        scrollToSection(sectionId);
+      }, 50);
     }
-    setIsMenuOpen(false);
   };
 
   const handleLogoClick = () => {
