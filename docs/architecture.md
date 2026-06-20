@@ -48,7 +48,7 @@ The front-end does not make requests directly to third-party endpoints to avoid 
 
 ### 2. Smooth Scrolling & Navigation Fixes
 - Section navigation is managed via `src/utils/scrollUtils.js` which performs smooth browser window scrolling with offsets to account for the fixed header height.
-- **Mobile Menu Fix:** Solved a critical issue where mobile navigation links failed to scroll because the body scroll lock (`overflow: hidden`) remained active during the scroll request. The drawer menu now toggles `isMenuOpen` to `false` and schedules the scroll action (using `300ms` on the home page and `350ms` when navigating) to allow the drawer's `280ms` close transition to finish and WebKit/Safari to fully release the body scroll lock.
+- **Mobile Menu Fix:** Solved a critical issue where mobile navigation links failed to scroll because the body scroll lock (`overflow: hidden`) remained active during the scroll request. The drawer menu now toggles `isMenuOpen` to `false` and schedules the scroll action (using `300ms` on the home page and `350ms` when navigating) to allow the drawer's `280ms` close transition to finish and WebKit/Safari to fully release the body scroll lock. Additionally, resolved a z-index stacking context bug where `.nav-backdrop` (z-index 998) was stacking *above* `.navbar` (previously z-index auto) and intercepting all mobile link tap gestures (closing the menu but failing to fire the link `onClick` handlers). Giving `.navbar` `z-index: 1000` guarantees links sit on top and receive click events.
 
 ### 3. Route Chunk Loading Optimization (Eager Loading)
 - Changed routing from lazy loading (`React.lazy`) to static imports for `GalleryPage`.
