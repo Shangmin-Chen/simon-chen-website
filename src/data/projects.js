@@ -14,7 +14,7 @@ export const projects = [
     title: "Hermes' Letters",
     titleParts: { before: '', em: "Hermes' Letters", after: ' — invite only letter sending platform' },
     description:
-      'An invite-only online letter sending platform for friends. Senders compose letters locked behind personal security questions; letters burn on open and can only be claimed once, offering a complete fire-and-forget experience.',
+      'An invite-only, long-form letter platform for friends. Letters are unsealed via an interactive wax-seal gesture and permanently deleted after opening. Saving an unsealed letter establishes a connection in a private phonebook to enable direct, secure mail delivery between connected users.',
     tags: ['Next.js', 'React', 'Supabase', 'Postgres', 'Drizzle-ORM', 'Tailwind-CSS'],
     meta: { year: '2026', role: 'Solo', status: 'Live (Invite-only)' },
     github: '',
