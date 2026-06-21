@@ -22,8 +22,8 @@ export const nowData = {
     },
     {
       label: 'Building',
-      value: "Hermes' Letters",
-      sub: 'An app I made to send meaningful letters to my friends.',
+      value: 'Persephone',
+      sub: 'An algorithmic trading bot for Kalshi event markets.',
       expand: 'github',
       handle: {
         text: '@Shangmin-Chen',
