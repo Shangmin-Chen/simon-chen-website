@@ -1,0 +1,27 @@
+{
+  "pkg": "simon-chen-website",
+  "globalName": "SimonChenWebsite",
+  "shape": "package",
+  "projectId": "1946e533-a140-4dd6-8579-51826a9a102c",
+  "entry": ".design-sync/entry.jsx",
+  "buildCmd": "node .design-sync/build-css.mjs",
+  "srcDir": "src",
+  "cssEntry": ".design-sync/styles.bundled.css",
+  "provider": { "component": "ThemeProvider" },
+  "guidelinesGlob": [],
+  "readmeHeader": ".design-sync/conventions.md",
+  "componentSrcMap": {
+    "Button": "src/components/ui/Button.jsx",
+    "Card": "src/components/ui/Card.jsx",
+    "Tag": "src/components/ui/Tag.jsx",
+    "FormField": "src/components/ui/FormField.jsx",
+    "RatingGraph": "src/components/charts/RatingGraph.jsx"
+  },
+  "dtsPropsFor": {
+    "Button": "variant?: 'primary' | 'secondary' | 'submit'; size?: 'small' | 'medium' | 'large'; type?: 'button' | 'submit' | 'reset'; disabled?: boolean; onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void; className?: string; children?: React.ReactNode;",
+    "Card": "variant?: 'default' | 'blog' | 'submission' | 'contest' | 'experience'; hover?: boolean; className?: string; children?: React.ReactNode;",
+    "Tag": "variant?: 'default' | 'skill' | 'tech' | 'rating' | 'verdict'; color?: string; className?: string; children?: React.ReactNode;",
+    "FormField": "label?: string; type?: string; name?: string; value?: string; onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void; placeholder?: string; required?: boolean; rows?: number; className?: string;",
+    "RatingGraph": "contests: Array<{ ratingUpdateTimeSeconds: number; newRating: number; contestName: string; contestId: number }>;"
+  }
+}
