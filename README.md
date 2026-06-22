@@ -53,7 +53,7 @@ To make sure dynamic features (GitHub contributions graph, Goodreads preview, ph
 
 ## 📸 Image Gallery Optimization
 
-The photo gallery is fed by `gallery.json` and loads assets hosted on Cloudflare R2. Before uploading raw images to R2, optimize them using the custom gallery resize script:
+The photo gallery is dynamically fed by `gallery.json` (hosted on Cloudflare R2) and loads assets hosted on Cloudflare R2. Before uploading raw images to R2, optimize them using the custom gallery resize script:
 
 ```bash
 npm run gallery:resize -- <inputDir> <outputDir>
@@ -66,7 +66,12 @@ This script uses [sharp](https://sharp.pixelplumbing.com/) to convert full-resol
 - `-full` images (max-width 1800px) for carousels and lightboxes.
 - `-thumb` images (max-width 700px) for grid thumbnails.
 
-After processing, upload the contents of `<outputDir>` to your Cloudflare R2 bucket and reference the filenames in `gallery.json`.
+After processing:
+1. Reference the new/optimized image filenames in your local `gallery.json`.
+2. Upload the optimized photos from `<outputDir>` to your Cloudflare R2 bucket.
+3. Upload the updated `gallery.json` manifest to your Cloudflare R2 bucket.
+
+Because the Cloudflare Worker proxies `gallery.json` directly from R2 (`/api/gallery`), uploading these assets to R2 will update the gallery on the live site instantly without requiring a redeployment of the website.
 
 ## 📧 EmailJS Setup
 
