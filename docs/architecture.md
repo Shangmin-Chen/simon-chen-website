@@ -8,7 +8,7 @@ This document outlines the current technical architecture, data flow, features, 
 
 ```text
 simon-chen-website/
-├── docs/                 # Documentation (Codeforces API, architecture overview)
+├── docs/                 # Documentation (this architecture overview)
 ├── src/
 │   ├── App.jsx           # Main routing (React Router) & global hook bindings
 │   ├── components/       # UI elements and section layouts (About, Experience, etc.)
@@ -39,7 +39,7 @@ The front-end does not make requests directly to third-party endpoints to avoid 
 
 ---
 
-## 🎨 Interactive Features & Recent Optimizations
+## 🎨 Interactive Features & Implementation Notes
 
 ### 1. Hero Polaroid Picture Frame
 - restyled `Hero.jsx` using `hero-avatar.css` to feature an elegant polaroid-style image box containing the profile photo (`shanghai_08-full.jpg` from the R2 domain).

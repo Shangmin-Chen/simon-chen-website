@@ -1,8 +1,6 @@
 # Simon Chen - Portfolio Website
 
-A modern, responsive portfolio website built with React and Vite, featuring custom animations, dynamic API integrations (GitHub contributions, Goodreads bookshelf, photo gallery, and contact form), hosted and served on **Cloudflare Pages & Workers**.
-
-> **Note**: This README documents a migration from GitHub Pages. The site is served directly on **Cloudflare Pages & Workers** (worker logic + static assets).
+A modern, responsive portfolio website built with React and Vite, featuring custom animations, dynamic API integrations (GitHub contributions, Goodreads bookshelf, Codeforces stats, photo gallery, and contact form), hosted and served on **Cloudflare Pages & Workers**.
 
 ## 🚀 Live Demo
 
@@ -25,7 +23,7 @@ Prerequisites: [Node.js](https://nodejs.org/) 20+ (recommended).
 
 ### 1. Clone and Install
 ```bash
-git clone https://github.com/shangmin-chen/simon-chen-website
+git clone https://github.com/Shangmin-Chen/simon-chen-website.git
 cd simon-chen-website
 npm install
 ```
@@ -98,6 +96,17 @@ Build the static files and deploy the Cloudflare Worker + static assets:
 npm run deploy
 ```
 This runs `vite build` followed by `wrangler deploy`. Ensure all environment secrets are set in your Cloudflare dashboard under the project settings.
+
+## 🎨 Make It Your Own
+
+Want to use this as a starting point for your own site?
+
+- **Portfolio content** (experience, projects, skills, links): edit the data files in `src/data/`.
+- **Blog posts**: add `.mdx` files to `src/content/posts/` — they're compiled at build time with frontmatter support.
+- **Photo gallery**: host your own `gallery.json` and images on Cloudflare R2 (see [Image Gallery Optimization](#-image-gallery-optimization)), or remove the gallery routes.
+- **Widgets**: the GitHub contributions, Goodreads, and Codeforces widgets are configured with usernames in `src/data/` and proxied through `src/worker.js` — swap in your own handles or delete the ones you don't want.
+
+For a deeper look at how everything fits together, see the [architecture & technical reference](docs/architecture.md).
 
 ## 📚 Additional Resources
 
