@@ -8,16 +8,11 @@
     "url": "https://github.com/Shangmin-Chen/simon-chen-website.git"
   },
   "dependencies": {
-    "@mdx-js/react": "^3.1.1",
-    "@mdx-js/rollup": "^3.1.1",
     "lucide-react": "^0.561.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.9.1",
-    "recharts": "^3.2.1",
-    "remark-frontmatter": "^5.0.0",
-    "remark-gfm": "^4.0.1",
-    "remark-mdx-frontmatter": "^5.2.0"
+    "recharts": "^3.2.1"
   },
   "scripts": {
     "dev": "vite",

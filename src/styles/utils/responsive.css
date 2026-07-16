@@ -55,7 +55,6 @@
   }
 
   .projects-grid,
-  .blog-grid,
   .submissions-grid {
     grid-template-columns: 1fr;
   }
@@ -76,18 +75,6 @@
 
   .container {
     padding: 0 24px;
-  }
-
-  .blog-post-title {
-    font-size: 2rem;
-  }
-
-  .blog-post-content h2 {
-    font-size: 1.5rem;
-  }
-
-  .blog-post-content h3 {
-    font-size: 1.2rem;
   }
 }
 
@@ -110,22 +97,9 @@
 
   .experience-item,
   .project-card,
-  .blog-card,
   .submission-card,
   .contest-card {
     padding-bottom: 1.5rem;
-  }
-
-  .blog-post-title {
-    font-size: 1.8rem;
-  }
-
-  .blog-post-content h2 {
-    font-size: 1.3rem;
-  }
-
-  .blog-post-content h3 {
-    font-size: 1.1rem;
   }
 
   .nav-controls {

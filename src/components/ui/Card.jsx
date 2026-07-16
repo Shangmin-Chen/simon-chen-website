@@ -10,7 +10,6 @@ const Card = ({
   const baseClasses = 'card';
   const variantClasses = {
     default: 'project-card',
-    blog: 'blog-card',
     submission: 'submission-card',
     contest: 'contest-card',
     experience: 'experience-item'

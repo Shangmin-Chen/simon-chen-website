@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { scrollToSection } from '../utils/scrollUtils';
 import { heroData } from '../data/heroData';
 import Button from './ui/Button';
+import SocialLinks from './ui/SocialLinks';
 
 const Hero = () => {
   const handleScrollToSection = (sectionId) => {
@@ -43,6 +44,7 @@ const Hero = () => {
                 </Button>
               ))}
             </div>
+            <SocialLinks className="social-links hero-social" linkClassName="social-link" />
           </div>
 
           <div className="hero-avatar-col">

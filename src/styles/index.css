@@ -21,7 +21,6 @@
 @import './components/hero-avatar.css';
 @import './components/experience.css';
 @import './components/projects.css';
-@import './components/blog.css';
 @import './components/contact.css';
 @import './components/codeforces.css';
 
@@ -35,5 +34,5 @@
 @import './components/goodreads.css';
 @import './components/gallery.css';
 
-/* Mdx Styles */
-@import './components/mdx.css';
+@import './components/footer.css';
+@import './components/social-links.css';

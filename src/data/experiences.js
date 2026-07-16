@@ -17,7 +17,7 @@ export const experiences = [
   },
   {
     mono: '2025 →',
-    title: 'Technical Director',
+    title: 'Lead Product Engineer',
     roleEm: 'Next.js · Supabase · Vercel',
     where: 'Ezesports · NYC',
     company: 'Ezesports',

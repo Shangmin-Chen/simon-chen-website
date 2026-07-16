@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { projects } from '../data/projects';
 
 const Projects = () => (
@@ -40,11 +39,6 @@ const Projects = () => (
                   <dd>{project.meta.status}</dd>
                 </dl>
                 <div className="read-row">
-                  {project.blog && (
-                    <Link className="read" to={`/blog/${project.blog}`}>
-                      Case study →
-                    </Link>
-                  )}
                   {project.github && (
                     <a
                       className="read"

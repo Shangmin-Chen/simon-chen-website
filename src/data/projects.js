@@ -8,7 +8,6 @@ export const projects = [
     meta: { year: '2026', role: 'Model Eng', status: 'In development' },
     github: '',
     demo: '',
-    blog: '',
   },
   {
     title: "Hermes' Letters",
@@ -19,6 +18,5 @@ export const projects = [
     meta: { year: '2026', role: 'Solo', status: 'Live (Invite-only)' },
     github: '',
     demo: 'https://hermesletters.vercel.app',
-    blog: '',
   },
 ];

@@ -12,10 +12,7 @@ simon-chen-website/
 ├── src/
 │   ├── App.jsx           # Main routing (React Router) & global hook bindings
 │   ├── components/       # UI elements and section layouts (About, Experience, etc.)
-│   │   ├── ui/           # Reusable atomic design components (Button, Tag, FormField)
-│   │   └── mdx/          # MDX components and configurations
-│   ├── content/          # Rich text markdown-based posts
-│   │   └── posts/        # MDX post files
+│   │   └── ui/           # Reusable atomic design components (Button, Tag, FormField)
 │   ├── data/             # Static configurations & mock/portfolio metadata
 │   ├── hooks/            # Reusable React hooks (useGallery, useScrollReveal)
 │   ├── styles/           # Modular CSS structure (base resets, layout grids, components)

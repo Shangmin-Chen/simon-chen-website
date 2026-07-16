@@ -391,6 +391,10 @@
   font-weight: 400;
 }
 
+.hero-social {
+  margin-top: 2rem;
+}
+
 @media (max-width: 768px) {
   .hero-meta {
     position: static;

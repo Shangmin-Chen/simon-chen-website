@@ -102,7 +102,6 @@ This runs `vite build` followed by `wrangler deploy`. Ensure all environment sec
 Want to use this as a starting point for your own site?
 
 - **Portfolio content** (experience, projects, skills, links): edit the data files in `src/data/`.
-- **Blog posts**: add `.mdx` files to `src/content/posts/` — they're compiled at build time with frontmatter support.
 - **Photo gallery**: host your own `gallery.json` and images on Cloudflare R2 (see [Image Gallery Optimization](#-image-gallery-optimization)), or remove the gallery routes.
 - **Widgets**: the GitHub contributions, Goodreads, and Codeforces widgets are configured with usernames in `src/data/` and proxied through `src/worker.js` — swap in your own handles or delete the ones you don't want.
 

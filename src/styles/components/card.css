@@ -15,20 +15,6 @@
   box-shadow: none;
 }
 
-.blog-card {
-  background: transparent;
-  padding: 0;
-  border-radius: 0;
-  box-shadow: none;
-  transition: none;
-  border-bottom: 1px solid var(--border-light);
-  padding-bottom: 2rem;
-}
-
-.blog-card:hover {
-  transform: none;
-  box-shadow: none;
-}
 
 .submission-card {
   background: transparent;

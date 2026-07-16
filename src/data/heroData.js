@@ -1,10 +1,10 @@
 export const heroData = {
-  headlineLines: ['Software'],
-  headlineBeforeEm: 'with a ',
-  headlineEm: 'Passion.',
+  headlineLines: ['Relentlessly'],
+  headlineBeforeEm: '',
+  headlineEm: 'Curious',
   lede:
-    "CS new grad from BU. I love shipping code, reading, working out, and hanging out with friends!",
-  metaLines: ['Based in NYC, NY', 'Boston University New Grad', 'Open to opportunities'],
+    "Always chasing the next rabbit hole. The act of learning, trying, and figuring things out is beautiful.",
+  metaLines: ['Based in NYC', 'Boston University New Grad'],
   buttons: [
     {
       text: 'View Projects',

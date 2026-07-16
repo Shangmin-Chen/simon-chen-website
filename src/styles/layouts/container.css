@@ -75,26 +75,3 @@
   margin: 0 auto;
 }
 
-/* Blog Post Layout */
-.blog-post-container {
-  min-height: 100vh;
-  background-color: var(--bg-primary);
-  padding-top: 100px; /* Account for fixed navbar */
-}
-
-.blog-post {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2rem 0;
-}
-
-.blog-post-header {
-  margin-bottom: 3rem;
-  text-align: left;
-}
-
-.blog-post-footer {
-  border-top: 1px solid var(--border-light);
-  padding-top: 2rem;
-  margin-top: 3rem;
-}

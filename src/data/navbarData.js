@@ -18,10 +18,6 @@ export const navbarData = {
       sectionId: "projects"
     },
     {
-      label: "Writing",
-      sectionId: "blog"
-    },
-    {
       label: "Gallery",
       sectionId: "gallery"
     },

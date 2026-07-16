@@ -15,6 +15,12 @@ export const contactData = {
       external: true
     },
     {
+      label: "X",
+      value: "x.com/simonchen0",
+      href: "https://x.com/simonchen0",
+      external: true
+    },
+    {
       label: "GitHub",
       value: "github.com/Shangmin-Chen",
       href: "https://github.com/Shangmin-Chen",
