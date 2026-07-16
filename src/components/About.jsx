@@ -21,19 +21,26 @@ const About = () => {
               <p key={index}>{paragraph}</p>
             ))}
             <p>
-              I build cool apps, explore my{' '}
+              Check out some of my{' '}
+              <a href="https://github.com/Shangmin-Chen" target="_blank" rel="noopener noreferrer">
+                projects on GitHub
+              </a>
+              , and I often think out loud on{' '}
+              <a href="https://x.com/simonchen0" target="_blank" rel="noopener noreferrer">
+                X
+              </a>
+              . If you want to talk — about anything, any discipline —{' '}
               <a
-                href="#projects"
+                href="#contact"
                 onClick={(e) => {
                   e.preventDefault();
-                  scrollToSection('projects');
+                  scrollToSection('contact');
                 }}
               >
-                projects section
+                reach out
               </a>{' '}
-              to see my work!
+              and let's find time to chat.
             </p>
-            <p>{aboutData.closing}</p>
             <div className="skills">
               <h3>{aboutData.skillsTitle}</h3>
               <div className="skills-grid">
