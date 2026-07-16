@@ -12,7 +12,7 @@ export const socialLinks = [
   {
     label: "X",
     href: "https://x.com/simonchen0",
-    icon: "x"
+    icon: "twitter"
   },
   {
     label: "Instagram",
