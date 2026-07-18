@@ -10,9 +10,6 @@ const prefersReducedMotion = () =>
   typeof window !== 'undefined' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// Extra breathing room below the fixed navbar, in px.
-const NAV_BREATHING_ROOM = 16;
-
 /**
  * Scroll to a specific section.
  * Uses instant scrolling when reduced motion is preferred.
@@ -22,8 +19,11 @@ export const scrollToSection = (sectionId) => {
   const element = document.getElementById(sectionId);
   if (!element) return;
 
+  // Land the section flush against the navbar — each section already has its
+  // own top padding, so no extra gap is added here (it would expose a sliver
+  // of the previous, differently-colored section above the target's edge).
   const navbar = document.querySelector('.navbar');
-  const navOffset = (navbar?.getBoundingClientRect().height ?? 0) + NAV_BREATHING_ROOM;
+  const navOffset = navbar?.getBoundingClientRect().height ?? 0;
   const top = element.getBoundingClientRect().top + window.scrollY - navOffset;
   window.scrollTo({
     top,
