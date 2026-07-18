@@ -18,7 +18,7 @@
   position: relative;
 }
 
-.section:nth-child(even) {
+.section:nth-of-type(even) {
   background-color: var(--bg-secondary);
 }
 

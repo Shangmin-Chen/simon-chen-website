@@ -10,8 +10,8 @@ const prefersReducedMotion = () =>
   typeof window !== 'undefined' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// ~--nav-height at 18px root (4.5rem); leaves room below the fixed navbar.
-const NAV_OFFSET = 81;
+// Extra breathing room below the fixed navbar, in px.
+const NAV_BREATHING_ROOM = 16;
 
 /**
  * Scroll to a specific section.
@@ -22,7 +22,9 @@ export const scrollToSection = (sectionId) => {
   const element = document.getElementById(sectionId);
   if (!element) return;
 
-  const top = element.getBoundingClientRect().top + window.scrollY - NAV_OFFSET;
+  const navbar = document.querySelector('.navbar');
+  const navOffset = (navbar?.getBoundingClientRect().height ?? 0) + NAV_BREATHING_ROOM;
+  const top = element.getBoundingClientRect().top + window.scrollY - navOffset;
   window.scrollTo({
     top,
     behavior: prefersReducedMotion() ? 'instant' : 'smooth',
