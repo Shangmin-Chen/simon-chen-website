@@ -25,21 +25,10 @@ const About = () => {
               <a href="https://github.com/Shangmin-Chen" target="_blank" rel="noopener noreferrer">
                 projects on GitHub
               </a>
-              , and I often think out loud on{' '}
-              <a href="https://x.com/simonchen0" target="_blank" rel="noopener noreferrer">
-                X
-              </a>
-              . If you want to talk — about anything, any discipline —{' '}
-              <a
-                href="#contact"
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToSection('contact');
-                }}
-              >
-                reach out
-              </a>{' '}
-              and let's find time to chat.
+              , and I often put my thoughts out on X.
+            </p>
+            <p>
+              If you want to chat about anything, don't hesistate to reach out!
             </p>
             <div className="skills">
               <h3>{aboutData.skillsTitle}</h3>

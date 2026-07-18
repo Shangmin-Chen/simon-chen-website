@@ -1,38 +1,7 @@
 export const contactData = {
   title: "Reach out",
   description: "I'm always interested in new opportunities and exciting projects. Feel free to reach out if you'd like to collaborate or just say hello!",
-  contactDetails: [
-    {
-      label: "Email",
-      value: "shangminch@gmail.com",
-      href: "mailto:shangminch@gmail.com",
-      external: false
-    },
-    {
-      label: "LinkedIn",
-      value: "linkedin.com/in/shangmin-chen",
-      href: "https://linkedin.com/in/shangmin-chen",
-      external: true
-    },
-    {
-      label: "X",
-      value: "x.com/simonchen0",
-      href: "https://x.com/simonchen0",
-      external: true
-    },
-    {
-      label: "GitHub",
-      value: "github.com/Shangmin-Chen",
-      href: "https://github.com/Shangmin-Chen",
-      external: true
-    },
-    {
-      label: "Instagram",
-      value: "instagram.com/the.simonchen",
-      href: "https://www.instagram.com/the.simonchen/",
-      external: true
-    }
-  ],
+  contactDetails: [],
   formFields: [
     {
       label: "Name",

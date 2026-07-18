@@ -13,7 +13,7 @@ const XPreview = () => {
           maxWidth: '50ch'
         }}
       >
-        Follow the yapping on X!
+        follow me on X
       </div>
       <div className="x-preview-foot">
         <a

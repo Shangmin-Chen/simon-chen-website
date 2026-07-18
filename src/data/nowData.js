@@ -30,16 +30,7 @@ export const nowData = {
         url: 'https://github.com/Shangmin-Chen',
       },
     },
-    {
-      label: 'Yapping',
-      value: 'My thoughts out loud',
-      sub: 'Into the void, with zero regrets.',
-      expand: 'twitter',
-      handle: {
-        text: '@simonchen0',
-        url: 'https://x.com/simonchen0',
-      },
-    },
+
   ],
   note: 'Updated Jun 2026',
 };

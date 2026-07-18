@@ -3,9 +3,9 @@ export const projects = [
     title: "Persephone",
     titleParts: { before: '', em: "Persephone", after: ' — Kalshi trading bot' },
     description:
-      'An algorithmic trading bot built for Kalshi event markets in collaboration with a quant trader and a YC founding engineer. Designed custom infrastructure and model layers, focusing on the statistical modeling layer. Scaled $2k to $20k with over $200k in traded volume within two weeks.',
+      'An algorithmic trading bot built for Kalshi event markets in collaboration with a quant trader @ sig and a founding engineer @ a YC backed startup. Scaled $2k to $20k with over $200k in traded volume within two weeks.',
     tags: ['Python', 'Kalshi-API', 'Quant-Trading', 'Statistical-Modeling'],
-    meta: { year: '2026', role: 'Model Eng', status: 'In development' },
+    meta: { year: '2026', role: 'Member', status: 'Live' },
     github: '',
     demo: '',
   },
@@ -17,6 +17,6 @@ export const projects = [
     tags: ['Next.js', 'React', 'Supabase', 'Postgres', 'Drizzle-ORM', 'Tailwind-CSS'],
     meta: { year: '2026', role: 'Solo', status: 'Live (Invite-only)' },
     github: '',
-    demo: 'https://hermesletters.vercel.app',
+    demo: 'https://letters.simon-chen.com',
   },
 ];
