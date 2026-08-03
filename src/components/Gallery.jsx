@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import useGallery from '../hooks/useGallery';
 import { galleryConfig, imageUrl } from '../data/galleryData';
 

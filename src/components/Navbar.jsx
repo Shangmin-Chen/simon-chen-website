@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 import { scrollToSection } from '../utils/scrollUtils';
 import { useTheme } from '../contexts/ThemeContext';
 import { navbarData } from '../data/navbarData';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { scrollToSection } from '../utils/scrollUtils';
 import { heroData } from '../data/heroData';
 import Button from './ui/Button';
