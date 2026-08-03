@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 import { scrollToSection } from '../utils/scrollUtils';
 import { footerData } from '../data/footerData';
 import SocialLinks from './ui/SocialLinks';
