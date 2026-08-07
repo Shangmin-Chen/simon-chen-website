@@ -14,6 +14,7 @@
 # local tooling
 /.wrangler
 /.claude
+!/.claude/launch.json
 
 # resized gallery images staged for R2 upload
 /gallery-dist
