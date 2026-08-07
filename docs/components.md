@@ -65,7 +65,7 @@ The `Card` component acts as a flexible content container, supporting multiple d
 | Prop Name | Type | Default | Options | Description |
 | :--- | :--- | :--- | :--- | :--- |
 | `children` | `ReactNode` | **Required** | — | Card content, sub-components, or layout nodes. |
-| `variant` | `string` | `'default'` | `'default'`, `'blog'`, `'submission'`, `'contest'`, `'experience'`, `'glass-card'` | Layout variant mapping to CSS class rules. |
+| `variant` | `string` | `'default'` | `'default'`, `'submission'`, `'contest'`, `'experience'`, `'glass-card'` | Layout variant mapping to CSS class rules. |
 | `className` | `string` | `''` | Custom string | Additional custom CSS classes. |
 | `hover` | `boolean` | `false` | `true`, `false` | Enables interactive hover elevation and transition effects. |
 | `...props` | `object` | `{}` | Standard HTML attributes | Additional attributes passed to the container `<div>`. |
@@ -73,7 +73,6 @@ The `Card` component acts as a flexible content container, supporting multiple d
 ### Variant & Class Mappings
 
 - `default`: Applies `.card.project-card` (Standard elevated project card styling).
-- `blog`: Applies `.card.project-card` (Editorial article card container).
 - `submission`: Applies `.card.submission-card` (Codeforces problem submission item).
 - `contest`: Applies `.card.contest-card` (Competitive programming rating event item).
 - `experience`: Applies `.card.experience-item` (Work history & education timeline item).
