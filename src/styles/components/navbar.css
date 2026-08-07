@@ -13,9 +13,14 @@
   width: 100%;
   z-index: 1000;
   background: var(--navbar-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-color);
+}
+
+@supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+  .navbar {
+    backdrop-filter: blur(var(--glass-blur, 12px));
+    -webkit-backdrop-filter: blur(var(--glass-blur, 12px));
+  }
 }
 
 .nav-container {
@@ -144,7 +149,7 @@
   margin: 0;
   padding: 0;
   border: none;
-  background: rgba(0, 0, 0, 0.25);
+  background: hsl(0 0% 0% / 0.25);
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.25s ease, visibility 0.25s ease;
@@ -154,7 +159,7 @@
 }
 
 html.dark .nav-backdrop {
-  background: rgba(0, 0, 0, 0.45);
+  background: hsl(0 0% 0% / 0.45);
 }
 
 /* Only allow the backdrop to become visible at mobile widths. */
@@ -183,7 +188,7 @@ html.dark .nav-backdrop {
     padding: 0.5rem 0 1rem;
     background-color: var(--bg-primary);
     border-bottom: 1px solid var(--border-color);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 12px 32px hsl(0 0% 0% / 0.08);
     text-align: left;
     transform: translateY(-100%);
     opacity: 0;

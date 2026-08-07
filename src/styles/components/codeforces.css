@@ -206,7 +206,7 @@
   color: var(--chart-tooltip-text);
 }
 
-@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+@supports not ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
   .custom-tooltip {
     background: var(--bg-secondary);
   }

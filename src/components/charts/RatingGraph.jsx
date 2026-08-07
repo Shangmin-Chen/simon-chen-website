@@ -45,8 +45,8 @@ const RatingGraph = ({ contests }) => {
           <AreaChart data={chartData}>
             <defs>
               <linearGradient id={`ratingGradient-${cleanId}`} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="var(--accent-color)" stopOpacity={0.25} />
-                <stop offset="95%" stopColor="var(--accent-color)" stopOpacity={0.02} />
+                <stop offset="5%" stopColor="var(--chart-fill-top)" />
+                <stop offset="95%" stopColor="var(--chart-fill-bottom)" />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid-stroke)" vertical={false} strokeOpacity={0.6} />

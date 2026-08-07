@@ -70,7 +70,7 @@
   --color-text-primary-hsl: 42 40% 88%;    /* #ede6d6 */
   --color-text-secondary-hsl: 38 15% 67%;  /* #b8afa0 */
   --color-text-muted-hsl: 40 10% 58%;      /* #9e9789 ≥4.5:1 */
-  --color-text-tertiary-hsl: 28 8% 53%;    /* #90867d ≥4.5:1 */
+  --color-text-tertiary-hsl: 28 8% 56%;    /* #90867d ≥4.5:1 */
   --color-border-hsl: 40 8% 22%;           /* #3d3a34 */
   --color-border-light-hsl: 30 6% 19%;     /* #34322e */
   --color-accent-hsl: 13 76% 62%;          /* #e87555 */
@@ -127,7 +127,7 @@
   box-shadow: var(--glass-shadow);
 }
 
-@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+@supports not ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
   .glass,
   .glass-card {
     background: var(--bg-secondary);

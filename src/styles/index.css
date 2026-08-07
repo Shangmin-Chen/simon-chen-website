@@ -1,8 +1,8 @@
 /* Main CSS Index - Imports all modular styles */
 
 /* Base Styles */
-@import './base/reset.css';
 @import './base/variables.css';
+@import './base/reset.css';
 @import './base/typography.css';
 
 /* Layout Styles */
@@ -23,16 +23,13 @@
 @import './components/projects.css';
 @import './components/contact.css';
 @import './components/codeforces.css';
-
-/* Utility Styles */
-@import './utils/responsive.css';
-@import './utils/scroll-reveal.css';
-
-/* Component Styles (continued) */
 @import './components/now.css';
 @import './components/github.css';
 @import './components/goodreads.css';
 @import './components/gallery.css';
-
 @import './components/footer.css';
 @import './components/social-links.css';
+
+/* Utility Styles */
+@import './utils/responsive.css';
+@import './utils/scroll-reveal.css';

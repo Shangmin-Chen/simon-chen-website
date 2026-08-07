@@ -61,7 +61,7 @@
   padding: 1.5rem;
 }
 
-@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+@supports not ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
   .glass-card {
     background: var(--card-bg);
   }
