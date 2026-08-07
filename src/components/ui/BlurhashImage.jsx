@@ -16,11 +16,13 @@ const BlurhashImage = ({
   width,
   height,
   onLoad,
+  onError,
   ...props
 }) => {
   const canvasRef = useRef(null);
   const imgRef = useRef(null);
   const [loaded, setLoaded] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     if (!blurhash || !canvasRef.current) return;
@@ -42,6 +44,7 @@ const BlurhashImage = ({
 
   useEffect(() => {
     setLoaded(false);
+    setHasError(false);
     if (imgRef.current && imgRef.current.complete && imgRef.current.naturalWidth !== 0) {
       setLoaded(true);
     }
@@ -52,9 +55,14 @@ const BlurhashImage = ({
     if (onLoad) onLoad(e);
   };
 
+  const handleError = (e) => {
+    setHasError(true);
+    if (onError) onError(e);
+  };
+
   return (
     <div
-      className={`blurhash-container ${loaded ? 'is-loaded' : ''} ${className}`.trim()}
+      className={`blurhash-container ${loaded ? 'is-loaded' : ''} ${hasError ? 'has-error' : ''} ${className}`.trim()}
       style={{
         position: 'relative',
         overflow: 'hidden',
@@ -71,22 +79,33 @@ const BlurhashImage = ({
           }}
         />
       )}
-      <img
-        ref={imgRef}
-        src={src}
-        alt={alt}
-        loading={loading}
-        draggable={draggable}
-        width={width}
-        height={height}
-        onLoad={handleLoad}
-        className={`blurhash-img ${imgClassName}`.trim()}
-        style={{
-          opacity: loaded ? 1 : 0,
-          ...imgStyle,
-        }}
-        {...props}
-      />
+      {hasError ? (
+        <div
+          className="blurhash-error-fallback"
+          role="img"
+          aria-label={alt ? `Photo unavailable: ${alt}` : 'Photo unavailable'}
+        >
+          <span>Photo unavailable</span>
+        </div>
+      ) : (
+        <img
+          ref={imgRef}
+          src={src}
+          alt={alt}
+          loading={loading}
+          draggable={draggable}
+          width={width}
+          height={height}
+          onLoad={handleLoad}
+          onError={handleError}
+          className={`blurhash-img ${imgClassName}`.trim()}
+          style={{
+            opacity: loaded ? 1 : 0,
+            ...imgStyle,
+          }}
+          {...props}
+        />
+      )}
     </div>
   );
 };

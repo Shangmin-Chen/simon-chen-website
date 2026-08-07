@@ -62,7 +62,12 @@ const useGallery = () => {
     setError(null);
 
     // Dedupe concurrent mounts onto a single request.
-    inflight = inflight ?? fetchManifest();
+    inflight =
+      inflight ??
+      fetchManifest().catch((err) => {
+        inflight = null;
+        throw err;
+      });
     inflight
       .then((result) => {
         memoryCache = result;

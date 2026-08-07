@@ -88,8 +88,16 @@ const Gallery = () => {
 
   const endDrag = () => {
     if (!dragRef.current.active) return;
-    const dx = dragRef.current.dx;
+    const { dx, pointerId } = dragRef.current;
+    if (pointerId !== null && viewportRef.current?.hasPointerCapture?.(pointerId)) {
+      try {
+        viewportRef.current.releasePointerCapture(pointerId);
+      } catch {
+        // safe ignore
+      }
+    }
     dragRef.current.active = false;
+    dragRef.current.pointerId = null;
     setDragX(0);
     if (dx <= -SWIPE_THRESHOLD) next();
     else if (dx >= SWIPE_THRESHOLD) prev();
@@ -102,11 +110,16 @@ const Gallery = () => {
     node.addEventListener('pointerup', endDrag);
     node.addEventListener('pointercancel', endDrag);
     return () => {
+      if (dragRef.current.pointerId !== null && node.hasPointerCapture?.(dragRef.current.pointerId)) {
+        try {
+          node.releasePointerCapture(dragRef.current.pointerId);
+        } catch {
+          // safe ignore
+        }
+      }
       node.removeEventListener('pointerup', endDrag);
       node.removeEventListener('pointercancel', endDrag);
     };
-    // endDrag closes over next/prev via refs + state setters; safe to omit.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [next, prev]);
 
   const pad = (n) => String(n + 1).padStart(2, '0');
