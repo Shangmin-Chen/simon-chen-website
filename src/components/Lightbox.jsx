@@ -1,134 +1,45 @@
-import React, { useCallback, useEffect, useRef } from 'react';
-import BlurhashImage from './ui/BlurhashImage';
+import React from 'react';
+import LightboxComponent from 'yet-another-react-lightbox';
+import Zoom from 'yet-another-react-lightbox/plugins/zoom';
+import 'yet-another-react-lightbox/styles.css';
 import { imageUrl } from '../data/galleryData';
 
-// Full-screen photo viewer for the album grid. Keyboard: Esc closes, arrows
-// navigate. `index` is controlled by the parent so the grid and viewer stay
-// in sync.
-const Lightbox = ({ photos, index, onIndex, onClose }) => {
-  const count = photos.length;
-  const photo = photos[index];
-  const closeBtnRef = useRef(null);
-  const prevActiveElementRef = useRef(null);
+// Enhanced photo viewer supporting touch swipe & multi-touch pinch zoom.
+const Lightbox = ({ photos = [], index, onIndex, onClose }) => {
+  const isOpen = index !== null && index !== undefined && index >= 0 && index < photos.length;
 
-  const go = useCallback(
-    (next) => onIndex(((next % count) + count) % count),
-    [count, onIndex]
-  );
+  const slides = photos.map((photo) => ({
+    src: imageUrl(photo?.full),
+    alt: photo?.alt || '',
+    caption: photo?.caption,
+    location: photo?.location,
+  }));
 
-  useEffect(() => {
-    prevActiveElementRef.current = document.activeElement;
-    closeBtnRef.current?.focus();
-
-    const onKey = (e) => {
-      if (e.key === 'Escape') {
-        onClose();
-      } else if (e.key === 'ArrowLeft') {
-        go(index - 1);
-      } else if (e.key === 'ArrowRight') {
-        go(index + 1);
-      } else if (e.key === 'Tab') {
-        const container = document.querySelector('.lightbox');
-        if (!container) return;
-        const focusables = Array.from(
-          container.querySelectorAll('button:not([disabled])')
-        );
-        if (focusables.length === 0) return;
-        const first = focusables[0];
-        const last = focusables[focusables.length - 1];
-
-        if (e.shiftKey) {
-          if (document.activeElement === first) {
-            e.preventDefault();
-            last.focus();
-          }
-        } else {
-          if (document.activeElement === last) {
-            e.preventDefault();
-            first.focus();
-          }
-        }
-      }
-    };
-
-    window.addEventListener('keydown', onKey);
-    // Lock background scroll while the viewer is open.
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-
-    return () => {
-      window.removeEventListener('keydown', onKey);
-      document.body.style.overflow = prevOverflow;
-      if (prevActiveElementRef.current && typeof prevActiveElementRef.current.focus === 'function') {
-        prevActiveElementRef.current.focus();
-      }
-    };
-  }, [index, go, onClose]);
-
-  if (!photo) return null;
+  if (!isOpen) return null;
 
   return (
-    <div
-      className="lightbox"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Photo viewer"
-    >
-      <button
-        type="button"
-        className="lightbox-backdrop"
-        onClick={onClose}
-        aria-label="Close photo viewer"
-      />
-      <button
-        ref={closeBtnRef}
-        type="button"
-        className="lightbox-close"
-        onClick={onClose}
-        aria-label="Close viewer"
-      >
-        ×
-      </button>
-      {count > 1 && (
-        <button
-          type="button"
-          className="lightbox-nav lightbox-prev"
-          onClick={(e) => {
-            e.stopPropagation();
-            go(index - 1);
-          }}
-          aria-label="Previous photo"
-        >
-          ←
-        </button>
-      )}
-      <figure className="lightbox-figure" onClick={(e) => e.stopPropagation()}>
-        <BlurhashImage
-          className="lightbox-blurhash"
-          imgClassName="lightbox-img"
-          src={imageUrl(photo.full)}
-          blurhash={photo.blurhash}
-          alt={photo.alt}
-        />
-        <figcaption className="lightbox-caption">
-          <span className="lightbox-cap-text">{photo.caption}</span>
-          {photo.location && <span className="lightbox-cap-loc">{photo.location}</span>}
-        </figcaption>
-      </figure>
-      {count > 1 && (
-        <button
-          type="button"
-          className="lightbox-nav lightbox-next"
-          onClick={(e) => {
-            e.stopPropagation();
-            go(index + 1);
-          }}
-          aria-label="Next photo"
-        >
-          →
-        </button>
-      )}
-    </div>
+    <LightboxComponent
+      open={isOpen}
+      close={onClose}
+      index={index}
+      slides={slides}
+      on={{
+        view: ({ index: current }) => onIndex(current),
+      }}
+      plugins={[Zoom]}
+      zoom={{
+        maxZoomPixelRatio: 3,
+        zoomInMultiplier: 2,
+      }}
+      render={{
+        slideFooter: ({ slide }) => (
+          <figcaption className="lightbox-caption">
+            {slide.caption && <span className="lightbox-cap-text">{slide.caption}</span>}
+            {slide.location && <span className="lightbox-cap-loc">{slide.location}</span>}
+          </figcaption>
+        ),
+      }}
+    />
   );
 };
 

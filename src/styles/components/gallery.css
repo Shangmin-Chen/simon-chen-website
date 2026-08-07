@@ -482,6 +482,8 @@
   font-size: 1.05rem;
   font-weight: 300;
   color: hsl(0 0% 100% / 0.92);
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .lightbox-cap-loc {
@@ -490,7 +492,41 @@
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: hsl(0 0% 100% / 0.5);
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
+
+/* ── yet-another-react-lightbox overrides ────────────────────────────── */
+
+:root {
+  --yarl__background_color: hsl(0 0% 0% / 0.92);
+  --yarl__backdrop_filter: blur(16px);
+  --yarl__color_button: hsl(0 0% 100% / 0.85);
+  --yarl__color_button_active: var(--text-primary);
+}
+
+.yarl__container {
+  backdrop-filter: var(--yarl__backdrop_filter);
+  touch-action: pan-y pinch-zoom;
+}
+
+.yarl__button {
+  background: hsl(0 0% 100% / 0.08);
+  border: 1px solid hsl(0 0% 100% / 0.2);
+  border-radius: 999px;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.yarl__button:hover {
+  background: hsl(0 0% 100% / 0.18);
+  border-color: hsl(0 0% 100% / 0.4);
+}
+
+.yarl__slide_title,
+.yarl__slide_description {
+  font-family: var(--font-serif);
+}
+
 
 .lightbox-nav,
 .lightbox-close {
