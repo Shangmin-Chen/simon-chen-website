@@ -441,6 +441,8 @@
   font-weight: 300;
   color: hsl(0 0% 100% / 0.92);
   letter-spacing: -0.01em;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .lightbox-cap-loc {

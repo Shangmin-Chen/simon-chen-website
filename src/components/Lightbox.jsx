@@ -11,13 +11,13 @@ const Lightbox = ({ photos, index, onIndex, onClose }) => {
   if (!photos || photos.length === 0) return null;
 
   const slides = photos.map((photo) => ({
-    src: imageUrl(photo.full),
-    alt: photo.alt || '',
-    caption: photo.caption,
-    location: photo.location,
+    src: imageUrl(photo?.full),
+    alt: photo?.alt || '',
+    caption: photo?.caption,
+    location: photo?.location,
   }));
 
-  const isOpen = index !== null && index !== undefined && index >= 0;
+  const isOpen = index !== null && index !== undefined && index >= 0 && index < photos.length;
 
   return (
     <LightboxComponent
@@ -29,7 +29,6 @@ const Lightbox = ({ photos, index, onIndex, onClose }) => {
       zoom={{
         maxZoomPixelRatio: 3,
         zoomInMultiplier: 2,
-        doubleTapDelay: 300,
       }}
       on={{
         view: ({ index: nextIndex }) => onIndex?.(nextIndex),
