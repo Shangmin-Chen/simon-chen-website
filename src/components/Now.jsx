@@ -1,4 +1,5 @@
 import React, { useId, useState } from 'react';
+import { motion } from 'framer-motion';
 import { nowData } from '../data/nowData';
 import CodeforcesPreview from './CodeforcesPreview';
 import GitHubPreview from './GitHubPreview';
@@ -21,24 +22,41 @@ const Now = () => {
   return (
     <section id="now" className="section">
       <div className="container">
-        <div className="section-head reveal">
+        <motion.div
+          className="section-head"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
           <div className="mono-label num">§ 02</div>
           <h2>
             Now <em>- Currently</em>
           </h2>
-        </div>
+        </motion.div>
         <div className="now-grid">
-          <div className="mono-label reveal">{nowData.note}</div>
+          <motion.div
+            className="mono-label"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            {nowData.note}
+          </motion.div>
           <ul className="now-list">
             {nowData.items.map((item, i) => {
               const isExpandable = Boolean(item.expand);
               const isExpanded = expanded.has(item.label);
               const panelId = `${baseId}-now-${i}`;
               return (
-                <li
+                <motion.li
                   key={item.label}
-                  className={`now-item reveal${isExpandable ? ' now-item--expandable' : ''}`}
-                  style={{ '--delay': `${i * 80}ms` }}
+                  className={`now-item${isExpandable ? ' now-item--expandable' : ''}`}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: i * 0.08 }}
                 >
                   <span className="now-label">{item.label}</span>
                   <div className="now-right">
@@ -68,7 +86,7 @@ const Now = () => {
                       </div>
                     )}
                   </div>
-                </li>
+                </motion.li>
               );
             })}
           </ul>

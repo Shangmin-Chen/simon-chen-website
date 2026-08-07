@@ -7,6 +7,7 @@ import React, {
   useState,
 } from 'react';
 import { Link } from 'react-router';
+import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import useGallery from '../hooks/useGallery';
 import { galleryConfig, imageUrl } from '../data/galleryData';
@@ -124,7 +125,7 @@ const Gallery = () => {
   } else {
     body = (
       <div
-        className="carousel reveal"
+        className="carousel"
         role="group"
         aria-roledescription="carousel"
         aria-label={featured?.title ? `${featured.title} photo gallery` : 'Photo gallery'}
@@ -222,23 +223,43 @@ const Gallery = () => {
   return (
     <section id="gallery" className="section">
       <div className="container">
-        <div className="section-head reveal">
+        <motion.div
+          className="section-head"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
           <div className="mono-label num">§ 06</div>
           <h2>
             Recent Frames <em>- Selected</em>
           </h2>
-        </div>
+        </motion.div>
 
         <div className="gallery-grid">
-          <div className="mono-label reveal">{note}</div>
-          <div className="gallery-main">
+          <motion.div
+            className="mono-label"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            {note}
+          </motion.div>
+          <motion.div
+            className="gallery-main"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+          >
             {body}
             {!loading && !error && galleries.length > 0 && (
-              <Link to="/gallery" className="gallery-all reveal">
+              <Link to="/gallery" className="gallery-all">
                 View full gallery →
               </Link>
             )}
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

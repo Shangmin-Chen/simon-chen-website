@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router';
+import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import useGallery from '../hooks/useGallery';
 import { galleryConfig, imageUrl } from '../data/galleryData';
@@ -98,7 +99,12 @@ const GalleryPage = () => {
   return (
     <section className="section gallery-page">
       <div className="container">
-        <div className="gallery-page-head reveal">
+        <motion.div
+          className="gallery-page-head"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           <div className="mono-label num">§ 06</div>
           {album ? (
             <>
@@ -125,7 +131,7 @@ const GalleryPage = () => {
               </h2>
             </>
           )}
-        </div>
+        </motion.div>
         {body}
       </div>
     </section>
