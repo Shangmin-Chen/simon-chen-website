@@ -1,19 +1,24 @@
 import React from 'react';
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
-import { useTheme } from '../../contexts/ThemeContext';
+import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid } from 'recharts';
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div className="custom-tooltip">
+        <p className="tooltip-label">{label}</p>
+        <p className="tooltip-rating">{`Rating: ${payload[0].value}`}</p>
+        <p className="tooltip-contest">{data.contestName}</p>
+      </div>
+    );
+  }
+  return null;
+};
 
 const RatingGraph = ({ contests }) => {
-  // Subscribe to theme so the chart re-renders when the theme changes.
-  // eslint-disable-next-line no-unused-vars
-  const { theme } = useTheme();
+  const gradientId = React.useId();
 
   if (!contests || contests.length === 0) return null;
-
-  // Read CSS custom properties so colors always match the active theme.
-  const style = getComputedStyle(document.documentElement);
-  const textSecondary = style.getPropertyValue('--text-secondary').trim() || '#4a4a4a';
-  const accentColor   = style.getPropertyValue('--accent-color').trim()   || '#c8442a';
-  const textPrimary   = style.getPropertyValue('--text-primary').trim()   || '#1a1a1a';
 
   // Sort contests chronologically for graph display (oldest to newest)
   const sortedContests = [...contests].sort((a, b) => a.ratingUpdateTimeSeconds - b.ratingUpdateTimeSeconds);
@@ -30,48 +35,45 @@ const RatingGraph = ({ contests }) => {
     contestId: contest.contestId
   }));
 
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <div className="custom-tooltip">
-          <p className="tooltip-label">{label}</p>
-          <p className="tooltip-rating">{`Rating: ${payload[0].value}`}</p>
-          <p className="tooltip-contest">{data.contestName}</p>
-        </div>
-      );
-    }
-    return null;
-  };
+  const cleanId = gradientId.replace(/:/g, '');
 
   return (
     <div className="rating-graph">
       <h3>Rating Progression</h3>
       <div className="graph-container">
         <ResponsiveContainer width="100%" height={140}>
-          <LineChart data={chartData}>
+          <AreaChart data={chartData}>
+            <defs>
+              <linearGradient id={`ratingGradient-${cleanId}`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="var(--accent-color)" stopOpacity={0.25} />
+                <stop offset="95%" stopColor="var(--accent-color)" stopOpacity={0.02} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid-stroke)" vertical={false} strokeOpacity={0.6} />
             <XAxis
               dataKey="date"
               axisLine={false}
               tickLine={false}
-              tick={{ fontSize: 8, fill: textSecondary, fontWeight: 300 }}
+              tick={{ fontSize: 8, fill: 'var(--chart-axis-text)', fontWeight: 300 }}
             />
             <YAxis
               domain={['dataMin - 50', 'dataMax + 50']}
               axisLine={false}
               tickLine={false}
-              tick={{ fontSize: 8, fill: textSecondary, fontWeight: 300 }}
+              tick={{ fontSize: 8, fill: 'var(--chart-axis-text)', fontWeight: 300 }}
             />
             <Tooltip content={<CustomTooltip />} />
-            <Line
+            <Area
               type="monotone"
               dataKey="rating"
-              stroke={accentColor}
+              stroke="var(--chart-stroke)"
               strokeWidth={2}
-              dot={{ fill: accentColor, strokeWidth: 0, r: 4 }}
-              activeDot={{ fill: textPrimary, strokeWidth: 0, r: 6 }}
+              fillOpacity={1}
+              fill={`url(#ratingGradient-${cleanId})`}
+              dot={{ fill: 'var(--chart-stroke)', strokeWidth: 0, r: 3 }}
+              activeDot={{ fill: 'var(--text-primary)', strokeWidth: 0, r: 5 }}
             />
-          </LineChart>
+          </AreaChart>
         </ResponsiveContainer>
       </div>
     </div>
@@ -79,3 +81,5 @@ const RatingGraph = ({ contests }) => {
 };
 
 export default RatingGraph;
+
+

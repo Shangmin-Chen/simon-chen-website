@@ -54,9 +54,9 @@
 }
 
 .toggle-icon.sun {
-  color: #f39c12;
+  color: var(--accent-color);
 }
 
 .toggle-icon.moon {
-  color: #3498db;
+  color: var(--accent-color);
 }

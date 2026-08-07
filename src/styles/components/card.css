@@ -49,3 +49,21 @@
   border-left: 1px solid var(--border-color);
   padding-left: 2rem;
 }
+
+/* Glass Card Component Utility */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur, 12px));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 12px));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: 6px;
+  padding: 1.5rem;
+}
+
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .glass-card {
+    background: var(--card-bg);
+  }
+}
+
