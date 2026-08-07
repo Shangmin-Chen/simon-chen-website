@@ -1,77 +1,135 @@
-/* CSS Custom Properties (Variables) */
+/* CSS Custom Properties (3-Layer Design System) */
 
-:root {
-  /* Layout */
+:root,
+:root.light {
+  /* Layout & Typography */
   --nav-height: 4.5rem;
-
-  /* Typography */
   --font-serif: 'Fraunces', 'Times New Roman', Georgia, serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
-  /* Light theme (default / :root.light) */
-  --bg-primary: #f5f1ea;
-  --bg-secondary: #ede8df;
-  --bg-tertiary: #e8e2d8;
-  --text-primary: #1a1a1a;
-  --text-secondary: #4a4a4a;
-  --text-muted: #6f6655; /* darkened from #9a9080 → ≥4.5:1 on #f5f1ea */
-  --text-tertiary: #6b6158; /* darkened from #7a7268 → 5.37:1 on #f5f1ea (WCAG AA) */
-  --border-color: #d8d0c0;
-  --border-light: #e5dfd4;
-  --accent-color: #c8442a;
-  --hover-bg: rgba(26, 26, 26, 0.06);
-  --navbar-bg: rgba(245, 241, 234, 0.88);
-  --code-bg: #ebe6dc;
-  --code-header-bg: #e3ddd2;
-  --card-bg: #ede8df;
-  --accent-bg: rgba(200, 68, 42, 0.12);
-  --stripe-bg: rgba(26, 26, 26, 0.04);
-  --success-color: #2d6a4f;
-  --error-color: #a83220;
+  /* Layer 1: Primitives (HSL Raw Channel Triplets) */
+  --color-bg-primary-hsl: 38 33% 94%;       /* #f5f1ea */
+  --color-bg-secondary-hsl: 39 25% 90%;     /* #ede8df */
+  --color-bg-tertiary-hsl: 38 24% 88%;      /* #e8e2d8 */
+  --color-text-primary-hsl: 0 0% 10%;        /* #1a1a1a */
+  --color-text-secondary-hsl: 0 0% 29%;      /* #4a4a4a */
+  --color-text-muted-hsl: 39 13% 38%;        /* #6f6655 ≥4.5:1 */
+  --color-text-tertiary-hsl: 28 10% 38%;     /* #6b6158 ≥4.5:1 */
+  --color-border-hsl: 40 25% 80%;           /* #d8d0c0 */
+  --color-border-light-hsl: 39 26% 86%;     /* #e5dfd4 */
+  --color-accent-hsl: 11 68% 44%;           /* #be3e25 */
+  --color-code-bg-hsl: 40 25% 89%;          /* #ebe6dc */
+  --color-code-header-bg-hsl: 39 23% 86%;   /* #e3ddd2 */
+  --color-success-hsl: 153 40% 30%;         /* #2d6a4f */
+  --color-error-hsl: 8 68% 39%;             /* #a83220 */
+
+  /* Layer 2: Semantic Tokens (Derived from Layer 1) */
+  --bg-primary: hsl(var(--color-bg-primary-hsl));
+  --bg-secondary: hsl(var(--color-bg-secondary-hsl));
+  --bg-tertiary: hsl(var(--color-bg-tertiary-hsl));
+  --text-primary: hsl(var(--color-text-primary-hsl));
+  --text-secondary: hsl(var(--color-text-secondary-hsl));
+  --text-muted: hsl(var(--color-text-muted-hsl));
+  --text-tertiary: hsl(var(--color-text-tertiary-hsl));
+  --border-color: hsl(var(--color-border-hsl));
+  --border-light: hsl(var(--color-border-light-hsl));
+  --accent-color: hsl(var(--color-accent-hsl));
+  --hover-bg: hsl(var(--color-text-primary-hsl) / 0.06);
+  --navbar-bg: hsl(var(--color-bg-primary-hsl) / 0.88);
+  --code-bg: hsl(var(--color-code-bg-hsl));
+  --code-header-bg: hsl(var(--color-code-header-bg-hsl));
+  --card-bg: hsl(var(--color-bg-secondary-hsl));
+  --accent-bg: hsl(var(--color-accent-hsl) / 0.12);
+  --stripe-bg: hsl(var(--color-text-primary-hsl) / 0.04);
+  --success-color: hsl(var(--color-success-hsl));
+  --error-color: hsl(var(--color-error-hsl));
+
+  /* Glassmorphism Tokens */
+  --glass-bg: hsl(var(--color-bg-primary-hsl) / 0.75);
+  --glass-border: hsl(var(--color-border-hsl) / 0.5);
+  --glass-blur: 12px;
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
+
+  /* Layer 3: Component & Recharts Tokens */
+  --chart-stroke: var(--accent-color);
+  --chart-fill-top: hsl(var(--color-accent-hsl) / 0.25);
+  --chart-fill-bottom: hsl(var(--color-accent-hsl) / 0.02);
+  --chart-grid-stroke: var(--border-light);
+  --chart-axis-text: var(--text-secondary);
+  --chart-tooltip-bg: var(--glass-bg);
+  --chart-tooltip-border: var(--glass-border);
+  --chart-tooltip-text: var(--text-primary);
 }
 
-/* Light Theme Variables */
-:root.light {
-  --bg-primary: #f5f1ea;
-  --bg-secondary: #ede8df;
-  --bg-tertiary: #e8e2d8;
-  --text-primary: #1a1a1a;
-  --text-secondary: #4a4a4a;
-  --text-muted: #6f6655; /* darkened from #9a9080 → ≥4.5:1 on #f5f1ea */
-  --text-tertiary: #6b6158; /* darkened from #7a7268 → 5.37:1 on #f5f1ea (WCAG AA) */
-  --border-color: #d8d0c0;
-  --border-light: #e5dfd4;
-  --accent-color: #c8442a;
-  --hover-bg: rgba(26, 26, 26, 0.06);
-  --navbar-bg: rgba(245, 241, 234, 0.88);
-  --code-bg: #ebe6dc;
-  --code-header-bg: #e3ddd2;
-  --card-bg: #ede8df;
-  --accent-bg: rgba(200, 68, 42, 0.12);
-  --stripe-bg: rgba(26, 26, 26, 0.04);
-  --success-color: #2d6a4f;
-  --error-color: #a83220;
-}
-
-/* Dark — lifted warm dark, not near-black */
+/* Dark Theme Variables */
 :root.dark {
-  --bg-primary: #22211d;
-  --bg-secondary: #2a2824;
-  --bg-tertiary: #32302b;
-  --text-primary: #ede6d6;
-  --text-secondary: #b8afa0;
-  --text-muted: #9e9789; /* lightened from #8a8278 → ≥4.5:1 on #22211d */
-  --text-tertiary: #90867d; /* lightened from #6a6258 → 4.52:1 on #22211d (WCAG AA) */
-  --border-color: #3d3a34;
-  --border-light: #34322e;
-  --accent-color: #e87555;
-  --hover-bg: rgba(237, 230, 214, 0.08);
-  --navbar-bg: rgba(34, 33, 29, 0.88);
-  --code-bg: #2f2d28;
-  --code-header-bg: #3a3832;
-  --card-bg: #2a2824;
-  --accent-bg: rgba(232, 117, 85, 0.15);
-  --stripe-bg: rgba(237, 230, 214, 0.04);
-  --success-color: #6bcf97;
-  --error-color: #e87555;
+  /* Layer 1: Primitives (HSL Raw Channel Triplets) */
+  --color-bg-primary-hsl: 48 8% 12%;       /* #22211d */
+  --color-bg-secondary-hsl: 40 8% 15%;     /* #2a2824 */
+  --color-bg-tertiary-hsl: 43 8% 18%;      /* #32302b */
+  --color-text-primary-hsl: 42 40% 88%;    /* #ede6d6 */
+  --color-text-secondary-hsl: 38 15% 67%;  /* #b8afa0 */
+  --color-text-muted-hsl: 40 10% 58%;      /* #9e9789 ≥4.5:1 */
+  --color-text-tertiary-hsl: 28 8% 56%;    /* #90867d ≥4.5:1 */
+  --color-border-hsl: 40 8% 22%;           /* #3d3a34 */
+  --color-border-light-hsl: 30 6% 19%;     /* #34322e */
+  --color-accent-hsl: 13 76% 62%;          /* #e87555 */
+  --color-code-bg-hsl: 43 8% 17%;          /* #2f2d28 */
+  --color-code-header-bg-hsl: 45 7% 21%;   /* #3a3832 */
+  --color-success-hsl: 146 52% 62%;        /* #6bcf97 */
+  --color-error-hsl: 13 76% 62%;          /* #e87555 */
+
+  /* Layer 2: Semantic Tokens (Derived from Layer 1) */
+  --bg-primary: hsl(var(--color-bg-primary-hsl));
+  --bg-secondary: hsl(var(--color-bg-secondary-hsl));
+  --bg-tertiary: hsl(var(--color-bg-tertiary-hsl));
+  --text-primary: hsl(var(--color-text-primary-hsl));
+  --text-secondary: hsl(var(--color-text-secondary-hsl));
+  --text-muted: hsl(var(--color-text-muted-hsl));
+  --text-tertiary: hsl(var(--color-text-tertiary-hsl));
+  --border-color: hsl(var(--color-border-hsl));
+  --border-light: hsl(var(--color-border-light-hsl));
+  --accent-color: hsl(var(--color-accent-hsl));
+  --hover-bg: hsl(var(--color-text-primary-hsl) / 0.08);
+  --navbar-bg: hsl(var(--color-bg-primary-hsl) / 0.88);
+  --code-bg: hsl(var(--color-code-bg-hsl));
+  --code-header-bg: hsl(var(--color-code-header-bg-hsl));
+  --card-bg: hsl(var(--color-bg-secondary-hsl));
+  --accent-bg: hsl(var(--color-accent-hsl) / 0.15);
+  --stripe-bg: hsl(var(--color-text-primary-hsl) / 0.04);
+  --success-color: hsl(var(--color-success-hsl));
+  --error-color: hsl(var(--color-error-hsl));
+
+  /* Glassmorphism Tokens */
+  --glass-bg: hsl(var(--color-bg-primary-hsl) / 0.75);
+  --glass-border: hsl(var(--color-border-hsl) / 0.4);
+  --glass-blur: 12px;
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+
+  /* Layer 3: Component & Recharts Tokens */
+  --chart-stroke: var(--accent-color);
+  --chart-fill-top: hsl(var(--color-accent-hsl) / 0.25);
+  --chart-fill-bottom: hsl(var(--color-accent-hsl) / 0.02);
+  --chart-grid-stroke: var(--border-light);
+  --chart-axis-text: var(--text-secondary);
+  --chart-tooltip-bg: var(--glass-bg);
+  --chart-tooltip-border: var(--glass-border);
+  --chart-tooltip-text: var(--text-primary);
+}
+
+/* Glassmorphism Utilities */
+.glass,
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+@supports not ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+  .glass,
+  .glass-card {
+    background: var(--bg-secondary);
+  }
 }

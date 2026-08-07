@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-const THEME_COLOR_LIGHT = '#f5f1ea';
-const THEME_COLOR_DARK = '#22211d';
+const THEME_COLOR_LIGHT = 'hsl(38 33% 94%)';
+const THEME_COLOR_DARK = 'hsl(48 8% 12%)';
 
 const ThemeContext = createContext();
 

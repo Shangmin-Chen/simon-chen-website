@@ -196,23 +196,41 @@
 
 /* Custom tooltip styles */
 .custom-tooltip {
-  background: var(--text-primary);
-  border-radius: 2px;
-  padding: 0.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: var(--chart-tooltip-bg);
+  backdrop-filter: blur(var(--glass-blur, 12px));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 12px));
+  border: 1px solid var(--chart-tooltip-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: 4px;
+  padding: 0.6rem 0.8rem;
+  color: var(--chart-tooltip-text);
+}
+
+@supports not ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+  .custom-tooltip {
+    background: var(--bg-secondary);
+  }
 }
 
 .tooltip-label {
-  color: var(--bg-primary);
-  font-size: 0.8rem;
-  font-weight: 300;
+  color: var(--chart-tooltip-text);
+  font-size: 0.75rem;
+  font-weight: 500;
   margin: 0 0 0.25rem 0;
+  opacity: 0.85;
 }
 
 .tooltip-rating {
-  color: var(--bg-primary);
-  font-size: 0.8rem;
-  font-weight: 400;
+  color: var(--chart-stroke);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
+}
+
+.tooltip-contest {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 300;
   margin: 0;
 }
 
