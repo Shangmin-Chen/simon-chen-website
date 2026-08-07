@@ -1,20 +1,35 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { projects } from '../data/projects';
 
 const Projects = () => (
   <section id="projects" className="section">
     <div className="container">
-      <div className="section-head reveal">
+      <motion.div
+        className="section-head"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+      >
         <div className="mono-label num">§ 04</div>
         <h2>
           Projects <em>- Recent</em>
         </h2>
-      </div>
+      </motion.div>
       <div className="work-grid">
         <div className="mono-label"></div>
         <div className="work-list">
-          {projects.map((project) => (
-            <article key={project.title} className="work-item reveal">
+          {projects.map((project, index) => (
+            <motion.article
+              key={project.title}
+              className="work-item"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              whileHover={{ y: -6, transition: { duration: 0.2 } }}
+            >
               <div>
                 <h3 className="title">
                   {project.titleParts.before}
@@ -61,7 +76,7 @@ const Projects = () => (
                   )}
                 </div>
               </div>
-            </article>
+            </motion.article>
           ))}
         </div>
       </div>

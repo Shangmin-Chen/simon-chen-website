@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { sendEmail } from '../utils/emailService';
 import { contactData } from '../data/contactData';
 import FormField from './ui/FormField';
@@ -70,10 +71,22 @@ const Contact = () => {
   return (
     <section id="contact" className="section">
       <div className="container">
-        <h2 className="section-title farewell">
+        <motion.h2
+          className="section-title farewell"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
           Let&apos;s <em>Chat</em>
-        </h2>
-        <div className="contact-content">
+        </motion.h2>
+        <motion.div
+          className="contact-content"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+        >
           <div className="contact-info">
             <h3>{contactData.title}</h3>
             <p>{contactData.description}</p>
@@ -123,7 +136,7 @@ const Contact = () => {
               </div>
             )}
           </form>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

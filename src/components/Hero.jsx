@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
+import { motion } from 'framer-motion';
 import { scrollToSection } from '../utils/scrollUtils';
 import { heroData } from '../data/heroData';
 import Button from './ui/Button';
@@ -14,13 +15,23 @@ const Hero = () => {
     <section className="hero" aria-label="Introduction">
       <div className="hero-content">
         {heroData.metaLines?.length > 0 && (
-          <div className="hero-meta mono-label">
+          <motion.div
+            className="hero-meta mono-label"
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.55 }}
+          >
             {heroData.metaLines.map((line) => (
               <div key={line}>{line}</div>
             ))}
-          </div>
+          </motion.div>
         )}
-        <h1 className="hero-title-v2">
+        <motion.h1
+          className="hero-title-v2"
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.05 }}
+        >
           {heroData.headlineLines.map((line) => (
             <React.Fragment key={line}>
               {line}
@@ -29,11 +40,23 @@ const Hero = () => {
           ))}
           {heroData.headlineBeforeEm}
           <em className="accent">{heroData.headlineEm}</em>
-        </h1>
+        </motion.h1>
         <div className="hero-lower-grid">
           <div className="hero-desc-col">
-            <p className="hero-lede-v2">{heroData.lede}</p>
-            <div className="hero-buttons">
+            <motion.p
+              className="hero-lede-v2"
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.22 }}
+            >
+              {heroData.lede}
+            </motion.p>
+            <motion.div
+              className="hero-buttons"
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.38 }}
+            >
               {heroData.buttons.map((button) => (
                 <Button
                   key={button.action}
@@ -43,11 +66,22 @@ const Hero = () => {
                   {button.text}
                 </Button>
               ))}
-            </div>
-            <SocialLinks className="social-links hero-social" linkClassName="social-link" />
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.45 }}
+            >
+              <SocialLinks className="social-links hero-social" linkClassName="social-link" />
+            </motion.div>
           </div>
 
-          <div className="hero-avatar-col">
+          <motion.div
+            className="hero-avatar-col"
+            initial={{ opacity: 0, scale: 0.96, y: 14 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+          >
             <div className="hero-avatar-frame">
               <img
                 src="https://images.simon-chen.com/shanghai/shanghai_08-full.jpg"
@@ -58,7 +92,7 @@ const Hero = () => {
                 Shanghai Study Abroad
               </Link>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
