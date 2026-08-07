@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
+import BlurhashImage from './ui/BlurhashImage';
 import { imageUrl } from '../data/galleryData';
 
 // Full-screen photo viewer for the album grid. Keyboard: Esc closes, arrows
@@ -56,7 +57,13 @@ const Lightbox = ({ photos, index, onIndex, onClose }) => {
         </button>
       )}
       <figure className="lightbox-figure" onClick={(e) => e.stopPropagation()}>
-        <img className="lightbox-img" src={imageUrl(photo.full)} alt={photo.alt} />
+        <BlurhashImage
+          className="lightbox-blurhash"
+          imgClassName="lightbox-img"
+          src={imageUrl(photo.full)}
+          blurhash={photo.blurhash}
+          alt={photo.alt}
+        />
         <figcaption className="lightbox-caption">
           <span className="lightbox-cap-text">{photo.caption}</span>
           {photo.location && <span className="lightbox-cap-loc">{photo.location}</span>}

@@ -10,6 +10,7 @@ import { Link } from 'react-router';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import useGallery from '../hooks/useGallery';
+import BlurhashImage from './ui/BlurhashImage';
 import { galleryConfig, imageUrl } from '../data/galleryData';
 
 const SWIPE_THRESHOLD = 50; // px before a drag counts as a swipe
@@ -159,8 +160,9 @@ const Gallery = () => {
                 aria-hidden={i !== index}
               >
                 <div className="carousel-frame">
-                  <img
+                  <BlurhashImage
                     src={slide.src}
+                    blurhash={slide.blurhash}
                     alt={slide.alt}
                     loading="eager"
                     draggable={false}

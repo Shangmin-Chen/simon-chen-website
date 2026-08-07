@@ -5,6 +5,7 @@ import { scrollToSection } from '../utils/scrollUtils';
 import { heroData } from '../data/heroData';
 import Button from './ui/Button';
 import SocialLinks from './ui/SocialLinks';
+import BlurhashImage from './ui/BlurhashImage';
 
 const Hero = () => {
   const handleScrollToSection = (sectionId) => {
@@ -83,10 +84,12 @@ const Hero = () => {
             transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
           >
             <div className="hero-avatar-frame">
-              <img
+              <BlurhashImage
                 src="https://images.simon-chen.com/shanghai/shanghai_08-full.jpg"
+                blurhash="LE9@L;4n00~p00?b?b9F.8M{RPo#"
                 alt="Simon Chen"
-                className="hero-avatar-img"
+                className="hero-avatar-img-container"
+                imgClassName="hero-avatar-img"
               />
               <Link to="/gallery/shanghai-study-abroad" className="hero-avatar-caption-link">
                 Shanghai Study Abroad
