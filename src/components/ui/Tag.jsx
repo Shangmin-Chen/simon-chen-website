@@ -9,14 +9,15 @@ const Tag = ({
 }) => {
   const baseClasses = 'tag';
   const variantClasses = {
-    default: 'tag',
+    default: '',
     skill: 'skill-tag',
     tech: 'tech-tag',
     rating: 'problem-rating',
     verdict: 'verdict'
   };
 
-  const tagClass = `${baseClasses} ${variantClasses[variant] || variantClasses.default} ${className}`.trim();
+  const selectedVariant = variantClasses[variant] !== undefined ? variantClasses[variant] : variantClasses.default;
+  const tagClass = `${baseClasses} ${selectedVariant} ${className}`.replace(/\s+/g, ' ').trim();
 
   const style = color ? { color, borderColor: color } : {};
 
