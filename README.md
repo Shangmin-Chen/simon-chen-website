@@ -28,26 +28,20 @@ cd simon-chen-website
 npm install
 ```
 
-### 2. Run the Vite Dev Server
-```bash
-npm run dev
-```
-This opens the frontend at [http://localhost:3000](http://localhost:3000) with hot-reloading.
+Local development is run exclusively via the Cloudflare Dev Worker (`npx wrangler dev` / `npm run dev:worker` on port 8787), which serves both static SPA assets and local API proxies (`/api/*`).
 
-### 3. Run the Cloudflare Worker Locally (Recommended)
-To make sure dynamic features (GitHub contributions graph, Goodreads preview, photo gallery, and contact form submission) function correctly in your local environment, you need to run the worker locally in a second terminal:
-
+### 2. Run the Cloudflare Dev Worker
 1. **Set Up Local Secrets**: Copy `.dev.vars.example` to `.dev.vars` and add your EmailJS API keys:
    ```bash
    cp .dev.vars.example .dev.vars
    ```
 2. **Start the Dev Worker**:
    ```bash
-   npx wrangler dev
+   npm run dev:worker
    ```
-   *Alternatively, run the npm helper script: `npm run dev:worker` (which builds the frontend first and then starts the wrangler dev server).*
+   *Alternatively, run `npx wrangler dev`.*
    
-   The local worker runs on `http://127.0.0.1:8787`. The Vite dev server automatically proxies all `/api/*` calls from port `3000` to port `8787`.
+   The Cloudflare Dev Worker runs on `http://localhost:8787` (or `http://127.0.0.1:8787`), serving both static SPA frontend assets (`./build`) and local API proxy endpoints (`/api/*`).
 
 ## 📸 Image Gallery Optimization
 
@@ -85,8 +79,8 @@ Because the Cloudflare Worker proxies `gallery.json` directly from R2 (`/api/gal
 
 ## 🔧 Configuration
 
-- **Dev Server Port**: Configured to `3000` in `vite.config.js` (`server.port`).
-- **API Proxy**: During development, `/api` requests target the wrangler dev server on `http://127.0.0.1:8787` (configured in `vite.config.js`).
+- **Local Dev Server Port**: Local development is run exclusively via Cloudflare Dev Worker on port `8787` (`npx wrangler dev` / `npm run dev:worker`).
+- **Asset & API Proxy Handling**: The dev worker serves static SPA assets from `./build` alongside local API proxy endpoints (`/api/*`) handled by `src/worker.js`.
 
 ## 🚀 Deployment
 

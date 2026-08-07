@@ -10,7 +10,7 @@ The application is a high-performance personal portfolio, gallery, and data dash
 
 - **Frontend Core**: [React 19](https://react.dev/) paired with [Vite](https://vitejs.dev/) for lightning-fast module bundling and Hot Module Replacement (HMR).
 - **Routing**: [React Router v8](https://reactrouter.com/) using eager component loading (`import`) for critical views to avoid dynamic code-splitting suspensions.
-- **Backend & Proxying**: Single-page application hosted on **Cloudflare Workers** (`src/worker.js` / `wrangler.jsonc`), which proxies all API endpoints under `/api/*` to bypass browser CORS limitations, sanitize requests, and edge-cache third-party responses.
+- **Backend & Proxying**: Single-page application hosted on **Cloudflare Workers** (`src/worker.js` / `wrangler.jsonc`), which proxies all API endpoints under `/api/*` to bypass browser CORS limitations, sanitize requests, and edge-cache third-party responses. Local development is run exclusively via the Cloudflare Dev Worker (`npx wrangler dev` / `npm run dev:worker` on port 8787), which serves both static SPA assets and local API proxies (`/api/*`).
 - **Media Asset Storage**: Dynamic photo assets hosted on a high-throughput Cloudflare R2 bucket (`https://images.simon-chen.com`) with automated image processing and Blurhash generation.
 
 ---
@@ -84,13 +84,15 @@ All network requests originating from the client target local relative routes (`
 
 ## 4. Standard CLI Commands
 
-Use the following CLI commands during development, testing, asset generation, and deployment:
+Use the following CLI commands during development, testing, asset generation, and deployment. Local development is run exclusively via the Cloudflare Dev Worker (`npx wrangler dev` / `npm run dev:worker` on port 8787):
 
 | Command | Action / Description |
 | :--- | :--- |
-| `npm run dev` | Launches Vite local development server with HMR on `http://localhost:5173`. |
-| `npx wrangler dev` | Starts local Cloudflare Worker development environment simulating edge caching and `/api/*` endpoints. |
-| `npm run dev:worker` | Builds static assets and launches `wrangler dev` in sequence. |
+| `npm run dev:worker` | Builds static assets and launches `wrangler dev` server on port 8787 (exclusive local development mode, serving static SPA assets and `/api/*` proxies). |
+| `npx wrangler dev` | Starts local Cloudflare Worker development environment on port 8787. |
+| `npm run dev` | Launches standalone Vite local development server. |
+| `npm run check:tokens` | Executes architecture sanity checks on CSS design tokens and component compliance. |
+| `npm run verify` | Runs `npm run build && npm run check:tokens` for complete build and token verification. |
 | `npm run build` | Compiles production assets into `./build` folder using Vite. |
 | `npm run gallery:resize` | Executes [`scripts/resize-gallery.mjs`](scripts/resize-gallery.mjs) via Sharp to process images and generate Blurhash string placeholders for the gallery manifest. |
 | `npm run deploy` | Runs production build and deploys worker and static assets to Cloudflare via `wrangler deploy`. |
