@@ -25,7 +25,9 @@
     "preview": "vite preview",
     "deploy": "npm run build && wrangler deploy",
     "dev:worker": "npm run build && wrangler dev",
-    "gallery:resize": "node scripts/resize-gallery.mjs"
+    "gallery:resize": "node scripts/resize-gallery.mjs",
+    "check:tokens": "node scripts/check-architecture.mjs",
+    "verify": "npm run build && npm run check:tokens"
   },
   "eslintConfig": {
     "extends": [
