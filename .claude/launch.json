@@ -2,20 +2,6 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "dev",
-      "type": "node",
-      "request": "launch",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "3000"
-      ],
-      "port": 3000
-    },
-    {
       "name": "dev:worker",
       "type": "node",
       "request": "launch",
@@ -27,15 +13,6 @@
         "8787"
       ],
       "port": 8787
-    }
-  ],
-  "compounds": [
-    {
-      "name": "compound",
-      "configurations": [
-        "dev",
-        "dev:worker"
-      ]
     }
   ]
 }
