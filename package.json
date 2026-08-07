@@ -15,7 +15,8 @@
     "react-dom": "^19.1.0",
     "react-router": "^8.3.0",
     "recharts": "^3.2.1",
-    "sonner": "^2.0.7"
+    "sonner": "^2.0.7",
+    "yet-another-react-lightbox": "^3.32.2"
   },
   "scripts": {
     "dev": "vite",
