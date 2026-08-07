@@ -1,3 +1,77 @@
+
+.blurhash-error-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-tertiary);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  z-index: 3;
+  padding: 12px;
+  text-align: center;
+}
+
+.lightbox-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  z-index: 0;
+}
+
+/* Blurhash placeholder & smooth image loading */
+.blurhash-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.blurhash-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(12px);
+  transform: scale(1.1);
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 0.4s ease-out;
+}
+
+.blurhash-img {
+  position: relative;
+  z-index: 2;
+  transition: opacity 0.4s ease-in-out, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.carousel-frame .blurhash-canvas {
+  object-fit: contain;
+}
+
+.lightbox-blurhash {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  max-height: 80vh;
+}
+
+.lightbox-blurhash .blurhash-canvas {
+  object-fit: contain;
+}
+
 /* Gallery / carousel — editorial frame slider */
 
 .gallery-grid {
@@ -294,7 +368,8 @@
   transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.album-card:hover .album-card-cover img {
+.album-card:hover .album-card-cover img,
+.album-card:hover .album-card-cover .blurhash-img {
   transform: scale(1.04);
 }
 
@@ -346,7 +421,8 @@
   transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.photo-grid-item:hover img {
+.photo-grid-item:hover img,
+.photo-grid-item:hover .blurhash-img {
   transform: scale(1.06);
 }
 
@@ -358,6 +434,7 @@
 /* ── Lightbox ────────────────────────────────────────────────────────── */
 
 .lightbox {
+  position: fixed;
   position: fixed;
   inset: 0;
   z-index: 1000;
@@ -376,6 +453,8 @@
 }
 
 .lightbox-figure {
+  position: relative;
+  z-index: 1;
   margin: 0;
   display: flex;
   flex-direction: column;

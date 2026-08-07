@@ -42,11 +42,16 @@
   box-shadow: 0 16px 40px hsl(0 0% 0% / 0.1);
 }
 
-.hero-avatar-img {
+.hero-avatar-img-container {
   width: 100%;
   height: 290px;
-  object-fit: cover;
   border: 1px solid var(--border-light);
+}
+
+.hero-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   display: block;
   background-color: var(--bg-tertiary);
 }

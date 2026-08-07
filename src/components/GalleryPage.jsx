@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import useGallery from '../hooks/useGallery';
 import { galleryConfig, imageUrl } from '../data/galleryData';
 import Lightbox from './Lightbox';
+import BlurhashImage from './ui/BlurhashImage';
 
 // Album index: a card per gallery, cover = first photo's thumbnail.
 const AlbumIndex = ({ galleries }) => (
@@ -14,7 +15,14 @@ const AlbumIndex = ({ galleries }) => (
       return (
         <Link to={`/gallery/${album.id}`} className="album-card" key={album.id}>
           <div className="album-card-cover">
-            {cover && <img src={imageUrl(cover.thumb)} alt={cover.alt || ''} loading="eager" />}
+            {cover && (
+            <BlurhashImage
+              src={imageUrl(cover.thumb)}
+              blurhash={cover.blurhash}
+              alt={cover.alt || ''}
+              loading="eager"
+            />
+          )}
           </div>
           <div className="album-card-meta">
             <span className="album-card-title">{album.title}</span>
@@ -44,7 +52,12 @@ const AlbumView = ({ album }) => {
             onClick={() => setLightboxIndex(i)}
             aria-label={`Open photo ${i + 1}: ${photo.caption || ''}`}
           >
-            <img src={imageUrl(photo.thumb)} alt={photo.alt} loading="eager" />
+            <BlurhashImage
+            src={imageUrl(photo.thumb)}
+            blurhash={photo.blurhash}
+            alt={photo.alt}
+            loading="eager"
+          />
           </button>
         ))}
       </div>

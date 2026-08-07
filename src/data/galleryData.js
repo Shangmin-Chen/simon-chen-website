@@ -13,5 +13,13 @@ export const galleryConfig = {
   },
 };
 
-export const imageUrl = (key) =>
-  key ? `${galleryConfig.imageBase}/${String(key).replace(/^\/+/, '')}` : '';
+export const imageUrl = (key) => {
+  if (!key) return '';
+  const cleanKey = String(key)
+    .replace(/^\/+/, '')
+    .replace(/\.\.\//g, '')
+    .split('/')
+    .map((segment) => encodeURIComponent(segment))
+    .join('/');
+  return `${galleryConfig.imageBase}/${cleanKey}`;
+};

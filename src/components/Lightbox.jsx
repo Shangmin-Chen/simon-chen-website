@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
+import BlurhashImage from './ui/BlurhashImage';
 import { imageUrl } from '../data/galleryData';
 
 // Full-screen photo viewer for the album grid. Keyboard: Esc closes, arrows
@@ -7,6 +8,8 @@ import { imageUrl } from '../data/galleryData';
 const Lightbox = ({ photos, index, onIndex, onClose }) => {
   const count = photos.length;
   const photo = photos[index];
+  const closeBtnRef = useRef(null);
+  const prevActiveElementRef = useRef(null);
 
   const go = useCallback(
     (next) => onIndex(((next % count) + count) % count),
@@ -14,18 +17,51 @@ const Lightbox = ({ photos, index, onIndex, onClose }) => {
   );
 
   useEffect(() => {
+    prevActiveElementRef.current = document.activeElement;
+    closeBtnRef.current?.focus();
+
     const onKey = (e) => {
-      if (e.key === 'Escape') onClose();
-      else if (e.key === 'ArrowLeft') go(index - 1);
-      else if (e.key === 'ArrowRight') go(index + 1);
+      if (e.key === 'Escape') {
+        onClose();
+      } else if (e.key === 'ArrowLeft') {
+        go(index - 1);
+      } else if (e.key === 'ArrowRight') {
+        go(index + 1);
+      } else if (e.key === 'Tab') {
+        const container = document.querySelector('.lightbox');
+        if (!container) return;
+        const focusables = Array.from(
+          container.querySelectorAll('button:not([disabled])')
+        );
+        if (focusables.length === 0) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
     };
+
     window.addEventListener('keydown', onKey);
     // Lock background scroll while the viewer is open.
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+
     return () => {
       window.removeEventListener('keydown', onKey);
       document.body.style.overflow = prevOverflow;
+      if (prevActiveElementRef.current && typeof prevActiveElementRef.current.focus === 'function') {
+        prevActiveElementRef.current.focus();
+      }
     };
   }, [index, go, onClose]);
 
@@ -37,9 +73,20 @@ const Lightbox = ({ photos, index, onIndex, onClose }) => {
       role="dialog"
       aria-modal="true"
       aria-label="Photo viewer"
-      onClick={onClose}
     >
-      <button type="button" className="lightbox-close" onClick={onClose} aria-label="Close viewer">
+      <button
+        type="button"
+        className="lightbox-backdrop"
+        onClick={onClose}
+        aria-label="Close photo viewer"
+      />
+      <button
+        ref={closeBtnRef}
+        type="button"
+        className="lightbox-close"
+        onClick={onClose}
+        aria-label="Close viewer"
+      >
         ×
       </button>
       {count > 1 && (
@@ -56,7 +103,13 @@ const Lightbox = ({ photos, index, onIndex, onClose }) => {
         </button>
       )}
       <figure className="lightbox-figure" onClick={(e) => e.stopPropagation()}>
-        <img className="lightbox-img" src={imageUrl(photo.full)} alt={photo.alt} />
+        <BlurhashImage
+          className="lightbox-blurhash"
+          imgClassName="lightbox-img"
+          src={imageUrl(photo.full)}
+          blurhash={photo.blurhash}
+          alt={photo.alt}
+        />
         <figcaption className="lightbox-caption">
           <span className="lightbox-cap-text">{photo.caption}</span>
           {photo.location && <span className="lightbox-cap-loc">{photo.location}</span>}

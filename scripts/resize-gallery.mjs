@@ -11,6 +11,7 @@
 import { readdir, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import sharp from 'sharp';
+import { encode } from 'blurhash';
 
 const FULL_WIDTH = 1800;
 const THUMB_WIDTH = 700;
@@ -37,9 +38,23 @@ const variants = [
   { suffix: 'thumb', width: THUMB_WIDTH },
 ];
 
+async function calculateBlurhash(imagePath) {
+  const { data, info } = await sharp(imagePath)
+    .rotate()
+    .raw()
+    .ensureAlpha()
+    .resize(32, 32, { fit: 'inside' })
+    .toBuffer({ resolveWithObject: true });
+
+  return encode(new Uint8ClampedArray(data), info.width, info.height, 4, 3);
+}
+
 for (const file of photos) {
   const base = path.basename(file, path.extname(file));
   const src = path.join(inputDir, file);
+
+  const blurhash = await calculateBlurhash(src);
+
   for (const { suffix, width } of variants) {
     const out = path.join(outputDir, `${base}-${suffix}.jpg`);
     await sharp(src)
@@ -49,6 +64,8 @@ for (const file of photos) {
       .toFile(out);
     console.log(`✓ ${out}`);
   }
+
+  console.log(`  Blurhash: ${blurhash}`);
 }
 
 console.log(
