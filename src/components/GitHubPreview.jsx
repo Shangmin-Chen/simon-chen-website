@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
+import { toast } from 'sonner';
 import useGithubContributions from '../hooks/useGithubContributions';
 import { githubData } from '../data/githubData';
 
@@ -24,6 +25,12 @@ function toWeeks(days) {
 const GitHubPreview = () => {
   const { days, total, loading, error } = useGithubContributions();
   const weeks = useMemo(() => toWeeks(days), [days]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(`${githubData.messages.error} ${error}`, { id: 'github-error' });
+    }
+  }, [error]);
 
   if (error) {
     return (

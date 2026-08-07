@@ -7,6 +7,7 @@ import React, {
   useState,
 } from 'react';
 import { Link } from 'react-router';
+import { toast } from 'sonner';
 import useGallery from '../hooks/useGallery';
 import { galleryConfig, imageUrl } from '../data/galleryData';
 
@@ -14,6 +15,12 @@ const SWIPE_THRESHOLD = 50; // px before a drag counts as a swipe
 
 const Gallery = () => {
   const { galleries, featured, loading, error } = useGallery();
+
+  useEffect(() => {
+    if (error) {
+      toast.error(`${galleryConfig.messages.error} ${error}`, { id: 'gallery-error' });
+    }
+  }, [error]);
 
   // Resolve the featured album's photos into carousel slides (R2 URLs).
   const slides = useMemo(

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router';
+import { toast } from 'sonner';
 import useGallery from '../hooks/useGallery';
 import { galleryConfig, imageUrl } from '../data/galleryData';
 import Lightbox from './Lightbox';
@@ -61,6 +62,12 @@ const AlbumView = ({ album }) => {
 const GalleryPage = () => {
   const { albumId } = useParams();
   const { galleries, loading, error } = useGallery();
+
+  useEffect(() => {
+    if (error) {
+      toast.error(`${galleryConfig.messages.error} ${error}`, { id: 'gallery-page-error' });
+    }
+  }, [error]);
 
   // Jump to top when entering a page (index ↔ album).
   useEffect(() => {
