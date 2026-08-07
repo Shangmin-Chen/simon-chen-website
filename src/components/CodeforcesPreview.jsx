@@ -25,7 +25,7 @@ const CodeforcesPreview = () => {
 
   useEffect(() => {
     if (error) {
-      toast.error(`${codeforcesData.messages.error} ${error}`);
+      toast.error(`${codeforcesData.messages.error} ${error}`, { id: 'codeforces-error' });
     }
   }, [error]);
 

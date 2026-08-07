@@ -28,7 +28,7 @@ const GitHubPreview = () => {
 
   useEffect(() => {
     if (error) {
-      toast.error(`${githubData.messages.error} ${error}`);
+      toast.error(`${githubData.messages.error} ${error}`, { id: 'github-error' });
     }
   }, [error]);
 

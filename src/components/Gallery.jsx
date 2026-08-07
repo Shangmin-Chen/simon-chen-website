@@ -18,7 +18,7 @@ const Gallery = () => {
 
   useEffect(() => {
     if (error) {
-      toast.error(`${galleryConfig.messages.error} ${error}`);
+      toast.error(`${galleryConfig.messages.error} ${error}`, { id: 'gallery-error' });
     }
   }, [error]);
 

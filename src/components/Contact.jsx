@@ -14,6 +14,8 @@ const Contact = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleChange = (e) => {
     setFormData({
@@ -24,37 +26,50 @@ const Contact = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitStatus(null);
+    setErrorMessage('');
     
     // Validate form data
     if (!formData.name.trim() || !formData.email.trim() || !formData.subject.trim() || !formData.message.trim()) {
-      toast.error(contactData.messages.validation.emptyFields);
+      const msg = contactData.messages.validation.emptyFields;
+      toast.error(msg, { id: 'contact-validation-error' });
+      setSubmitStatus('error');
+      setErrorMessage(msg);
       return;
     }
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      toast.error(contactData.messages.validation.invalidEmail);
+      const msg = contactData.messages.validation.invalidEmail;
+      toast.error(msg, { id: 'contact-validation-error' });
+      setSubmitStatus('error');
+      setErrorMessage(msg);
       return;
     }
 
     setIsSubmitting(true);
-    const toastId = toast.info('Sending your message...', { duration: 10000 });
+    const toastId = toast.loading('Sending your message...');
 
     try {
       // Send email
       const result = await sendEmail(formData);
       
-      toast.dismiss(toastId);
       if (result.success) {
-        toast.success(contactData.messages.success);
+        toast.success('Message sent successfully!', { id: toastId });
+        setSubmitStatus('success');
         setFormData({ name: '', email: '', subject: '', message: '' });
       } else {
-        toast.error(result.message || contactData.messages.error);
+        const msg = result.message || contactData.messages.error;
+        toast.error(msg, { id: toastId });
+        setSubmitStatus('error');
+        setErrorMessage(msg);
       }
     } catch (error) {
-      toast.dismiss(toastId);
-      toast.error(error.message || contactData.messages.error);
+      const msg = error.message || contactData.messages.error;
+      toast.error(msg, { id: toastId });
+      setSubmitStatus('error');
+      setErrorMessage(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -103,6 +118,18 @@ const Contact = () => {
             <Button type="submit" variant="submit" disabled={isSubmitting}>
               {isSubmitting ? contactData.submitButton.submitting : contactData.submitButton.default}
             </Button>
+
+            {submitStatus === 'success' && (
+              <div className="success-message" role="alert">
+                {contactData.messages.success}
+              </div>
+            )}
+
+            {submitStatus === 'error' && (
+              <div className="error-message" role="alert">
+                {errorMessage}
+              </div>
+            )}
           </form>
         </div>
       </div>

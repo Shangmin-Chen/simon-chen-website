@@ -21,20 +21,20 @@ const AppToaster = () => {
   return <Toaster position="bottom-right" richColors closeButton theme={theme} />;
 };
 
+const HomePage = () => (
+  <>
+    <Hero />
+    <About />
+    <Now />
+    <Experience />
+    <Projects />
+    <Gallery />
+    <Contact />
+  </>
+);
+
 function App() {
   useScrollReveal();
-
-  const HomePage = () => (
-    <>
-      <Hero />
-      <About />
-      <Now />
-      <Experience />
-      <Projects />
-      <Gallery />
-      <Contact />
-    </>
-  );
 
   return (
     <ThemeProvider>

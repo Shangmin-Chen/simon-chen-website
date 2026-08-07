@@ -8,7 +8,7 @@ const GoodreadsPreview = () => {
 
   useEffect(() => {
     if (error) {
-      toast.error(`${goodreadsData.messages.error} ${error}`);
+      toast.error(`${goodreadsData.messages.error} ${error}`, { id: 'goodreads-error' });
     }
   }, [error]);
 
