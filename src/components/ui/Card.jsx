@@ -10,12 +10,17 @@ const Card = ({
   const baseClasses = 'card';
   const variantClasses = {
     default: 'project-card',
+    blog: 'project-card',
     submission: 'submission-card',
     contest: 'contest-card',
-    experience: 'experience-item'
+    experience: 'experience-item',
+    'glass-card': 'glass-card'
   };
 
-  const cardClass = `${baseClasses} ${variantClasses[variant] || variantClasses.default} ${className}`.trim();
+  const selectedVariant = variantClasses[variant] || variantClasses.default;
+  const hoverClass = hover ? 'card-hover' : '';
+
+  const cardClass = `${baseClasses} ${selectedVariant} ${hoverClass} ${className}`.replace(/\s+/g, ' ').trim();
 
   return (
     <div className={cardClass} {...props}>
