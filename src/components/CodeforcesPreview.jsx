@@ -1,4 +1,5 @@
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useEffect } from 'react';
+import { toast } from 'sonner';
 import useCodeforcesData from '../hooks/useCodeforcesData';
 import { codeforcesData } from '../data/codeforcesData';
 
@@ -21,6 +22,12 @@ function codeforcesLedgerStats(contests, userInfo) {
 
 const CodeforcesPreview = () => {
   const { contests, userInfo, loading, error } = useCodeforcesData();
+
+  useEffect(() => {
+    if (error) {
+      toast.error(`${codeforcesData.messages.error} ${error}`);
+    }
+  }, [error]);
 
   if (error) {
     return (

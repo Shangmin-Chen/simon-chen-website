@@ -1,7 +1,8 @@
 import './styles/index.css';
 import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router';
-import { ThemeProvider } from './contexts/ThemeContext';
+import { Toaster } from 'sonner';
+import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Hero from './components/Hero';
@@ -14,6 +15,11 @@ import Contact from './components/Contact';
 import { useScrollReveal } from './hooks/useScrollReveal';
 
 import GalleryPage from './components/GalleryPage';
+
+const AppToaster = () => {
+  const { theme } = useTheme();
+  return <Toaster position="bottom-right" richColors closeButton theme={theme} />;
+};
 
 function App() {
   useScrollReveal();
@@ -32,6 +38,7 @@ function App() {
 
   return (
     <ThemeProvider>
+      <AppToaster />
       <Router>
         <div className="App">
           <Navbar />

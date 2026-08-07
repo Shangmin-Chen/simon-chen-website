@@ -1,9 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { toast } from 'sonner';
 import useGoodreads from '../hooks/useGoodreads';
 import { goodreadsData } from '../data/goodreadsData';
 
 const GoodreadsPreview = () => {
   const { books, loading, error } = useGoodreads();
+
+  useEffect(() => {
+    if (error) {
+      toast.error(`${goodreadsData.messages.error} ${error}`);
+    }
+  }, [error]);
 
   if (error) {
     return (

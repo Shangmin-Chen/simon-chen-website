@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import { sendEmail } from '../utils/emailService';
 import { contactData } from '../data/contactData';
 import FormField from './ui/FormField';
@@ -13,8 +14,6 @@ const Contact = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState(null);
-  const [errorMessage, setErrorMessage] = useState('');
 
   const handleChange = (e) => {
     setFormData({
@@ -25,43 +24,37 @@ const Contact = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setErrorMessage('');
-    setSubmitStatus(null);
     
+    // Validate form data
+    if (!formData.name.trim() || !formData.email.trim() || !formData.subject.trim() || !formData.message.trim()) {
+      toast.error(contactData.messages.validation.emptyFields);
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast.error(contactData.messages.validation.invalidEmail);
+      return;
+    }
+
+    setIsSubmitting(true);
+    const toastId = toast.info('Sending your message...', { duration: 10000 });
+
     try {
-      // Validate form data
-      if (!formData.name.trim() || !formData.email.trim() || !formData.subject.trim() || !formData.message.trim()) {
-        throw new Error(contactData.messages.validation.emptyFields);
-      }
-
-      // Validate email format
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email)) {
-        throw new Error(contactData.messages.validation.invalidEmail);
-      }
-
       // Send email
       const result = await sendEmail(formData);
       
+      toast.dismiss(toastId);
       if (result.success) {
-        setSubmitStatus('success');
+        toast.success(contactData.messages.success);
         setFormData({ name: '', email: '', subject: '', message: '' });
-        
-        // Reset status after 5 seconds
-        setTimeout(() => setSubmitStatus(null), 5000);
       } else {
-        throw new Error(result.message);
+        toast.error(result.message || contactData.messages.error);
       }
     } catch (error) {
-      setSubmitStatus('error');
-      setErrorMessage(error.message || contactData.messages.error);
-      
-      // Reset error status after 5 seconds
-      setTimeout(() => {
-        setSubmitStatus(null);
-        setErrorMessage('');
-      }, 5000);
+      toast.dismiss(toastId);
+      toast.error(error.message || contactData.messages.error);
     } finally {
       setIsSubmitting(false);
     }
@@ -93,7 +86,7 @@ const Contact = () => {
             </div>
           </div>
           
-          <form className="contact-form" onSubmit={handleSubmit}>
+          <form className="contact-form" onSubmit={handleSubmit} noValidate>
             {contactData.formFields.map((field, index) => (
               <FormField
                 key={index}
@@ -110,18 +103,6 @@ const Contact = () => {
             <Button type="submit" variant="submit" disabled={isSubmitting}>
               {isSubmitting ? contactData.submitButton.submitting : contactData.submitButton.default}
             </Button>
-            
-            {submitStatus === 'success' && (
-              <div className="success-message" role="alert">
-                {contactData.messages.success}
-              </div>
-            )}
-
-            {submitStatus === 'error' && (
-              <div className="error-message" role="alert">
-                {errorMessage}
-              </div>
-            )}
           </form>
         </div>
       </div>
