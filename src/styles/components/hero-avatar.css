@@ -25,13 +25,13 @@
   gap: clamp(1rem, 2vh, 1.5rem);
 }
 
-/* Left-anchored like the row it replaces — the far right stays open. */
+/* Left-anchored under the plate — the far right stays open. */
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 1.25rem 2rem;
-  margin-top: clamp(1.5rem, 3.5vh, 2.5rem);
+  margin-top: clamp(0.25rem, 1.5vh, 1rem);
 }
 
 /* Both children carry stacked-layout spacing from where they used to sit under

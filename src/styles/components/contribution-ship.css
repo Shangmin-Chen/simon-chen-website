@@ -166,28 +166,52 @@
 .cs-tb-name {
   position: relative;
   min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
 }
 
-/* The dashed rule is the affordance — same border-bottom the captain and
-   album links use, sized to the text so it stops where the name stops. */
 .hero-vessel {
-  width: fit-content;
   margin: 0;
-  cursor: help;
-  border-bottom: 2px dashed var(--text-muted);
-  padding-bottom: 0.06em;
   font-size: clamp(2.25rem, 4.6vw, 4rem);
   font-weight: 300;
   font-variation-settings: "opsz" 144, "SOFT" 100;
   letter-spacing: -0.04em;
   line-height: 0.92;
   color: var(--text-primary);
-  transition: border-color 0.2s ease;
 }
 
-.cs-tb-name:hover .hero-vessel,
-.cs-tb-name:focus-within .hero-vessel {
-  border-bottom-color: var(--accent-color);
+/* The affordance: a small info marker at the name's top right. */
+.cs-info {
+  flex: 0 0 auto;
+  margin-top: 0.3em;
+  width: 1.15rem;
+  height: 1.15rem;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--text-tertiary);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-tertiary);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.72rem;
+  line-height: 1;
+  cursor: help;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.cs-info:hover,
+.cs-info:focus-visible {
+  color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+.cs-info:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 3px;
 }
 
 .hero-vessel em.accent {
@@ -195,11 +219,6 @@
   font-weight: 300;
   font-variation-settings: "opsz" 144, "SOFT" 50;
   color: var(--accent-color);
-}
-
-.cs-tb-name:focus-visible {
-  outline: 2px solid var(--accent-color);
-  outline-offset: 4px;
 }
 
 /* Knocked out over the drawing the way the dimension callout is, so it stays
@@ -224,8 +243,8 @@
   pointer-events: none;
 }
 
-.cs-tb-name:hover .cs-name-tip,
-.cs-tb-name:focus-within .cs-name-tip {
+.cs-info:hover ~ .cs-name-tip,
+.cs-info:focus-visible ~ .cs-name-tip {
   opacity: 1;
   visibility: visible;
 }

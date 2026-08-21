@@ -146,16 +146,24 @@ const ContributionShip = ({ title, note }) => {
       {/* Her name and particulars head the plate, above the drawing. */}
       <figcaption className="cs-titleblock">
         <div className="cs-tb-head">
-          {/* The remarks are a hover readout on the name, not a field beside
-              it. Kept in the DOM and wired with aria-describedby so it isn't
-              pointer-only, and the wrapper takes focus so a keyboard reaches
-              it too. */}
-          <div className="cs-tb-name" tabIndex={note ? 0 : undefined} aria-describedby={note ? noteId : undefined}>
+          {/* An info marker carries the remarks rather than the name itself —
+              a real button, so it is reachable and announced, not pointer-only. */}
+          <div className="cs-tb-name">
             {title}
             {note && (
-              <span className="cs-name-tip" id={noteId} role="tooltip">
-                {note}
-              </span>
+              <>
+                <button
+                  type="button"
+                  className="cs-info"
+                  aria-describedby={noteId}
+                  aria-label="How to read this drawing"
+                >
+                  i
+                </button>
+                <span className="cs-name-tip" id={noteId} role="tooltip">
+                  {note}
+                </span>
+              </>
             )}
           </div>
         </div>

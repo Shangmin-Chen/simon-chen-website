@@ -46,6 +46,29 @@ const Hero = () => {
               }
               note={heroData.shipNote}
             />
+
+            {/* Sits under the plate, not under the whole grid: the column is
+                stretched to the prints' height, so a row below the grid floats
+                far beneath the drawing it belongs to. */}
+            <motion.div
+              className="hero-actions"
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, ease: EASE, delay: 0.55 }}
+            >
+              <div className="hero-buttons">
+                {heroData.buttons.map((button) => (
+                  <Button
+                    key={button.action}
+                    variant={button.variant}
+                    onClick={() => handleScrollToSection(button.action)}
+                  >
+                    {button.text}
+                  </Button>
+                ))}
+              </div>
+              <SocialLinks className="social-links hero-social" linkClassName="social-link" />
+            </motion.div>
           </motion.div>
 
           <div className="hero-photos-col">
@@ -88,28 +111,6 @@ const Hero = () => {
             </div>
           </div>
         </div>
-
-        {/* Spans both columns, so the calls to action close the hero across its
-            full width rather than leaving the corner under the prints empty. */}
-        <motion.div
-          className="hero-actions"
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, ease: EASE, delay: 0.55 }}
-        >
-          <div className="hero-buttons">
-            {heroData.buttons.map((button) => (
-              <Button
-                key={button.action}
-                variant={button.variant}
-                onClick={() => handleScrollToSection(button.action)}
-              >
-                {button.text}
-              </Button>
-            ))}
-          </div>
-          <SocialLinks className="social-links hero-social" linkClassName="social-link" />
-        </motion.div>
       </div>
     </section>
   );
