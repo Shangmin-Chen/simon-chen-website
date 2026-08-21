@@ -152,26 +152,21 @@
 
 /* --- title block ------------------------------------------------------- */
 
-/* A drafting title block: the vessel named largest, her particulars ruled off
-   beside it. Closed on all four sides. */
+/* The name sits free under the drawing; only her particulars are boxed. */
 .cs-titleblock {
-  border: 1px solid var(--border-color);
   margin: 0;
 }
 
-/* Name and remarks share the head, ruled apart the way a title block's
-   fields are. */
 .cs-tb-head {
   display: flex;
   align-items: stretch;
-  border-bottom: 1px solid var(--border-color);
 }
 
 .cs-tb-name {
   position: relative;
   flex: 1 1 auto;
   min-width: 0;
-  padding: 0.85rem 1rem 0.95rem;
+  padding: 0.1rem 0 0.85rem;
   display: flex;
   align-items: center;
 }
@@ -188,14 +183,12 @@
   top: 50%;
   transform: translateY(-50%);
   z-index: 6;
-  max-width: min(300px, 48%);
-  padding: 0.5rem 0.65rem;
-  background: var(--text-primary);
-  color: var(--bg-primary);
+  max-width: min(290px, 48%);
   font-family: var(--font-mono);
-  font-size: 0.62rem;
-  line-height: 1.6;
+  font-size: 0.61rem;
+  line-height: 1.75;
   letter-spacing: 0.01em;
+  color: var(--text-tertiary);
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.15s ease, visibility 0.15s ease;
@@ -213,15 +206,21 @@
   cursor: help;
   /* Struck from the text ramp, not --border-color: at this size that token is
      too close to the ground to read as an invitation to hover. */
-  text-decoration: underline dashed var(--text-tertiary);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.16em;
+  text-decoration: underline dashed var(--text-muted);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.14em;
+  transition: text-decoration-color 0.2s ease;
   font-size: clamp(2.25rem, 4.6vw, 4rem);
   font-weight: 300;
   font-variation-settings: "opsz" 144, "SOFT" 100;
   letter-spacing: -0.04em;
   line-height: 0.92;
   color: var(--text-primary);
+}
+
+.cs-tb-name:hover .hero-vessel,
+.cs-tb-name:focus-within .hero-vessel {
+  text-decoration-color: var(--accent-color);
 }
 
 .hero-vessel em.accent {
@@ -237,6 +236,7 @@
 .cs-tb-specs {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
+  border: 1px solid var(--border-color);
   margin: 0;
 }
 
