@@ -143,6 +143,43 @@ const ContributionShip = ({ title, note }) => {
         .filter(Boolean)
         .join(' ')}
     >
+      {/* Her name and particulars head the plate, above the drawing. */}
+      <figcaption className="cs-titleblock">
+        <div className="cs-tb-head">
+          {/* The remarks are a hover readout on the name, not a field beside
+              it. Kept in the DOM and wired with aria-describedby so it isn't
+              pointer-only, and the wrapper takes focus so a keyboard reaches
+              it too. */}
+          <div className="cs-tb-name" tabIndex={note ? 0 : undefined} aria-describedby={note ? noteId : undefined}>
+            {title}
+            {note && (
+              <span className="cs-name-tip" id={noteId} role="tooltip">
+                {note}
+              </span>
+            )}
+          </div>
+        </div>
+        <dl className="cs-tb-specs">
+          <div className="cs-tb-cell">
+            <dt>{ship.labels.captain}</dt>
+            <dd>
+              <a
+                href={githubData.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${githubData.handle} on GitHub`}
+              >
+                {githubData.handle}
+              </a>
+            </dd>
+          </div>
+          <div className="cs-tb-cell">
+            <dt>{ship.labels.window}</dt>
+            <dd>{contributions}</dd>
+          </div>
+        </dl>
+      </figcaption>
+
       <svg
         className="cs-svg"
         viewBox={compact ? VIEWBOX_COMPACT : VIEWBOX_FULL}
@@ -282,43 +319,6 @@ const ContributionShip = ({ title, note }) => {
         </span>
       )}
 
-      {/* A drafting title block: the vessel is named largest, her particulars
-          run beside it. */}
-      <figcaption className="cs-titleblock">
-        <div className="cs-tb-head">
-          {/* The remarks are a hover readout on the name, not a field beside
-              it. Kept in the DOM and wired with aria-describedby so it isn't
-              pointer-only, and the wrapper takes focus so a keyboard reaches
-              it too. */}
-          <div className="cs-tb-name" tabIndex={note ? 0 : undefined} aria-describedby={note ? noteId : undefined}>
-            {title}
-            {note && (
-              <span className="cs-name-tip" id={noteId} role="tooltip">
-                {note}
-              </span>
-            )}
-          </div>
-        </div>
-        <dl className="cs-tb-specs">
-          <div className="cs-tb-cell">
-            <dt>{ship.labels.captain}</dt>
-            <dd>
-              <a
-                href={githubData.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`${githubData.handle} on GitHub`}
-              >
-                {githubData.handle}
-              </a>
-            </dd>
-          </div>
-          <div className="cs-tb-cell">
-            <dt>{ship.labels.window}</dt>
-            <dd>{contributions}</dd>
-          </div>
-        </dl>
-      </figcaption>
     </figure>
   );
 };

@@ -152,75 +152,42 @@
 
 /* --- title block ------------------------------------------------------- */
 
-/* The name sits free under the drawing; only her particulars are boxed. */
+/* Her name and particulars head the plate: one unruled row above the drawing,
+   name to port, particulars to starboard. */
 .cs-titleblock {
-  margin: 0;
-}
-
-.cs-tb-head {
   display: flex;
-  align-items: stretch;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.25rem 2.5rem;
+  margin: 0;
 }
 
 .cs-tb-name {
   position: relative;
-  flex: 1 1 auto;
   min-width: 0;
-  padding: 0.1rem 0 0.85rem;
-  display: flex;
-  align-items: center;
 }
 
-/* The name carries its own hover readout, so the head is just the name. */
-.cs-tb-name:focus-visible {
-  outline: 2px solid var(--accent-color);
-  outline-offset: -2px;
-}
-
-.cs-name-tip {
-  position: absolute;
-  right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 6;
-  max-width: min(290px, 48%);
-  font-family: var(--font-mono);
-  font-size: 0.61rem;
-  line-height: 1.75;
-  letter-spacing: 0.01em;
-  color: var(--text-tertiary);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.15s ease, visibility 0.15s ease;
-  pointer-events: none;
-}
-
-.cs-tb-name:hover .cs-name-tip,
-.cs-tb-name:focus-within .cs-name-tip {
-  opacity: 1;
-  visibility: visible;
-}
-
+/* The dashed rule is the affordance — same border-bottom the captain and
+   album links use, sized to the text so it stops where the name stops. */
 .hero-vessel {
+  width: fit-content;
   margin: 0;
   cursor: help;
-  /* Struck from the text ramp, not --border-color: at this size that token is
-     too close to the ground to read as an invitation to hover. */
-  text-decoration: underline dashed var(--text-muted);
-  text-decoration-thickness: 2px;
-  text-underline-offset: 0.14em;
-  transition: text-decoration-color 0.2s ease;
+  border-bottom: 2px dashed var(--text-muted);
+  padding-bottom: 0.06em;
   font-size: clamp(2.25rem, 4.6vw, 4rem);
   font-weight: 300;
   font-variation-settings: "opsz" 144, "SOFT" 100;
   letter-spacing: -0.04em;
   line-height: 0.92;
   color: var(--text-primary);
+  transition: border-color 0.2s ease;
 }
 
 .cs-tb-name:hover .hero-vessel,
 .cs-tb-name:focus-within .hero-vessel {
-  text-decoration-color: var(--accent-color);
+  border-bottom-color: var(--accent-color);
 }
 
 .hero-vessel em.accent {
@@ -230,39 +197,51 @@
   color: var(--accent-color);
 }
 
-/* Two fields across, stacking on a cropped plate. Cells draw only the rules
-   *between* them; the outer box belongs to .cs-titleblock, so nothing is
-   painted twice. */
+.cs-tb-name:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 4px;
+}
+
+/* Knocked out over the drawing the way the dimension callout is, so it stays
+   legible without an inverted chip. */
+.cs-name-tip {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 0.5rem);
+  z-index: 6;
+  width: max(240px, 100%);
+  max-width: 340px;
+  padding: 0.4rem 0.55rem 0.45rem 0;
+  background: var(--bg-primary);
+  font-family: var(--font-mono);
+  font-size: 0.61rem;
+  line-height: 1.75;
+  letter-spacing: 0.01em;
+  color: var(--text-tertiary);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.18s ease, visibility 0.18s ease;
+  pointer-events: none;
+}
+
+.cs-tb-name:hover .cs-name-tip,
+.cs-tb-name:focus-within .cs-name-tip {
+  opacity: 1;
+  visibility: visible;
+}
+
 .cs-tb-specs {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  border: 1px solid var(--border-color);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 2.25rem;
   margin: 0;
 }
 
 .cs-tb-cell {
-  border-right: 1px solid var(--border-color);
-  padding: 0.6rem 0.8rem;
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.15rem;
   min-width: 0;
-}
-
-.cs-tb-cell:last-child {
-  border-right: 0;
-}
-
-.cs-plate--compact .cs-tb-specs {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-.cs-plate--compact .cs-tb-cell {
-  border-right: 0;
-}
-
-.cs-plate--compact .cs-tb-cell:not(:last-child) {
-  border-bottom: 1px solid var(--border-color);
 }
 
 .cs-tb-cell dt {
@@ -297,9 +276,8 @@
 
 /* --- hero placement ---------------------------------------------------- */
 
-/* The drawing sits directly on its title block — one plate, not two objects. */
 .hero-plate-col .cs-plate {
-  gap: 0;
+  gap: clamp(0.75rem, 1.6vh, 1.25rem);
 }
 
 /* Below this the annotation layer falls under ~6px, so the drawing crops to
