@@ -10,7 +10,7 @@ export const heroData = {
   // Remarks, in the title block beside her name: what the drawing is reading.
   shipNote:
     'Every lit window is a day of GitHub contributions. Weekdays run along the passenger decks, weekends sit in the portholes below.',
-  metaLines: ['Based in NYC and SF', 'Boston University New Grad'],
+  metaLines: ['Based in NYC and SF', 'Boston University Alumni'],
   buttons: [
     {
       text: 'View Projects',
