@@ -36,11 +36,6 @@
   fill: none;
 }
 
-.cs-station {
-  stroke-width: 0.7;
-  stroke-dasharray: 2 4;
-}
-
 .cs-label,
 .cs-label-b {
   font-family: var(--font-mono);
@@ -210,14 +205,13 @@
   color: var(--accent-color);
 }
 
-/* Four fields or two, never three — auto-fit would orphan a fourth on its own
-   row at the widths the plate actually takes. Keyed to the plate's measured
-   width, like the annotation layer.
+/* Three fields across, stacking to one on a cropped plate — the date range
+   needs its full measure and won't sit in a third of a phone's width.
    Cells draw only the rules *between* them; the outer box belongs to
    .cs-titleblock, so nothing is painted twice. */
 .cs-tb-specs {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   margin: 0;
 }
 
@@ -235,14 +229,14 @@
 }
 
 .cs-plate--compact .cs-tb-specs {
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: minmax(0, 1fr);
 }
 
-.cs-plate--compact .cs-tb-cell:nth-child(2n) {
+.cs-plate--compact .cs-tb-cell {
   border-right: 0;
 }
 
-.cs-plate--compact .cs-tb-cell:nth-child(-n + 2) {
+.cs-plate--compact .cs-tb-cell:not(:last-child) {
   border-bottom: 1px solid var(--border-color);
 }
 

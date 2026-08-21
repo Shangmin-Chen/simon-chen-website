@@ -119,16 +119,11 @@ const ContributionShip = ({ title, description }) => {
   // The hero never interrupts on a failed fetch — the plate simply draws
   // unlit. The Now section surfaces the error where the detail lives.
   const hasData = !loading && !error;
-  const plotted = toIsoDate(new Date());
-  // Cropped plates lose the dimension callout, so the span moves into the
-  // caption — otherwise this reads as an unqualified total next to the
-  // year-long one in §02 Now.
-  const complement = hasData
-    ? `${total.toLocaleString()} ${ship.labels.contributions}${
-        compact ? ` · ${WEEKS} ${ship.labels.weeks}` : ''
-      }`
-    : ship.labels.empty;
-  const lengthOverall = `${CELLS} ${ship.labels.days}`;
+  const contributions = hasData ? total.toLocaleString() : ship.labels.empty;
+  // The dates the grid actually spans — this is what keeps the count above
+  // from reading as an unqualified total beside the year-long one in §02 Now.
+  const firstDay = cells[0]?.iso;
+  const lastDay = cells[cells.length - 1]?.iso;
 
   return (
     <figure
@@ -147,11 +142,8 @@ const ContributionShip = ({ title, description }) => {
             : `GitHub contributions for the last ${WEEKS} weeks`
         }
       >
-        {/* station lines — one per week, drawn first so the vessel sits on them */}
+        {/* station ticks — one per week, numbered along the foot */}
         <g className="cs-anno">
-          {STATION_X.map((x) => (
-            <line key={`station-${x}`} className="cs-ink-faint cs-station" x1={x} y1="76" x2={x} y2="308" />
-          ))}
           {STATION_X.map((x, i) => (
             <text key={`stn-label-${x}`} className="cs-label" x={x} y="320" textAnchor="middle">
               {String(i + 1).padStart(2, '0')}
@@ -209,9 +201,6 @@ const ContributionShip = ({ title, description }) => {
           {HATCH_X.map((x) => (
             <line key={`hatch-${x}`} className="cs-ink-faint" x1={x} y1="299" x2={x + 6} y2="293" strokeWidth="0.7" />
           ))}
-          <text className="cs-label" x="20" y="288">
-            {ship.labels.waterline}
-          </text>
         </g>
 
         {/* row letters in the starboard margin */}
@@ -234,9 +223,9 @@ const ContributionShip = ({ title, description }) => {
           <line className="cs-ink-thin" x1={DIM_X1} y1="336" x2={DIM_X2} y2="336" strokeWidth="0.9" />
           <line className="cs-ink-thin" x1={DIM_X1} y1="331" x2={DIM_X1} y2="341" strokeWidth="0.9" />
           <line className="cs-ink-thin" x1={DIM_X2} y1="331" x2={DIM_X2} y2="341" strokeWidth="0.9" />
-          <rect className="cs-knock" x={DIM_MID - 66} y="329" width="132" height="14" />
+          <rect className="cs-knock" x={DIM_MID - 42} y="329" width="84" height="14" />
           <text className="cs-label-b" x={DIM_MID} y="339.5" textAnchor="middle">
-            {`${WEEKS} WEEKS · ${CELLS} DAYS`}
+            {ship.labels.span.toUpperCase()}
           </text>
         </g>
 
@@ -284,15 +273,7 @@ const ContributionShip = ({ title, description }) => {
         </div>
         <dl className="cs-tb-specs">
           <div className="cs-tb-cell">
-            <dt>{ship.labels.length}</dt>
-            <dd>{lengthOverall}</dd>
-          </div>
-          <div className="cs-tb-cell">
-            <dt>{ship.labels.complement}</dt>
-            <dd>{complement}</dd>
-          </div>
-          <div className="cs-tb-cell">
-            <dt>{ship.labels.master}</dt>
+            <dt>{ship.labels.captain}</dt>
             <dd>
               <a
                 href={githubData.url}
@@ -305,10 +286,16 @@ const ContributionShip = ({ title, description }) => {
             </dd>
           </div>
           <div className="cs-tb-cell">
-            <dt>{ship.labels.plotted}</dt>
+            <dt>{ship.labels.length}</dt>
             <dd>
-              <time dateTime={plotted}>{plotted}</time>
+              <time dateTime={firstDay}>{firstDay}</time>
+              {' → '}
+              <time dateTime={lastDay}>{lastDay}</time>
             </dd>
+          </div>
+          <div className="cs-tb-cell">
+            <dt>{ship.labels.contributions}</dt>
+            <dd>{contributions}</dd>
           </div>
         </dl>
       </figcaption>

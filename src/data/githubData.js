@@ -14,14 +14,11 @@ export const githubData = {
     rowLetters: ['M', 'T', 'W', 'T', 'F', 'SA', 'SU'],
     // Her particulars, in the register's own vocabulary.
     labels: {
-      length: 'Length o.a.',
-      complement: 'Complement',
-      master: 'Master',
-      plotted: 'Plotted',
-      waterline: 'L.W.L.',
-      contributions: 'contributions',
-      weeks: 'weeks',
-      days: 'days',
+      captain: 'Captain',
+      length: 'Length',
+      contributions: 'Contributions',
+      // The dimension callout under the hull.
+      span: '3 months',
       empty: '—'
     },
     messages: {

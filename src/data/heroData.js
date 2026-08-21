@@ -7,8 +7,9 @@ export const heroData = {
     lead: 'The',
     accent: 'Curiosity',
   },
-  lede:
-    "Always chasing the next rabbit hole. The act of learning, trying, and figuring things out is beautiful.",
+  // Remarks, in the title block beside her name: what the drawing is reading.
+  shipNote:
+    'Every window is a day, lit when I ship something — weekdays along the decks, weekends in the portholes below.',
   metaLines: ['Based in NYC', 'Boston University New Grad'],
   buttons: [
     {

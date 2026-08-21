@@ -44,7 +44,7 @@ const Hero = () => {
                   {heroData.vessel.lead} <em className="accent">{heroData.vessel.accent}</em>
                 </h1>
               }
-              description={<p className="hero-lede-v2">{heroData.lede}</p>}
+              description={<p className="hero-lede-v2">{heroData.shipNote}</p>}
             />
           </motion.div>
 
