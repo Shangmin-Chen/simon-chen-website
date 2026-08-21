@@ -168,6 +168,7 @@
 }
 
 .cs-tb-name {
+  position: relative;
   flex: 1 1 auto;
   min-width: 0;
   padding: 0.85rem 1rem 0.95rem;
@@ -175,36 +176,46 @@
   align-items: center;
 }
 
-.cs-tb-desc {
-  flex: 0 1 44%;
-  min-width: 0;
-  border-left: 1px solid var(--border-color);
-  padding: 0.85rem 1rem;
-  display: flex;
-  align-items: center;
+/* The name carries its own hover readout, so the head is just the name. */
+.cs-tb-name:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: -2px;
 }
 
-.cs-tb-desc .hero-lede-v2 {
-  margin: 0;
-  max-width: none;
-  font-size: clamp(0.92rem, 1.1vw, 1.05rem);
-  line-height: 1.45;
+.cs-name-tip {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 6;
+  max-width: min(300px, 48%);
+  padding: 0.5rem 0.65rem;
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+  pointer-events: none;
 }
 
-/* Side by side, the two fields would each be too narrow to set — so on a
-   cropped plate they stack and keep the full measure. */
-.cs-plate--compact .cs-tb-head {
-  flex-direction: column;
-}
-
-.cs-plate--compact .cs-tb-desc {
-  flex: 0 0 auto;
-  border-left: 0;
-  border-top: 1px solid var(--border-color);
+.cs-tb-name:hover .cs-name-tip,
+.cs-tb-name:focus-within .cs-name-tip {
+  opacity: 1;
+  visibility: visible;
 }
 
 .hero-vessel {
   margin: 0;
+  cursor: help;
+  /* Struck from the text ramp, not --border-color: at this size that token is
+     too close to the ground to read as an invitation to hover. */
+  text-decoration: underline dashed var(--text-tertiary);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
   font-size: clamp(2.25rem, 4.6vw, 4rem);
   font-weight: 300;
   font-variation-settings: "opsz" 144, "SOFT" 100;

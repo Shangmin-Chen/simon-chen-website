@@ -7,9 +7,9 @@ export const heroData = {
     lead: 'The',
     accent: 'Curiosity',
   },
-  // Remarks, in the title block beside her name: what the drawing is reading.
+  // Remarks, revealed by hovering her name: what the drawing is reading.
   shipNote:
-    'Every lit window is a day of GitHub contributions. Weekdays run along the passenger decks, weekends sit in the portholes below.',
+    "Every lit window is a day of GitHub contributions. Weekdays run along the passenger decks, weekends sit in the portholes below. Hover any window to see that day's count.",
   metaLines: ['Based in NYC and SF', 'Boston University Alumni'],
   buttons: [
     {

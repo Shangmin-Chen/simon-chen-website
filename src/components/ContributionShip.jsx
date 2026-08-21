@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useId, useLayoutEffect, useMemo, useState } from 'react';
 import useGithubContributions from '../hooks/useGithubContributions';
 import useHoverLabel from '../hooks/useHoverLabel';
 import { contributionDayLabel } from '../utils/contributionLabel';
@@ -102,12 +102,13 @@ function toGrid(days) {
   return cells;
 }
 
-// `title` is the vessel's name and `description` her remarks — both supplied
-// by the caller so the heading level stays with the page that owns it; in the
-// hero the title is the h1.
-const ContributionShip = ({ title, description }) => {
+// `title` is the vessel's name, supplied by the caller so the heading level
+// stays with the page that owns it — in the hero it is the h1. `note` is her
+// remarks, revealed by hovering the name rather than set beside it.
+const ContributionShip = ({ title, note }) => {
   const { days, loading, error } = useGithubContributions();
   const { frameRef: plateRef, tip, onPointerOver, onPointerOut } = useHoverLabel('.cs-cell');
+  const noteId = useId();
   const [compact, setCompact] = useState(false);
 
   // Measured before paint, so a narrow plate never shows a frame of the
@@ -285,8 +286,18 @@ const ContributionShip = ({ title, description }) => {
           run beside it. */}
       <figcaption className="cs-titleblock">
         <div className="cs-tb-head">
-          <div className="cs-tb-name">{title}</div>
-          {description && <div className="cs-tb-desc">{description}</div>}
+          {/* The remarks are a hover readout on the name, not a field beside
+              it. Kept in the DOM and wired with aria-describedby so it isn't
+              pointer-only, and the wrapper takes focus so a keyboard reaches
+              it too. */}
+          <div className="cs-tb-name" tabIndex={note ? 0 : undefined} aria-describedby={note ? noteId : undefined}>
+            {title}
+            {note && (
+              <span className="cs-name-tip" id={noteId} role="tooltip">
+                {note}
+              </span>
+            )}
+          </div>
         </div>
         <dl className="cs-tb-specs">
           <div className="cs-tb-cell">
