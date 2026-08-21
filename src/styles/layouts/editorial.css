@@ -414,3 +414,6 @@
     padding-right: clamp(8rem, 18vw, 13rem);
   }
 }
+
+/* The .hero-title-v2--demoted modifier lives in components/contribution-ship.css,
+   next to the rest of the layout the plate asks the hero for. */

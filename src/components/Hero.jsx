@@ -6,6 +6,7 @@ import { heroData } from '../data/heroData';
 import Button from './ui/Button';
 import SocialLinks from './ui/SocialLinks';
 import BlurhashImage from './ui/BlurhashImage';
+import ContributionShip from './ContributionShip';
 
 const Hero = () => {
   const handleScrollToSection = (sectionId) => {
@@ -28,7 +29,7 @@ const Hero = () => {
           </motion.div>
         )}
         <motion.h1
-          className="hero-title-v2"
+          className="hero-title-v2 hero-title-v2--demoted"
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.05 }}
@@ -75,26 +76,34 @@ const Hero = () => {
             >
               <SocialLinks className="social-links hero-social" linkClassName="social-link" />
             </motion.div>
+            <motion.div
+              className="hero-avatar-col hero-avatar-col--inline"
+              initial={{ opacity: 0, scale: 0.96, y: 14 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.52 }}
+            >
+              <div className="hero-avatar-frame">
+                <BlurhashImage
+                  src="https://images.simon-chen.com/shanghai/shanghai_08-full.jpg"
+                  blurhash="LE9@L;4n00~p00?b?b9F.8M{RPo#"
+                  alt="Simon Chen"
+                  className="hero-avatar-img-container"
+                  imgClassName="hero-avatar-img"
+                />
+                <Link to="/gallery/shanghai-study-abroad" className="hero-avatar-caption-link">
+                  Shanghai Study Abroad
+                </Link>
+              </div>
+            </motion.div>
           </div>
 
           <motion.div
-            className="hero-avatar-col"
-            initial={{ opacity: 0, scale: 0.96, y: 14 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+            className="hero-plate-col"
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.42 }}
           >
-            <div className="hero-avatar-frame">
-              <BlurhashImage
-                src="https://images.simon-chen.com/shanghai/shanghai_08-full.jpg"
-                blurhash="LE9@L;4n00~p00?b?b9F.8M{RPo#"
-                alt="Simon Chen"
-                className="hero-avatar-img-container"
-                imgClassName="hero-avatar-img"
-              />
-              <Link to="/gallery/shanghai-study-abroad" className="hero-avatar-caption-link">
-                Shanghai Study Abroad
-              </Link>
-            </div>
+            <ContributionShip vesselName={heroData.vesselName} />
           </motion.div>
         </div>
       </div>

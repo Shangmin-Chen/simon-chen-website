@@ -1,0 +1,258 @@
+/* Contribution Ship — 13 weeks of GitHub activity as a naval architect's plate.
+   All ink derives from the semantic text/border tokens, so the drawing inverts
+   with the theme without a second palette. */
+
+.cs-plate {
+  margin: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+/* Keeps the default SVG clip: the compact viewBox crops the plate to the
+   vessel, and the waterline runs wider than that box. */
+.cs-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* --- drawing ink ------------------------------------------------------- */
+
+.cs-ink {
+  stroke: var(--text-primary);
+  fill: none;
+  stroke-linecap: square;
+}
+
+.cs-ink-thin {
+  stroke: var(--text-secondary);
+  fill: none;
+}
+
+.cs-ink-faint {
+  stroke: var(--border-color);
+  fill: none;
+}
+
+.cs-station {
+  stroke-width: 0.7;
+  stroke-dasharray: 2 4;
+}
+
+.cs-label,
+.cs-label-b {
+  font-family: var(--font-mono);
+  letter-spacing: 0.1em;
+}
+
+.cs-label {
+  fill: var(--text-tertiary);
+  font-size: 8px;
+}
+
+.cs-label-b {
+  fill: var(--text-secondary);
+  font-size: 8.5px;
+  letter-spacing: 0.12em;
+}
+
+/* knocks the dimension line out from behind its own label */
+.cs-knock {
+  fill: var(--bg-primary);
+  stroke: none;
+}
+
+/* --- the data ---------------------------------------------------------- */
+
+/* pointer-events: all because empty windows are fill: none — under SVG's
+   default visiblePainted only their 0.9px stroke would be a hit target, so
+   their tooltips would be unreachable (and the whole grid inert while the
+   contributions are still loading). */
+.cs-cell {
+  stroke-width: 0.9;
+  pointer-events: all;
+  transition: fill 0.3s ease;
+}
+
+/* Same ramp as the contribution calendar in §02 Now, so the two read as one
+   scale (see .gh-cell in components/github.css). */
+/* Empty days are still windows on a drawing, so they keep an outline. It is
+   struck from the text ramp rather than --border-color, which sits too close
+   to the dark ground to survive at 0.9px. */
+.cs-cell.lvl-0 {
+  fill: none;
+  stroke: color-mix(in srgb, var(--text-tertiary) 50%, transparent);
+}
+
+.cs-cell.lvl-1 {
+  fill: color-mix(in srgb, var(--accent-color) 28%, transparent);
+  stroke: color-mix(in srgb, var(--accent-color) 45%, transparent);
+}
+
+.cs-cell.lvl-2 {
+  fill: color-mix(in srgb, var(--accent-color) 52%, transparent);
+  stroke: color-mix(in srgb, var(--accent-color) 62%, transparent);
+}
+
+.cs-cell.lvl-3 {
+  fill: color-mix(in srgb, var(--accent-color) 76%, transparent);
+  stroke: color-mix(in srgb, var(--accent-color) 82%, transparent);
+}
+
+.cs-cell.lvl-4 {
+  fill: var(--accent-color);
+  stroke: var(--accent-color);
+}
+
+/* Days later this week haven't happened yet — drawn, but not yet a berth.
+   Every future cell also carries lvl-0, so this needs to outrank
+   `.cs-cell.lvl-0` (0,2,0) on specificity rather than on source order —
+   otherwise reordering the ramp above would silently drop the dashes. */
+.cs-cells .cs-cell.cs-cell--future {
+  stroke: color-mix(in srgb, var(--text-tertiary) 26%, transparent);
+  stroke-dasharray: 1.5 1.5;
+}
+
+/* --- load sequence: windows light bow to stern -------------------------- */
+
+/* Runs when the contributions land, not on mount, so the sequence carries the
+   data rather than playing out against an empty grid. `backwards` holds the
+   from-state through the stagger delay and hands back to the cell's own
+   opacity afterwards — so a cell is never left stuck invisible. */
+@media (prefers-reduced-motion: no-preference) {
+  .cs-plate--lit .cs-cell {
+    animation: cs-light-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+    animation-delay: calc(var(--cs-col) * 0.045s);
+  }
+}
+
+@keyframes cs-light-up {
+  from {
+    opacity: 0;
+    transform: translateY(1.5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- title block ------------------------------------------------------- */
+
+/* Cells own the right and bottom rules so the block closes correctly at any
+   number of rows — two up in the hero column, four across when wider. */
+.cs-titleblock {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  border: 1px solid var(--border-color);
+  border-right: 0;
+  border-bottom: 0;
+  margin: 0;
+}
+
+.cs-tb-cell {
+  border-right: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0.6rem 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.cs-tb-cell dt {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  color: var(--text-tertiary);
+}
+
+.cs-tb-cell dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.cs-tb-cell dd a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px dashed var(--border-color);
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.cs-tb-cell dd a:hover,
+.cs-tb-cell dd a:focus-visible {
+  color: var(--accent-color);
+  border-bottom-color: var(--accent-color);
+}
+
+/* --- hero placement ---------------------------------------------------- */
+
+/* The plate takes the right column of .hero-lower-grid, where the polaroid
+   used to sit. It is the widest element in the hero, but still has to leave
+   the section inside 100vh — hence the clamp rather than a fixed width. */
+.hero-plate-col {
+  flex: 0 0 clamp(340px, 46%, 560px);
+  min-width: 0;
+  margin-top: -0.5rem;
+}
+
+/* Demoted headline — the plate carries the hero's visual weight now, so the
+   wordmark steps down and hands its scale to the drawing.
+   Only where the plate is actually beside the headline: below 901px the grid
+   stacks and the plate sits under the fold, so the headline keeps its own
+   scale from editorial.css. Scoped to .hero-content so it outranks that file
+   regardless of import order. */
+@media (min-width: 901px) {
+  .hero-content .hero-title-v2--demoted {
+    font-size: clamp(2.25rem, 6vw, 4rem);
+    letter-spacing: -0.03em;
+    line-height: 0.9;
+    margin-bottom: 0.3em;
+  }
+}
+
+/* Below the compact breakpoint the annotation layer falls under ~6px, so the
+   component crops to the vessel alone. */
+.cs-plate--compact .cs-anno {
+  display: none;
+}
+
+/* Short laptops: trim the plate and the polaroid so the hero still resolves
+   inside 100vh, rather than letting the section grow past the fold. */
+@media (min-width: 901px) and (max-height: 860px) {
+  .hero-plate-col {
+    flex-basis: clamp(300px, 38%, 430px);
+  }
+
+  .hero-plate-col .cs-plate {
+    gap: 0.85rem;
+  }
+
+  .hero-content .hero-title-v2--demoted {
+    font-size: clamp(2rem, 4.5vw, 3rem);
+  }
+}
+
+/* Stacked layout: centred under the text, matching the polaroid above it. */
+@media (max-width: 900px) {
+  .hero-plate-col {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 520px;
+    margin-top: 0;
+    margin-inline: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .cs-titleblock {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

@@ -5,6 +5,8 @@ export const heroData = {
   lede:
     "Always chasing the next rabbit hole. The act of learning, trying, and figuring things out is beautiful.",
   metaLines: ['Based in NYC', 'Boston University New Grad'],
+  // The headline, demoted into the plate's own vernacular as the vessel name.
+  vesselName: 'MV Relentlessly Curious',
   buttons: [
     {
       text: 'View Projects',
