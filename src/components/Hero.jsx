@@ -49,6 +49,18 @@ const Hero = () => {
           </motion.div>
 
           <div className="hero-photos-col">
+            <motion.div
+              className="hero-photos-head"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: EASE, delay: 0.3 }}
+            >
+              <span className="mono-label">{heroData.album.label}</span>
+              <Link to={heroData.album.to} className="hero-photos-link">
+                {heroData.album.caption}
+              </Link>
+            </motion.div>
+
             <div className="hero-photo-stack">
               {heroData.photos.map((photo, i) => (
                 <motion.div
@@ -70,9 +82,6 @@ const Hero = () => {
                       className="hero-photo-img-container"
                       imgClassName="hero-photo-img"
                     />
-                    {i === 0 && (
-                      <span className="hero-photo-caption">{heroData.album.caption}</span>
-                    )}
                   </Link>
                 </motion.div>
               ))}

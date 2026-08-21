@@ -25,6 +25,7 @@ export const heroData = {
   ],
   album: {
     to: '/gallery/shanghai-study-abroad',
+    label: 'Ports of call',
     caption: 'Shanghai Study Abroad',
   },
   // Scattered on the right, largest first — the first carries the caption
@@ -47,6 +48,12 @@ export const heroData = {
       src: `${IMAGE_HOST}/shanghai/shanghai_12-thumb.jpg`,
       blurhash: 'LpFsPrWVo2WB.TIVocj[%#V@afof',
       alt: "The factory Simon Chen's grandfather used to run, in Songjiang, Shanghai",
+    },
+    {
+      id: 'desk',
+      src: `${IMAGE_HOST}/shanghai/shanghai_18-thumb.jpg`,
+      blurhash: 'LKF$2?oHIo-o.mIoR*xux[%1kCIV',
+      alt: 'Simon Chen shipping code at his internship in Jingan, Shanghai',
     },
   ],
 };

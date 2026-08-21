@@ -153,7 +153,6 @@ const ContributionShip = ({ title, description }) => {
 
         {/* hull */}
         <path className="cs-ink" d={HULL_D} strokeWidth="1.5" />
-        <path className="cs-ink-thin" d="M56 258 C110 285 150 292 200 292 L410 292" strokeWidth="0.8" />
         <line className="cs-ink-thin" x1="150" y1="237" x2="436" y2="237" strokeWidth="0.8" />
 
         {/* superstructure: five decks, one per weekday row */}

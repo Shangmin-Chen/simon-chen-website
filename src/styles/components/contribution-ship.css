@@ -257,6 +257,12 @@
   overflow-wrap: anywhere;
 }
 
+/* Keeps a date whole — the hyphens are break opportunities, so without this
+   the span wraps as "2026-08-" / "23" in a narrow cell. */
+.cs-tb-cell time {
+  white-space: nowrap;
+}
+
 .cs-tb-cell dd a {
   color: inherit;
   text-decoration: none;
