@@ -3,6 +3,7 @@
    with the theme without a second palette. */
 
 .cs-plate {
+  position: relative;
   margin: 0;
   width: 100%;
   display: flex;
@@ -115,6 +116,31 @@
 .cs-cells .cs-cell.cs-cell--future {
   stroke: color-mix(in srgb, var(--text-tertiary) 26%, transparent);
   stroke-dasharray: 1.5 1.5;
+}
+
+/* Hovered window: pulled out of the ramp so you can see which one you're
+   reading. Matches .cs-cells .cs-cell.cs-cell--future on specificity and is
+   declared after it, so it wins on future days too. */
+.cs-cells .cs-cell:hover {
+  stroke: var(--text-primary);
+  stroke-width: 1.6;
+  stroke-dasharray: none;
+}
+
+/* Replaces the native <title> tooltip, which only appears after a browser
+   delay and can't be themed. */
+.cs-tip {
+  position: absolute;
+  z-index: 5;
+  transform: translate(-50%, calc(-100% - 7px));
+  padding: 0.3rem 0.5rem;
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
 /* --- load sequence: windows light bow to stern -------------------------- */

@@ -78,13 +78,24 @@ function toGrid(days) {
     const iso = toIsoDate(date);
     const day = byDate.get(iso);
 
+    const count = day?.count ?? 0;
+    const when = date.toLocaleDateString(undefined, {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric'
+    });
+
     cells.push({
       iso,
       col: Math.floor(i / ROWS),
       row: DOW_ROW[date.getDay()],
-      count: day?.count ?? 0,
+      count,
       level: day?.level ?? 0,
-      future: date > today
+      future: date > today,
+      label:
+        date > today
+          ? `${when} · ${ship.messages.future}`
+          : `${when} · ${count === 0 ? 'no' : count} contribution${count === 1 ? '' : 's'}`
     });
   }
   return cells;
@@ -112,6 +123,26 @@ const ContributionShip = ({ title, description }) => {
     observer.observe(node);
     return () => observer.disconnect();
   }, []);
+
+  // Positioned off the hovered window's own box, so it tracks correctly at any
+  // viewBox scale without converting user units back to pixels.
+  const [tip, setTip] = useState(null);
+
+  const showTip = (event) => {
+    const cell = event.target.closest('.cs-cell');
+    const plate = plateRef.current;
+    if (!cell || !plate) return;
+
+    const box = cell.getBoundingClientRect();
+    const frame = plate.getBoundingClientRect();
+    setTip({
+      label: cell.dataset.label,
+      x: box.left - frame.left + box.width / 2,
+      y: box.top - frame.top
+    });
+  };
+
+  const hideTip = () => setTip(null);
 
   const cells = useMemo(() => toGrid(days), [days]);
   const total = useMemo(() => cells.reduce((sum, cell) => sum + cell.count, 0), [cells]);
@@ -229,7 +260,7 @@ const ContributionShip = ({ title, description }) => {
         </g>
 
         {/* the data */}
-        <g className="cs-cells">
+        <g className="cs-cells" onPointerOver={showTip} onPointerOut={hideTip}>
           {cells.map((cell) => {
             const cx = COL_X0 + cell.col * COL_W;
             const isPorthole = cell.row >= DECK_ROWS;
@@ -238,30 +269,38 @@ const ContributionShip = ({ title, description }) => {
               .filter(Boolean)
               .join(' ');
             const style = { '--cs-col': cell.col };
-            const label = cell.future
-              ? `${cell.iso} — ${ship.messages.future}`
-              : `${cell.count} contribution${cell.count === 1 ? '' : 's'} on ${cell.iso}`;
 
             return isPorthole ? (
-              <circle key={cell.iso} className={className} style={style} cx={cx} cy={cy} r="4.6">
-                <title>{label}</title>
-              </circle>
+              <circle
+                key={cell.iso}
+                className={className}
+                style={style}
+                data-label={cell.label}
+                cx={cx}
+                cy={cy}
+                r="4.6"
+              />
             ) : (
               <rect
                 key={cell.iso}
                 className={className}
                 style={style}
+                data-label={cell.label}
                 x={cx - 6.5}
                 y={cy - 4.5}
                 width="13"
                 height="9"
-              >
-                <title>{label}</title>
-              </rect>
+              />
             );
           })}
         </g>
       </svg>
+
+      {tip && (
+        <span className="cs-tip" style={{ left: tip.x, top: tip.y }} aria-hidden="true">
+          {tip.label}
+        </span>
+      )}
 
       {/* A drafting title block: the vessel is named largest, her particulars
           run beside it. */}
