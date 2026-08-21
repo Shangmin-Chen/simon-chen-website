@@ -90,7 +90,10 @@ function toGrid(days) {
   return cells;
 }
 
-const ContributionShip = ({ vesselName }) => {
+// `title` is the vessel's name and `description` her remarks — both supplied
+// by the caller so the heading level stays with the page that owns it; in the
+// hero the title is the h1.
+const ContributionShip = ({ title, description }) => {
   const { days, loading, error } = useGithubContributions();
   const plateRef = useRef(null);
   const [compact, setCompact] = useState(false);
@@ -125,6 +128,7 @@ const ContributionShip = ({ vesselName }) => {
         compact ? ` · ${WEEKS} ${ship.labels.weeks}` : ''
       }`
     : ship.labels.empty;
+  const lengthOverall = `${CELLS} ${ship.labels.days}`;
 
   return (
     <figure
@@ -271,24 +275,24 @@ const ContributionShip = ({ vesselName }) => {
         </g>
       </svg>
 
-      <figcaption>
-        <dl className="cs-titleblock">
+      {/* A drafting title block: the vessel is named largest, her particulars
+          run beside it. */}
+      <figcaption className="cs-titleblock">
+        <div className="cs-tb-head">
+          <div className="cs-tb-name">{title}</div>
+          {description && <div className="cs-tb-desc">{description}</div>}
+        </div>
+        <dl className="cs-tb-specs">
           <div className="cs-tb-cell">
-            <dt>{ship.labels.vessel}</dt>
-            <dd>{vesselName}</dd>
+            <dt>{ship.labels.length}</dt>
+            <dd>{lengthOverall}</dd>
           </div>
           <div className="cs-tb-cell">
             <dt>{ship.labels.complement}</dt>
             <dd>{complement}</dd>
           </div>
           <div className="cs-tb-cell">
-            <dt>{ship.labels.plotted}</dt>
-            <dd>
-              <time dateTime={plotted}>{plotted}</time>
-            </dd>
-          </div>
-          <div className="cs-tb-cell">
-            <dt>{ship.labels.register}</dt>
+            <dt>{ship.labels.master}</dt>
             <dd>
               <a
                 href={githubData.url}
@@ -298,6 +302,12 @@ const ContributionShip = ({ vesselName }) => {
               >
                 {githubData.handle}
               </a>
+            </dd>
+          </div>
+          <div className="cs-tb-cell">
+            <dt>{ship.labels.plotted}</dt>
+            <dd>
+              <time dateTime={plotted}>{plotted}</time>
             </dd>
           </div>
         </dl>

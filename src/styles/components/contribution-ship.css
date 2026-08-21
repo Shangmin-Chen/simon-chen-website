@@ -141,25 +141,109 @@
 
 /* --- title block ------------------------------------------------------- */
 
-/* Cells own the right and bottom rules so the block closes correctly at any
-   number of rows — two up in the hero column, four across when wider. */
+/* A drafting title block: the vessel named largest, her particulars ruled off
+   beside it. */
 .cs-titleblock {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
   border: 1px solid var(--border-color);
-  border-right: 0;
-  border-bottom: 0;
+  border-top: 0;
+  margin: 0;
+}
+
+/* Name and remarks share the head, ruled apart the way a title block's
+   fields are. */
+.cs-tb-head {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.cs-tb-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.85rem 1rem 0.95rem;
+  display: flex;
+  align-items: center;
+}
+
+.cs-tb-desc {
+  flex: 0 1 44%;
+  min-width: 0;
+  border-left: 1px solid var(--border-color);
+  padding: 0.85rem 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.cs-tb-desc .hero-lede-v2 {
+  margin: 0;
+  max-width: none;
+  font-size: clamp(0.92rem, 1.1vw, 1.05rem);
+  line-height: 1.45;
+}
+
+/* Side by side, the two fields would each be too narrow to set — so on a
+   cropped plate they stack and keep the full measure. */
+.cs-plate--compact .cs-tb-head {
+  flex-direction: column;
+}
+
+.cs-plate--compact .cs-tb-desc {
+  flex: 0 0 auto;
+  border-left: 0;
+  border-top: 1px solid var(--border-color);
+}
+
+.hero-vessel {
+  margin: 0;
+  font-size: clamp(2.25rem, 4.6vw, 4rem);
+  font-weight: 300;
+  font-variation-settings: "opsz" 144, "SOFT" 100;
+  letter-spacing: -0.04em;
+  line-height: 0.92;
+  color: var(--text-primary);
+}
+
+.hero-vessel em.accent {
+  font-style: italic;
+  font-weight: 300;
+  font-variation-settings: "opsz" 144, "SOFT" 50;
+  color: var(--accent-color);
+}
+
+/* Four fields or two, never three — auto-fit would orphan a fourth on its own
+   row at the widths the plate actually takes. Keyed to the plate's measured
+   width, like the annotation layer.
+   Cells draw only the rules *between* them; the outer box belongs to
+   .cs-titleblock, so nothing is painted twice. */
+.cs-tb-specs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   margin: 0;
 }
 
 .cs-tb-cell {
   border-right: 1px solid var(--border-color);
-  border-bottom: 1px solid var(--border-color);
   padding: 0.6rem 0.8rem;
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
   min-width: 0;
+}
+
+.cs-tb-cell:last-child {
+  border-right: 0;
+}
+
+.cs-plate--compact .cs-tb-specs {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.cs-plate--compact .cs-tb-cell:nth-child(2n) {
+  border-right: 0;
+}
+
+.cs-plate--compact .cs-tb-cell:nth-child(-n + 2) {
+  border-bottom: 1px solid var(--border-color);
 }
 
 .cs-tb-cell dt {
@@ -173,7 +257,7 @@
 .cs-tb-cell dd {
   margin: 0;
   font-family: var(--font-mono);
-  font-size: 0.76rem;
+  font-size: 0.72rem;
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
@@ -194,65 +278,37 @@
 
 /* --- hero placement ---------------------------------------------------- */
 
-/* The plate takes the right column of .hero-lower-grid, where the polaroid
-   used to sit. It is the widest element in the hero, but still has to leave
-   the section inside 100vh — hence the clamp rather than a fixed width. */
-.hero-plate-col {
-  flex: 0 0 clamp(340px, 46%, 560px);
-  min-width: 0;
-  margin-top: -0.5rem;
+/* The drawing sits directly on its title block — one plate, not two objects. */
+.hero-plate-col .cs-plate {
+  gap: 0;
 }
 
-/* Demoted headline — the plate carries the hero's visual weight now, so the
-   wordmark steps down and hands its scale to the drawing.
-   Only where the plate is actually beside the headline: below 901px the grid
-   stacks and the plate sits under the fold, so the headline keeps its own
-   scale from editorial.css. Scoped to .hero-content so it outranks that file
-   regardless of import order. */
-@media (min-width: 901px) {
-  .hero-content .hero-title-v2--demoted {
-    font-size: clamp(2.25rem, 6vw, 4rem);
-    letter-spacing: -0.03em;
-    line-height: 0.9;
-    margin-bottom: 0.3em;
-  }
+.hero-plate-col .cs-svg {
+  margin-bottom: -0.35rem;
 }
 
-/* Below the compact breakpoint the annotation layer falls under ~6px, so the
-   component crops to the vessel alone. */
+/* Below this the annotation layer falls under ~6px, so the drawing crops to
+   the vessel alone. */
 .cs-plate--compact .cs-anno {
   display: none;
 }
 
-/* Short laptops: trim the plate and the polaroid so the hero still resolves
-   inside 100vh, rather than letting the section grow past the fold. */
+/* Short laptops: the plate gives up width so the hero still resolves inside
+   100vh rather than growing past the fold. */
 @media (min-width: 901px) and (max-height: 860px) {
   .hero-plate-col {
-    flex-basis: clamp(300px, 38%, 430px);
-  }
-
-  .hero-plate-col .cs-plate {
-    gap: 0.85rem;
-  }
-
-  .hero-content .hero-title-v2--demoted {
-    font-size: clamp(2rem, 4.5vw, 3rem);
-  }
-}
-
-/* Stacked layout: centred under the text, matching the polaroid above it. */
-@media (max-width: 900px) {
-  .hero-plate-col {
-    flex: 0 0 auto;
-    width: 100%;
     max-width: 520px;
-    margin-top: 0;
-    margin-inline: auto;
   }
-}
 
-@media (max-width: 768px) {
-  .cs-titleblock {
-    grid-template-columns: repeat(2, 1fr);
+  .hero-vessel {
+    font-size: clamp(1.9rem, 3.4vw, 2.75rem);
+  }
+
+  .cs-tb-name {
+    padding: 0.7rem 0.9rem 0.75rem;
+  }
+
+  .cs-tb-desc {
+    padding: 0.7rem 0.9rem;
   }
 }

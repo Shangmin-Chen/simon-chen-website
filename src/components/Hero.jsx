@@ -8,6 +8,8 @@ import SocialLinks from './ui/SocialLinks';
 import BlurhashImage from './ui/BlurhashImage';
 import ContributionShip from './ContributionShip';
 
+const EASE = [0.16, 1, 0.3, 1];
+
 const Hero = () => {
   const handleScrollToSection = (sectionId) => {
     scrollToSection(sectionId);
@@ -21,91 +23,80 @@ const Hero = () => {
             className="hero-meta mono-label"
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.55 }}
+            transition={{ duration: 0.7, ease: EASE, delay: 0.5 }}
           >
             {heroData.metaLines.map((line) => (
               <div key={line}>{line}</div>
             ))}
           </motion.div>
         )}
-        <motion.h1
-          className="hero-title-v2 hero-title-v2--demoted"
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.05 }}
-        >
-          {heroData.headlineLines.map((line) => (
-            <React.Fragment key={line}>
-              {line}
-              <br />
-            </React.Fragment>
-          ))}
-          {heroData.headlineBeforeEm}
-          <em className="accent">{heroData.headlineEm}</em>
-        </motion.h1>
-        <div className="hero-lower-grid">
-          <div className="hero-desc-col">
-            <motion.p
-              className="hero-lede-v2"
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.22 }}
-            >
-              {heroData.lede}
-            </motion.p>
-            <motion.div
-              className="hero-buttons"
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.38 }}
-            >
-              {heroData.buttons.map((button) => (
-                <Button
-                  key={button.action}
-                  variant={button.variant}
-                  onClick={() => handleScrollToSection(button.action)}
-                >
-                  {button.text}
-                </Button>
-              ))}
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.45 }}
-            >
-              <SocialLinks className="social-links hero-social" linkClassName="social-link" />
-            </motion.div>
-            <motion.div
-              className="hero-avatar-col hero-avatar-col--inline"
-              initial={{ opacity: 0, scale: 0.96, y: 14 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.52 }}
-            >
-              <div className="hero-avatar-frame">
-                <BlurhashImage
-                  src="https://images.simon-chen.com/shanghai/shanghai_08-full.jpg"
-                  blurhash="LE9@L;4n00~p00?b?b9F.8M{RPo#"
-                  alt="Simon Chen"
-                  className="hero-avatar-img-container"
-                  imgClassName="hero-avatar-img"
-                />
-                <Link to="/gallery/shanghai-study-abroad" className="hero-avatar-caption-link">
-                  Shanghai Study Abroad
-                </Link>
-              </div>
-            </motion.div>
-          </div>
 
+        <div className="hero-lower-grid">
           <motion.div
             className="hero-plate-col"
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.42 }}
+            transition={{ duration: 0.9, ease: EASE, delay: 0.05 }}
           >
-            <ContributionShip vesselName={heroData.vesselName} />
+            <ContributionShip
+              title={
+                <h1 className="hero-vessel">
+                  {heroData.vessel.lead} <em className="accent">{heroData.vessel.accent}</em>
+                </h1>
+              }
+              description={<p className="hero-lede-v2">{heroData.lede}</p>}
+            />
           </motion.div>
+
+          <div className="hero-photos-col">
+            {heroData.photos.map((photo, i) => (
+              <motion.div
+                key={photo.id}
+                className={`hero-photo hero-photo--${photo.id}`}
+                initial={{ opacity: 0, scale: 0.94, y: 16 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ duration: 0.9, ease: EASE, delay: 0.34 + i * 0.09 }}
+              >
+                <Link
+                  to={heroData.album.to}
+                  className="hero-photo-frame"
+                  aria-label={`${photo.alt} — open the ${heroData.album.caption} album`}
+                >
+                  <BlurhashImage
+                    src={photo.src}
+                    blurhash={photo.blurhash}
+                    alt={photo.alt}
+                    className="hero-photo-img-container"
+                    imgClassName="hero-photo-img"
+                  />
+                  {i === 0 && <span className="hero-photo-caption">{heroData.album.caption}</span>}
+                </Link>
+              </motion.div>
+            ))}
+          </div>
         </div>
+
+        {/* Spans both columns, so the calls to action close the hero across its
+            full width rather than leaving the corner under the prints empty. */}
+        <motion.div
+          className="hero-actions"
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, ease: EASE, delay: 0.55 }}
+        >
+          <div className="hero-buttons">
+            {heroData.buttons.map((button) => (
+              <Button
+                key={button.action}
+                variant={button.variant}
+                onClick={() => handleScrollToSection(button.action)}
+              >
+                {button.text}
+              </Button>
+            ))}
+          </div>
+          <SocialLinks className="social-links hero-social" linkClassName="social-link" />
+        </motion.div>
       </div>
     </section>
   );

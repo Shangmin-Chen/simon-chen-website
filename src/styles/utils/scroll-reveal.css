@@ -4,7 +4,7 @@
   50%       { font-variation-settings: "opsz" 144, "SOFT" 100; }
 }
 
-.hero-title-v2 em.accent {
+.hero-vessel em.accent {
   animation: accent-breathe 7s ease-in-out infinite 1.6s;
 }
 
@@ -14,7 +14,7 @@
 /* ------------------------------------------------------------------ */
 @media (prefers-reduced-motion: reduce) {
   /* "life." accent — stop the infinite breathe */
-  .hero-title-v2 em.accent {
+  .hero-vessel em.accent {
     animation: none;
     opacity: 1;
     transform: none;

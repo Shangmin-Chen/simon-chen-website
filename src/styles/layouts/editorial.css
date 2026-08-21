@@ -365,22 +365,8 @@
   margin-bottom: 0.4em;
 }
 
-.hero-title-v2 {
-  font-size: clamp(3.5rem, 13vw, 11rem);
-  font-weight: 300;
-  font-variation-settings: "opsz" 144, "SOFT" 100;
-  letter-spacing: -0.05em;
-  line-height: 0.85;
-  margin: 0 0 0.4em;
-  color: var(--text-primary);
-}
-
-.hero-title-v2 em.accent {
-  font-style: italic;
-  font-weight: 300;
-  font-variation-settings: "opsz" 144, "SOFT" 50;
-  color: var(--accent-color);
-}
+/* The hero's headline is now the vessel named by the contribution plate —
+   see .hero-vessel in components/contribution-ship.css. */
 
 .hero-lede-v2 {
   font-size: clamp(1.1rem, 2vw, 1.5rem);
@@ -403,10 +389,6 @@
     margin: 0 0 1.25rem;
     z-index: auto;
   }
-
-  .hero-title-v2 {
-    font-size: clamp(2.5rem, 12vw, 4rem);
-  }
 }
 
 @media (min-width: 769px) {
@@ -415,5 +397,3 @@
   }
 }
 
-/* The .hero-title-v2--demoted modifier lives in components/contribution-ship.css,
-   next to the rest of the layout the plate asks the hero for. */
