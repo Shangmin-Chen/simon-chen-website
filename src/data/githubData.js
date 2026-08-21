@@ -11,7 +11,7 @@ export const githubData = {
     // drawn for exactly 13 stations, so it isn't a data-level knob.
     // Row order top to bottom: five cabin decks, then the two porthole
     // strakes in the hull.
-    rowLetters: ['M', 'T', 'W', 'T', 'F', 'SA', 'SU'],
+    rowDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
     // Her particulars, in the register's own vocabulary.
     labels: {
       captain: 'Captain',

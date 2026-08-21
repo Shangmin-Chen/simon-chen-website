@@ -53,6 +53,13 @@
   letter-spacing: 0.12em;
 }
 
+/* Spelled-out weekdays: tighter tracking so WEDNESDAY still clears the
+   viewBox's right edge. */
+.cs-label-day {
+  font-size: 8px;
+  letter-spacing: 0.07em;
+}
+
 /* knocks the dimension line out from behind its own label */
 .cs-knock {
   fill: var(--bg-primary);
@@ -137,10 +144,9 @@
 /* --- title block ------------------------------------------------------- */
 
 /* A drafting title block: the vessel named largest, her particulars ruled off
-   beside it. */
+   beside it. Closed on all four sides. */
 .cs-titleblock {
   border: 1px solid var(--border-color);
-  border-top: 0;
   margin: 0;
 }
 
@@ -281,10 +287,6 @@
 /* The drawing sits directly on its title block — one plate, not two objects. */
 .hero-plate-col .cs-plate {
   gap: 0;
-}
-
-.hero-plate-col .cs-svg {
-  margin-bottom: -0.35rem;
 }
 
 /* Below this the annotation layer falls under ~6px, so the drawing crops to

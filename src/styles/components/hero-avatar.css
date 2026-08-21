@@ -34,6 +34,13 @@
   margin-top: clamp(1.5rem, 3.5vh, 2.5rem);
 }
 
+/* Both children carry stacked-layout spacing from where they used to sit under
+   the lede; in this row it would offset them from each other's centre line. */
+.hero-actions .hero-buttons {
+  margin-top: 0;
+  padding-top: 0;
+}
+
 .hero-actions .hero-social {
   margin-top: 0;
 }

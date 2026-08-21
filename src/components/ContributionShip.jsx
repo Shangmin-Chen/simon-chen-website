@@ -28,11 +28,11 @@ const HULL_D =
 
 // The full plate includes the annotation margins; the compact box crops to the
 // vessel alone once the drawing is too small to carry them.
-const VIEWBOX_FULL = '0 0 490 350';
+const VIEWBOX_FULL = '0 0 525 350';
 const VIEWBOX_COMPACT = '30 30 420 285';
 
-// Annotations are set at 8px in a 490-unit viewBox, so they render at
-// 8 × (width / 490). Below this the labels fall under ~6.5px and the plate
+// Annotations are set at 8px in a 525-unit viewBox, so they render at
+// 8 × (width / 525). Below this the labels fall under ~6.5px and the plate
 // crops instead. Measured off the element, not the viewport — the plate's own
 // width doesn't track viewport width (it is capped when stacked, and shrinks
 // again on short laptops).
@@ -204,13 +204,13 @@ const ContributionShip = ({ title, description }) => {
 
         {/* row letters in the starboard margin */}
         <g className="cs-anno">
-          {ship.rowLetters.map((letter, row) => {
+          {ship.rowDays.map((day, row) => {
             const cy = row < DECK_ROWS ? DECK_CY[row] : PORT_CY[row - DECK_ROWS];
             return (
               <g key={`row-${row}`}>
                 <line className="cs-ink-faint" x1="440" y1={cy} x2="456" y2={cy} strokeWidth="0.7" />
-                <text className="cs-label-b" x="462" y={cy + 3}>
-                  {letter}
+                <text className="cs-label-b cs-label-day" x="462" y={cy + 3}>
+                  {day.toUpperCase()}
                 </text>
               </g>
             );
