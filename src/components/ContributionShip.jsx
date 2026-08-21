@@ -1,5 +1,7 @@
 import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import useGithubContributions from '../hooks/useGithubContributions';
+import useHoverLabel from '../hooks/useHoverLabel';
+import { contributionDayLabel } from '../utils/contributionLabel';
 import { githubData } from '../data/githubData';
 
 const { ship } = githubData;
@@ -79,11 +81,6 @@ function toGrid(days) {
     const day = byDate.get(iso);
 
     const count = day?.count ?? 0;
-    const when = date.toLocaleDateString(undefined, {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric'
-    });
 
     cells.push({
       iso,
@@ -94,8 +91,12 @@ function toGrid(days) {
       future: date > today,
       label:
         date > today
-          ? `${when} · ${ship.messages.future}`
-          : `${when} · ${count === 0 ? 'no' : count} contribution${count === 1 ? '' : 's'}`
+          ? `${date.toLocaleDateString(undefined, {
+              weekday: 'short',
+              month: 'short',
+              day: 'numeric'
+            })} · ${ship.messages.future}`
+          : contributionDayLabel(date, count)
     });
   }
   return cells;
@@ -106,7 +107,7 @@ function toGrid(days) {
 // hero the title is the h1.
 const ContributionShip = ({ title, description }) => {
   const { days, loading, error } = useGithubContributions();
-  const plateRef = useRef(null);
+  const { frameRef: plateRef, tip, onPointerOver, onPointerOut } = useHoverLabel('.cs-cell');
   const [compact, setCompact] = useState(false);
 
   // Measured before paint, so a narrow plate never shows a frame of the
@@ -124,42 +125,20 @@ const ContributionShip = ({ title, description }) => {
     return () => observer.disconnect();
   }, []);
 
-  // Positioned off the hovered window's own box, so it tracks correctly at any
-  // viewBox scale without converting user units back to pixels.
-  const [tip, setTip] = useState(null);
-
-  const showTip = (event) => {
-    const cell = event.target.closest('.cs-cell');
-    const plate = plateRef.current;
-    if (!cell || !plate) return;
-
-    const box = cell.getBoundingClientRect();
-    const frame = plate.getBoundingClientRect();
-    setTip({
-      label: cell.dataset.label,
-      x: box.left - frame.left + box.width / 2,
-      y: box.top - frame.top
-    });
-  };
-
-  const hideTip = () => setTip(null);
-
   const cells = useMemo(() => toGrid(days), [days]);
   const total = useMemo(() => cells.reduce((sum, cell) => sum + cell.count, 0), [cells]);
 
   // The hero never interrupts on a failed fetch — the plate simply draws
   // unlit. The Now section surfaces the error where the detail lives.
   const hasData = !loading && !error;
-  const contributions = hasData ? total.toLocaleString() : ship.labels.empty;
-  // The dates the grid actually spans — this is what keeps the count above
-  // from reading as an unqualified total beside the year-long one in §02 Now.
-  const firstDay = cells[0]?.iso;
-  const lastDay = cells[cells.length - 1]?.iso;
+  const contributions = hasData
+    ? `${total.toLocaleString()} ${ship.labels.contributions}`
+    : ship.labels.empty;
 
   return (
     <figure
       ref={plateRef}
-      className={['cs-plate', compact ? 'cs-plate--compact' : '', hasData ? 'cs-plate--lit' : '']
+      className={['cs-plate', 'hover-tip-frame', compact ? 'cs-plate--compact' : '', hasData ? 'cs-plate--lit' : '']
         .filter(Boolean)
         .join(' ')}
     >
@@ -260,7 +239,7 @@ const ContributionShip = ({ title, description }) => {
         </g>
 
         {/* the data */}
-        <g className="cs-cells" onPointerOver={showTip} onPointerOut={hideTip}>
+        <g className="cs-cells" onPointerOver={onPointerOver} onPointerOut={onPointerOut}>
           {cells.map((cell) => {
             const cx = COL_X0 + cell.col * COL_W;
             const isPorthole = cell.row >= DECK_ROWS;
@@ -297,7 +276,7 @@ const ContributionShip = ({ title, description }) => {
       </svg>
 
       {tip && (
-        <span className="cs-tip" style={{ left: tip.x, top: tip.y }} aria-hidden="true">
+        <span className="hover-tip" style={{ left: tip.x, top: tip.y }} aria-hidden="true">
           {tip.label}
         </span>
       )}
@@ -324,15 +303,7 @@ const ContributionShip = ({ title, description }) => {
             </dd>
           </div>
           <div className="cs-tb-cell">
-            <dt>{ship.labels.length}</dt>
-            <dd>
-              <time dateTime={firstDay}>{firstDay}</time>
-              {' → '}
-              <time dateTime={lastDay}>{lastDay}</time>
-            </dd>
-          </div>
-          <div className="cs-tb-cell">
-            <dt>{ship.labels.contributions}</dt>
+            <dt>{ship.labels.window}</dt>
             <dd>{contributions}</dd>
           </div>
         </dl>

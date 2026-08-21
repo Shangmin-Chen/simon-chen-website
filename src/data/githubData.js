@@ -15,8 +15,10 @@ export const githubData = {
     // Her particulars, in the register's own vocabulary.
     labels: {
       captain: 'Captain',
-      length: 'Length',
-      contributions: 'Contributions',
+      // Labels the count rather than sitting beside it, so the number can
+      // never read as an all-time total.
+      window: 'Past 3 months',
+      contributions: 'contributions',
       // The dimension callout under the hull.
       span: '3 months',
       empty: '—'

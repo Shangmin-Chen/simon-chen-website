@@ -3,7 +3,6 @@
    with the theme without a second palette. */
 
 .cs-plate {
-  position: relative;
   margin: 0;
   width: 100%;
   display: flex;
@@ -123,24 +122,8 @@
    declared after it, so it wins on future days too. */
 .cs-cells .cs-cell:hover {
   stroke: var(--text-primary);
-  stroke-width: 1.6;
+  stroke-width: 1.2;
   stroke-dasharray: none;
-}
-
-/* Replaces the native <title> tooltip, which only appears after a browser
-   delay and can't be themed. */
-.cs-tip {
-  position: absolute;
-  z-index: 5;
-  transform: translate(-50%, calc(-100% - 7px));
-  padding: 0.3rem 0.5rem;
-  background: var(--text-primary);
-  color: var(--bg-primary);
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-  pointer-events: none;
 }
 
 /* --- load sequence: windows light bow to stern -------------------------- */
@@ -237,13 +220,12 @@
   color: var(--accent-color);
 }
 
-/* Three fields across, stacking to one on a cropped plate — the date range
-   needs its full measure and won't sit in a third of a phone's width.
-   Cells draw only the rules *between* them; the outer box belongs to
-   .cs-titleblock, so nothing is painted twice. */
+/* Two fields across, stacking on a cropped plate. Cells draw only the rules
+   *between* them; the outer box belongs to .cs-titleblock, so nothing is
+   painted twice. */
 .cs-tb-specs {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   margin: 0;
 }
 
@@ -287,12 +269,6 @@
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
-}
-
-/* Keeps a date whole — the hyphens are break opportunities, so without this
-   the span wraps as "2026-08-" / "23" in a narrow cell. */
-.cs-tb-cell time {
-  white-space: nowrap;
 }
 
 .cs-tb-cell dd a {
