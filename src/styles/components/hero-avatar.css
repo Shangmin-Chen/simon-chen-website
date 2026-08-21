@@ -6,35 +6,32 @@
   }
 }
 
-/* Two declared halves, ruled apart: the drawing to port, the prints to
-   starboard. The rule is what makes the split read as structure rather than
-   as two things that happen to sit near each other. */
+/* Distribution follows the hero this replaced: one dominant mass anchored
+   left, a small accent anchored far right, and the empty middle left empty.
+   The plate is the mass; the prints are the accent. */
 .hero-lower-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.84fr);
+  display: flex;
   align-items: stretch;
+  justify-content: space-between;
+  gap: clamp(2rem, 5vw, 5rem);
   margin-top: clamp(1rem, 2.5vh, 2rem);
 }
 
 .hero-plate-col {
+  flex: 0 1 640px;
   min-width: 0;
-  padding-right: clamp(1.75rem, 4vw, 3.5rem);
   display: flex;
   flex-direction: column;
-  justify-content: center;
   gap: clamp(1rem, 2vh, 1.5rem);
 }
 
-/* Full-width closing row: buttons anchored left, socials right. */
+/* Left-anchored like the row it replaces — the far right stays open. */
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
   gap: 1.25rem 2rem;
-  margin-top: clamp(1rem, 2.2vh, 1.6rem);
-  padding-top: clamp(1rem, 2.2vh, 1.6rem);
-  border-top: 1px solid var(--border-color);
+  margin-top: clamp(1.5rem, 3.5vh, 2.5rem);
 }
 
 .hero-actions .hero-social {
@@ -43,14 +40,14 @@
 
 /* --- polaroid cluster --------------------------------------------------- */
 
-/* Starboard half: the prints, piled the way a handful dropped on a desk would
-   be. */
+/* The accent: a tight pile at the far right, sized against the plate the way
+   the polaroid was sized against the headline — roughly a quarter of the
+   width, not half. Bottom-aligned so it sits opposite the title block and
+   leaves the upper right open. */
 .hero-photos-col {
-  min-width: 0;
-  border-left: 1px solid var(--border-color);
-  padding-left: clamp(1.75rem, 4vw, 3.5rem);
+  flex: 0 0 clamp(230px, 25%, 330px);
   display: flex;
-  align-items: center;
+  align-items: flex-end;
 }
 
 /* The stack's own height is fixed — the offsets below are percentages, so a
@@ -58,7 +55,7 @@
 .hero-photo-stack {
   position: relative;
   width: 100%;
-  height: clamp(340px, 44vh, 450px);
+  height: clamp(280px, 36vh, 370px);
 }
 
 .hero-photo {
@@ -66,23 +63,23 @@
 }
 
 .hero-photo--portrait {
-  top: 12%;
+  top: 6%;
   left: 0;
-  width: 54%;
+  width: 64%;
   z-index: 3;
 }
 
 .hero-photo--river {
   top: 0;
   right: 0;
-  width: 45%;
+  width: 52%;
   z-index: 1;
 }
 
 .hero-photo--street {
-  top: 56%;
-  left: 38%;
-  width: 46%;
+  bottom: 0;
+  right: 2%;
+  width: 54%;
   z-index: 2;
 }
 
@@ -168,22 +165,18 @@
 
 @media (max-width: 900px) {
   .hero-lower-grid {
-    grid-template-columns: minmax(0, 1fr);
+    flex-direction: column;
     gap: 2.5rem;
     margin-top: 2rem;
   }
 
   .hero-plate-col {
-    padding-right: 0;
+    flex: 0 1 auto;
   }
 
-  /* Stacked, the rule moves from the side to the top, and the scatter — which
-     has no room to spread on a phone — falls into a row keeping only its tilt. */
+  /* No room to spread on a phone — the prints fall into a row, keeping tilt. */
   .hero-photos-col {
-    border-left: 0;
-    border-top: 1px solid var(--border-color);
-    padding-left: 0;
-    padding-top: 2rem;
+    display: block;
   }
 
   .hero-photo-stack {
