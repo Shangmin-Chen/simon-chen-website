@@ -6,21 +6,22 @@
   }
 }
 
+/* Two declared halves, ruled apart: the drawing to port, the prints to
+   starboard. The rule is what makes the split read as structure rather than
+   as two things that happen to sit near each other. */
 .hero-lower-grid {
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: clamp(2rem, 4vw, 3.5rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.84fr);
+  align-items: stretch;
   margin-top: clamp(1rem, 2.5vh, 2rem);
 }
 
-/* The plate leads: drawing, title block, then the copy it belongs to. */
 .hero-plate-col {
-  flex: 1 1 auto;
   min-width: 0;
-  max-width: 640px;
+  padding-right: clamp(1.75rem, 4vw, 3.5rem);
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: clamp(1rem, 2vh, 1.5rem);
 }
 
@@ -31,7 +32,9 @@
   align-items: center;
   justify-content: space-between;
   gap: 1.25rem 2rem;
-  margin-top: clamp(1.25rem, 3vh, 2.25rem);
+  margin-top: clamp(1rem, 2.2vh, 1.6rem);
+  padding-top: clamp(1rem, 2.2vh, 1.6rem);
+  border-top: 1px solid var(--border-color);
 }
 
 .hero-actions .hero-social {
@@ -40,17 +43,22 @@
 
 /* --- polaroid cluster --------------------------------------------------- */
 
-/* Absolutely placed against a reserved box so the three overlap the way a
-   handful of prints dropped on a desk would. */
-/* Height is fixed rather than stretched — the offsets below are percentages,
-   so a column that grew with its neighbour would fan the pile apart. */
+/* Starboard half: the prints, piled the way a handful dropped on a desk would
+   be. */
 .hero-photos-col {
+  min-width: 0;
+  border-left: 1px solid var(--border-color);
+  padding-left: clamp(1.75rem, 4vw, 3.5rem);
+  display: flex;
+  align-items: center;
+}
+
+/* The stack's own height is fixed — the offsets below are percentages, so a
+   box that grew with the column beside it would fan the pile apart. */
+.hero-photo-stack {
   position: relative;
-  flex: 1 1 auto;
-  min-width: 280px;
-  max-width: 620px;
-  align-self: center;
-  height: clamp(360px, 46vh, 470px);
+  width: 100%;
+  height: clamp(340px, 44vh, 450px);
 }
 
 .hero-photo {
@@ -160,25 +168,26 @@
 
 @media (max-width: 900px) {
   .hero-lower-grid {
-    flex-direction: column;
-    align-items: stretch;
+    grid-template-columns: minmax(0, 1fr);
     gap: 2.5rem;
     margin-top: 2rem;
   }
 
   .hero-plate-col {
-    max-width: 100%;
+    padding-right: 0;
   }
 
-  /* The scatter needs room it doesn't have on a phone — the prints fall into
-     a row instead, keeping only their tilt. */
-  /* Release both the reserved box and the floor the scatter needed — height,
-     not min-height, is what the base rule sets, and min-width would otherwise
-     hold the column wider than the page on a very narrow phone. */
+  /* Stacked, the rule moves from the side to the top, and the scatter — which
+     has no room to spread on a phone — falls into a row keeping only its tilt. */
   .hero-photos-col {
-    position: static;
+    border-left: 0;
+    border-top: 1px solid var(--border-color);
+    padding-left: 0;
+    padding-top: 2rem;
+  }
+
+  .hero-photo-stack {
     height: auto;
-    min-width: 0;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;

@@ -49,30 +49,34 @@ const Hero = () => {
           </motion.div>
 
           <div className="hero-photos-col">
-            {heroData.photos.map((photo, i) => (
-              <motion.div
-                key={photo.id}
-                className={`hero-photo hero-photo--${photo.id}`}
-                initial={{ opacity: 0, scale: 0.94, y: 16 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.9, ease: EASE, delay: 0.34 + i * 0.09 }}
-              >
-                <Link
-                  to={heroData.album.to}
-                  className="hero-photo-frame"
-                  aria-label={`${photo.alt} — open the ${heroData.album.caption} album`}
+            <div className="hero-photo-stack">
+              {heroData.photos.map((photo, i) => (
+                <motion.div
+                  key={photo.id}
+                  className={`hero-photo hero-photo--${photo.id}`}
+                  initial={{ opacity: 0, scale: 0.94, y: 16 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ duration: 0.9, ease: EASE, delay: 0.34 + i * 0.09 }}
                 >
-                  <BlurhashImage
-                    src={photo.src}
-                    blurhash={photo.blurhash}
-                    alt={photo.alt}
-                    className="hero-photo-img-container"
-                    imgClassName="hero-photo-img"
-                  />
-                  {i === 0 && <span className="hero-photo-caption">{heroData.album.caption}</span>}
-                </Link>
-              </motion.div>
-            ))}
+                  <Link
+                    to={heroData.album.to}
+                    className="hero-photo-frame"
+                    aria-label={`${photo.alt} — open the ${heroData.album.caption} album`}
+                  >
+                    <BlurhashImage
+                      src={photo.src}
+                      blurhash={photo.blurhash}
+                      alt={photo.alt}
+                      className="hero-photo-img-container"
+                      imgClassName="hero-photo-img"
+                    />
+                    {i === 0 && (
+                      <span className="hero-photo-caption">{heroData.album.caption}</span>
+                    )}
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
 
