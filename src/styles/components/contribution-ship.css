@@ -157,7 +157,9 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.55rem;
+  /* The italic descender in "Curiosity" hangs well below the baseline, so the
+     particulars need more air than the optical gap suggests. */
+  gap: clamp(0.9rem, 2vh, 1.4rem);
 }
 
 .hero-vessel {
