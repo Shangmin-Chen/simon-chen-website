@@ -142,9 +142,31 @@ const ContributionShip = ({ title, note }) => {
         .filter(Boolean)
         .join(' ')}
     >
-      {/* The name letters the sheet; everything else is annotation below the
-          hull, in the same hand as the station numbers. */}
-      <div className="cs-plate-head">{title}</div>
+      {/* The name letters the sheet with her particulars directly beneath it;
+          the note is annotation below the hull, in the same hand as the
+          station numbers. */}
+      <div className="cs-plate-head">
+        {title}
+        <dl className="cs-tb-specs">
+          <div className="cs-tb-cell">
+            <dt>{ship.labels.captain}</dt>
+            <dd>
+              <a
+                href={githubData.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${githubData.handle} on GitHub`}
+              >
+                {githubData.handle}
+              </a>
+            </dd>
+          </div>
+          <div className="cs-tb-cell">
+            <dt>{ship.labels.window}</dt>
+            <dd>{contributions}</dd>
+          </div>
+        </dl>
+      </div>
 
       <svg
         className="cs-svg"
@@ -280,25 +302,6 @@ const ContributionShip = ({ title, note }) => {
       </svg>
 
       <figcaption className="cs-notes">
-        <dl className="cs-tb-specs">
-          <div className="cs-tb-cell">
-            <dt>{ship.labels.captain}</dt>
-            <dd>
-              <a
-                href={githubData.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`${githubData.handle} on GitHub`}
-              >
-                {githubData.handle}
-              </a>
-            </dd>
-          </div>
-          <div className="cs-tb-cell">
-            <dt>{ship.labels.window}</dt>
-            <dd>{contributions}</dd>
-          </div>
-        </dl>
         {note && (
           <p className="cs-note">
             <span className="cs-note-label">{ship.labels.note}</span>

@@ -152,9 +152,12 @@
 
 /* --- title block ------------------------------------------------------- */
 
-/* The name letters the sheet — nothing beside it, nothing boxed. */
+/* The name letters the sheet, her particulars set directly beneath it. */
 .cs-plate-head {
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
 }
 
 .hero-vessel {
