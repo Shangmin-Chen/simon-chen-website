@@ -59,9 +59,7 @@
   gap: clamp(1.25rem, 3vh, 2rem);
 }
 
-/* Cleared past .hero-meta, which is absolutely positioned over this corner. */
 .hero-photos-head {
-  margin-top: clamp(2.5rem, 5.5vh, 3.5rem);
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
@@ -247,7 +245,6 @@
   }
 
   .hero-photos-head {
-    margin-top: 0;
     margin-bottom: 1.75rem;
   }
 

@@ -351,18 +351,14 @@
   }
 }
 
-/* Hero v2 meta — sits in top-right of .hero-content on desktop; in-flow on small screens */
-.hero-meta {
-  position: absolute;
-  top: 0;
-  right: 0;
-  text-align: right;
-  z-index: 2;
-  max-width: min(28h, 52vw);
+/* Hero meta — the first block of the hero's starboard column, sharing its
+   left edge with the album header and the prints beneath it. */
+.hero-meta div {
+  margin-bottom: 0.35em;
 }
 
-.hero-meta div {
-  margin-bottom: 0.4em;
+.hero-meta div:last-child {
+  margin-bottom: 0;
 }
 
 /* The hero's headline is now the vessel named by the contribution plate —
@@ -379,16 +375,6 @@
 
 .hero-social {
   margin-top: 2rem;
-}
-
-@media (max-width: 768px) {
-  .hero-meta {
-    position: static;
-    text-align: left;
-    max-width: none;
-    margin: 0 0 1.25rem;
-    z-index: auto;
-  }
 }
 
 @media (min-width: 769px) {

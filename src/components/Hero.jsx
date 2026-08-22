@@ -22,19 +22,6 @@ const Hero = () => {
   return (
     <section className="hero" aria-label="Introduction">
       <div className="hero-content">
-        {heroData.metaLines?.length > 0 && (
-          <motion.div
-            className="hero-meta mono-label"
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: EASE, delay: 0.5 }}
-          >
-            {heroData.metaLines.map((line) => (
-              <div key={line}>{line}</div>
-            ))}
-          </motion.div>
-        )}
-
         {/* Spans the full content width, the way the headline it replaces did —
             it is what carries the eye across the gap between the two columns. */}
         <motion.h1
@@ -114,7 +101,22 @@ const Hero = () => {
             </motion.div>
           </motion.div>
 
+          {/* Starboard column: where he is, where he's been, and the prints —
+              one stack on one edge, rather than a floating corner label. */}
           <div className="hero-photos-col">
+            {heroData.metaLines?.length > 0 && (
+              <motion.div
+                className="hero-meta mono-label"
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: EASE, delay: 0.25 }}
+              >
+                {heroData.metaLines.map((line) => (
+                  <div key={line}>{line}</div>
+                ))}
+              </motion.div>
+            )}
+
             <motion.div
               className="hero-photos-head"
               initial={{ opacity: 0, y: 12 }}
