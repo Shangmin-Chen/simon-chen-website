@@ -152,23 +152,9 @@
 
 /* --- title block ------------------------------------------------------- */
 
-/* Her name and particulars head the plate: one unruled row above the drawing,
-   name to port, particulars to starboard. */
-.cs-titleblock {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 1.25rem 2.5rem;
-  margin: 0;
-}
-
-.cs-tb-name {
-  position: relative;
+/* The name letters the sheet — nothing beside it, nothing boxed. */
+.cs-plate-head {
   min-width: 0;
-  display: flex;
-  align-items: flex-start;
-  gap: 0.45rem;
 }
 
 .hero-vessel {
@@ -181,39 +167,6 @@
   color: var(--text-primary);
 }
 
-/* The affordance: a small info marker at the name's top right. */
-.cs-info {
-  flex: 0 0 auto;
-  margin-top: 0.3em;
-  width: 1.15rem;
-  height: 1.15rem;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--text-tertiary);
-  border-radius: 50%;
-  background: transparent;
-  color: var(--text-tertiary);
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 0.72rem;
-  line-height: 1;
-  cursor: help;
-  transition: color 0.2s ease, border-color 0.2s ease;
-}
-
-.cs-info:hover,
-.cs-info:focus-visible {
-  color: var(--accent-color);
-  border-color: var(--accent-color);
-}
-
-.cs-info:focus-visible {
-  outline: 2px solid var(--accent-color);
-  outline-offset: 3px;
-}
-
 .hero-vessel em.accent {
   font-style: italic;
   font-weight: 300;
@@ -221,51 +174,50 @@
   color: var(--accent-color);
 }
 
-/* Knocked out over the drawing the way the dimension callout is, so it stays
-   legible without an inverted chip. */
-.cs-name-tip {
-  position: absolute;
-  left: 0;
-  top: calc(100% + 0.5rem);
-  z-index: 6;
-  width: max(240px, 100%);
-  max-width: 340px;
-  padding: 0.4rem 0.55rem 0.45rem 0;
-  background: var(--bg-primary);
-  font-family: var(--font-mono);
-  font-size: 0.61rem;
-  line-height: 1.75;
-  letter-spacing: 0.01em;
-  color: var(--text-tertiary);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.18s ease, visibility 0.18s ease;
-  pointer-events: none;
-}
-
-.cs-info:hover ~ .cs-name-tip,
-.cs-info:focus-visible ~ .cs-name-tip {
-  opacity: 1;
-  visibility: visible;
+/* Everything under the hull is printed annotation, set in the same mono, at
+   the same size and colour as the station numbers on the drawing above. */
+.cs-notes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin: 0;
 }
 
 .cs-tb-specs {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem 2.25rem;
+  gap: 0.5rem 2.5rem;
   margin: 0;
 }
 
 .cs-tb-cell {
   display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
+  align-items: baseline;
+  gap: 0.55rem;
   min-width: 0;
+}
+
+.cs-note {
+  margin: 0;
+  display: flex;
+  gap: 0.55rem;
+  max-width: 62ch;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  line-height: 1.7;
+  color: var(--text-tertiary);
+}
+
+.cs-note-label {
+  flex: 0 0 auto;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  color: var(--text-tertiary);
 }
 
 .cs-tb-cell dt {
   font-family: var(--font-mono);
-  font-size: 0.58rem;
+  font-size: 0.62rem;
   text-transform: uppercase;
   letter-spacing: 0.13em;
   color: var(--text-tertiary);
@@ -274,8 +226,8 @@
 .cs-tb-cell dd {
   margin: 0;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
-  color: var(--text-primary);
+  font-size: 0.62rem;
+  color: var(--text-secondary);
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
 }

@@ -1,4 +1,4 @@
-import React, { useId, useLayoutEffect, useMemo, useState } from 'react';
+import React, { useLayoutEffect, useMemo, useState } from 'react';
 import useGithubContributions from '../hooks/useGithubContributions';
 import useHoverLabel from '../hooks/useHoverLabel';
 import { contributionDayLabel } from '../utils/contributionLabel';
@@ -108,7 +108,6 @@ function toGrid(days) {
 const ContributionShip = ({ title, note }) => {
   const { days, loading, error } = useGithubContributions();
   const { frameRef: plateRef, tip, onPointerOver, onPointerOut } = useHoverLabel('.cs-cell');
-  const noteId = useId();
   const [compact, setCompact] = useState(false);
 
   // Measured before paint, so a narrow plate never shows a frame of the
@@ -143,50 +142,9 @@ const ContributionShip = ({ title, note }) => {
         .filter(Boolean)
         .join(' ')}
     >
-      {/* Her name and particulars head the plate, above the drawing. */}
-      <figcaption className="cs-titleblock">
-        <div className="cs-tb-head">
-          {/* An info marker carries the remarks rather than the name itself —
-              a real button, so it is reachable and announced, not pointer-only. */}
-          <div className="cs-tb-name">
-            {title}
-            {note && (
-              <>
-                <button
-                  type="button"
-                  className="cs-info"
-                  aria-describedby={noteId}
-                  aria-label="How to read this drawing"
-                >
-                  i
-                </button>
-                <span className="cs-name-tip" id={noteId} role="tooltip">
-                  {note}
-                </span>
-              </>
-            )}
-          </div>
-        </div>
-        <dl className="cs-tb-specs">
-          <div className="cs-tb-cell">
-            <dt>{ship.labels.captain}</dt>
-            <dd>
-              <a
-                href={githubData.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`${githubData.handle} on GitHub`}
-              >
-                {githubData.handle}
-              </a>
-            </dd>
-          </div>
-          <div className="cs-tb-cell">
-            <dt>{ship.labels.window}</dt>
-            <dd>{contributions}</dd>
-          </div>
-        </dl>
-      </figcaption>
+      {/* The name letters the sheet; everything else is annotation below the
+          hull, in the same hand as the station numbers. */}
+      <div className="cs-plate-head">{title}</div>
 
       <svg
         className="cs-svg"
@@ -320,6 +278,34 @@ const ContributionShip = ({ title, note }) => {
           })}
         </g>
       </svg>
+
+      <figcaption className="cs-notes">
+        <dl className="cs-tb-specs">
+          <div className="cs-tb-cell">
+            <dt>{ship.labels.captain}</dt>
+            <dd>
+              <a
+                href={githubData.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${githubData.handle} on GitHub`}
+              >
+                {githubData.handle}
+              </a>
+            </dd>
+          </div>
+          <div className="cs-tb-cell">
+            <dt>{ship.labels.window}</dt>
+            <dd>{contributions}</dd>
+          </div>
+        </dl>
+        {note && (
+          <p className="cs-note">
+            <span className="cs-note-label">{ship.labels.note}</span>
+            {note}
+          </p>
+        )}
+      </figcaption>
 
       {tip && (
         <span className="hover-tip" style={{ left: tip.x, top: tip.y }} aria-hidden="true">

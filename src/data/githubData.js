@@ -19,6 +19,7 @@ export const githubData = {
       // never read as an all-time total.
       window: 'Past 3 months',
       contributions: 'contributions',
+      note: 'Note',
       // The dimension callout under the hull.
       span: '3 months',
       empty: '—'
