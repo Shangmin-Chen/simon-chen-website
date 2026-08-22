@@ -152,10 +152,11 @@
 
 /* --- title block ------------------------------------------------------- */
 
-/* The claim is the hero's one display voice; the plate speaks in mono. */
+/* The claim is the hero's one display voice; the plate speaks in mono. Set on
+   one line across the full content width so it bridges the two columns. */
 .hero-claim {
-  margin: 0;
-  font-size: clamp(2.4rem, 4.8vw, 4.35rem);
+  margin: 0 0 clamp(1.5rem, 4vh, 3rem);
+  font-size: clamp(2.1rem, 6.2vw, 5.5rem);
   font-weight: 300;
   font-variation-settings: "opsz" 144, "SOFT" 100;
   letter-spacing: -0.045em;
@@ -268,7 +269,8 @@
   }
 
   .hero-claim {
-    font-size: clamp(2rem, 3.8vw, 3.25rem);
+    font-size: clamp(2rem, 5vw, 4.25rem);
+    margin-bottom: clamp(1rem, 2.5vh, 1.75rem);
   }
 
   .cs-note {

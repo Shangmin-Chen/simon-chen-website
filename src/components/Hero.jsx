@@ -31,6 +31,17 @@ const Hero = () => {
           </motion.div>
         )}
 
+        {/* Spans the full content width, the way the headline it replaces did —
+            it is what carries the eye across the gap between the two columns. */}
+        <motion.h1
+          className="hero-claim"
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, ease: EASE, delay: 0.05 }}
+        >
+          {heroData.headline.lead} <em className="accent">{heroData.headline.accent}</em>
+        </motion.h1>
+
         <div className="hero-lower-grid">
           <motion.div
             className="hero-plate-col"
@@ -38,17 +49,6 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, ease: EASE, delay: 0.05 }}
           >
-            <motion.h1
-              className="hero-claim"
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, ease: EASE, delay: 0.05 }}
-            >
-              {heroData.headline.lead}
-              <br />
-              <em className="accent">{heroData.headline.accent}</em>
-            </motion.h1>
-
             <ContributionShip
               vessel={
                 <>
