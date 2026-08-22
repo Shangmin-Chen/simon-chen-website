@@ -59,5 +59,23 @@ export const heroData = {
       blurhash: 'LKF$2?oHIo-o.mIoR*xux[%1kCIV',
       alt: 'Simon Chen shipping code at his internship in Jingan, Shanghai',
     },
+    {
+      id: 'library',
+      src: `${IMAGE_HOST}/shanghai/shanghai_16-thumb.jpg`,
+      blurhash: 'LLEof0_NgitR%2o#kDj[H?VtWEt7',
+      alt: 'The reading room at Shanghai Public Library',
+    },
+    {
+      id: 'tower',
+      src: `${IMAGE_HOST}/shanghai/shanghai_17-thumb.jpg`,
+      blurhash: 'LwEDr2bdtmo#tpoztSkDX8jsRjkC',
+      alt: 'Guanghua Tower at Fudan University, Simon Chen\'s exchange school',
+    },
+    {
+      id: 'cat',
+      src: `${IMAGE_HOST}/shanghai/shanghai_05-thumb.jpg`,
+      blurhash: 'L69QgQ00S6-o~U0LkC?G9Go#n}%M',
+      alt: 'Potato, the dorm cat at Unijia No.5, Shanghai',
+    },
   ],
 };

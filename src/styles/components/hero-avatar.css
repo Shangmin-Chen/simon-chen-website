@@ -97,32 +97,55 @@
   position: absolute;
 }
 
+/* Seven prints, overlapping into a pile rather than dotted about — bigger
+   relative to the box and packed, so the cluster reads as one object. */
 .hero-photo--river {
-  top: 2%;
-  right: 1%;
+  top: 0;
+  right: 4%;
   width: 30%;
-  z-index: 1;
+  z-index: 2;
+}
+
+.hero-photo--library {
+  top: 4%;
+  left: 30%;
+  width: 29%;
+  z-index: 3;
 }
 
 .hero-photo--portrait {
-  top: 15%;
-  left: 2%;
+  top: 14%;
+  left: 0;
   width: 33%;
+  z-index: 6;
+}
+
+.hero-photo--tower {
+  top: 30%;
+  right: 0;
+  width: 27%;
   z-index: 4;
 }
 
 .hero-photo--street {
-  top: 47%;
-  right: 7%;
+  top: 46%;
+  left: 27%;
   width: 31%;
-  z-index: 2;
+  z-index: 5;
 }
 
 .hero-photo--desk {
-  bottom: 3%;
-  left: 21%;
-  width: 29%;
-  z-index: 3;
+  bottom: 0;
+  left: 5%;
+  width: 30%;
+  z-index: 7;
+}
+
+.hero-photo--cat {
+  bottom: 4%;
+  right: 10%;
+  width: 27%;
+  z-index: 1;
 }
 
 .hero-photo-frame {
@@ -147,6 +170,18 @@
 
 .hero-photo--street .hero-photo-frame {
   transform: rotate(-1.5deg);
+}
+
+.hero-photo--library .hero-photo-frame {
+  transform: rotate(-2.5deg);
+}
+
+.hero-photo--tower .hero-photo-frame {
+  transform: rotate(2deg);
+}
+
+.hero-photo--cat .hero-photo-frame {
+  transform: rotate(-4deg);
 }
 
 .hero-photo--desk .hero-photo-frame {
@@ -179,7 +214,9 @@
 
 .hero-photo--river .hero-photo-img-container,
 .hero-photo--street .hero-photo-img-container,
-.hero-photo--desk .hero-photo-img-container {
+.hero-photo--desk .hero-photo-img-container,
+.hero-photo--library .hero-photo-img-container,
+.hero-photo--cat .hero-photo-img-container {
   aspect-ratio: 5 / 4;
 }
 
@@ -227,8 +264,11 @@
   .hero-photo--portrait,
   .hero-photo--river,
   .hero-photo--street,
-  .hero-photo--desk {
+  .hero-photo--desk,
+  .hero-photo--library,
+  .hero-photo--tower,
+  .hero-photo--cat {
     position: static;
-    width: clamp(120px, 25vw, 168px);
+    width: clamp(112px, 23vw, 156px);
   }
 }
