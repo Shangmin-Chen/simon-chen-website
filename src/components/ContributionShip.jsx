@@ -1,16 +1,9 @@
-import React, { useLayoutEffect, useMemo, useState } from 'react';
-import useGithubContributions from '../hooks/useGithubContributions';
+import React, { useLayoutEffect, useState } from 'react';
+import useContributionWindow, { WEEKS } from '../hooks/useContributionWindow';
 import useHoverLabel from '../hooks/useHoverLabel';
-import { contributionDayLabel } from '../utils/contributionLabel';
 import { githubData } from '../data/githubData';
 
 const { ship } = githubData;
-
-// Fixed, not a knob: the SVG below is drawn for exactly 13 stations — widening
-// the grid would push windows past the superstructure and off the hull.
-const WEEKS = 13;
-const ROWS = 7;
-const CELLS = WEEKS * ROWS;
 
 // Window column pitch, and the y-centre of every window row. Decks 1–5 carry
 // Mon–Fri as cabin windows; the two porthole strakes in the hull are the
@@ -20,9 +13,6 @@ const COL_W = 22;
 const DECK_CY = [129, 151, 173, 195, 217];
 const PORT_CY = [251, 269];
 const DECK_ROWS = DECK_CY.length;
-
-// getDay() is Sun=0 … Sat=6; map it onto the drawing's row order Mon…Fri, Sat, Sun.
-const DOW_ROW = [6, 0, 1, 2, 3, 4, 5];
 
 // Hull: sheer line aft-to-bow, raked stem, keel, cruiser stern.
 const HULL_D =
@@ -51,61 +41,10 @@ const DIM_X1 = COL_X0 - 8;
 const DIM_X2 = COL_X0 + (WEEKS - 1) * COL_W + 8;
 const DIM_MID = (DIM_X1 + DIM_X2) / 2;
 
-function toIsoDate(date) {
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${date.getFullYear()}-${month}-${day}`;
-}
-
-// Lay the flat day list out into 13 week-columns ending with the current,
-// still-unfinished week, so the grid always includes today. Days later this
-// week have not happened yet and render as unlit "not yet" windows.
-//
-// Columns start on Monday to match the row order above — on a Sunday-start
-// week the SU porthole would hold the Sunday *before* its own column's Monday,
-// six days out of order and sitting below days that haven't happened yet.
-function toGrid(days) {
-  const byDate = new Map(days.map((day) => [day.date, day]));
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const sinceMonday = (today.getDay() + 6) % 7;
-  const start = new Date(today);
-  start.setDate(today.getDate() - sinceMonday - (WEEKS - 1) * ROWS);
-
-  const cells = [];
-  for (let i = 0; i < CELLS; i += 1) {
-    const date = new Date(start);
-    date.setDate(start.getDate() + i);
-    const iso = toIsoDate(date);
-    const day = byDate.get(iso);
-
-    const count = day?.count ?? 0;
-
-    cells.push({
-      iso,
-      col: Math.floor(i / ROWS),
-      row: DOW_ROW[date.getDay()],
-      count,
-      level: day?.level ?? 0,
-      future: date > today,
-      label:
-        date > today
-          ? `${date.toLocaleDateString(undefined, {
-              weekday: 'short',
-              month: 'short',
-              day: 'numeric'
-            })} · ${ship.messages.future}`
-          : contributionDayLabel(date, count)
-    });
-  }
-  return cells;
-}
-
 // `vessel` is her name and `note` her remarks, both supplied by the caller so
 // the hero keeps ownership of its own copy.
-const ContributionShip = ({ vessel, note }) => {
-  const { days, loading, error } = useGithubContributions();
+const ContributionShip = ({ note }) => {
+  const { cells, total, hasData } = useContributionWindow();
   const { frameRef: plateRef, tip, onPointerOver, onPointerOut } = useHoverLabel('.cs-cell');
   const [compact, setCompact] = useState(false);
 
@@ -124,15 +63,7 @@ const ContributionShip = ({ vessel, note }) => {
     return () => observer.disconnect();
   }, []);
 
-  const cells = useMemo(() => toGrid(days), [days]);
-  const total = useMemo(() => cells.reduce((sum, cell) => sum + cell.count, 0), [cells]);
 
-  // The hero never interrupts on a failed fetch — the plate simply draws
-  // unlit. The Now section surfaces the error where the detail lives.
-  const hasData = !loading && !error;
-  const contributions = hasData
-    ? `${total.toLocaleString()} ${ship.labels.contributions}`
-    : ship.labels.empty;
 
   return (
     <figure
@@ -141,32 +72,6 @@ const ContributionShip = ({ vessel, note }) => {
         .filter(Boolean)
         .join(' ')}
     >
-      {/* Her particulars head the sheet; the note annotates it below the hull,
-          both in the same hand as the station numbers on the drawing. */}
-      <dl className="cs-tb-specs">
-        <div className="cs-tb-cell">
-          <dt>{ship.labels.vessel}</dt>
-          <dd className="cs-vessel">{vessel}</dd>
-        </div>
-        <div className="cs-tb-cell">
-          <dt>{ship.labels.captain}</dt>
-          <dd>
-            <a
-              href={githubData.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`${githubData.handle} on GitHub`}
-            >
-              {githubData.handle}
-            </a>
-          </dd>
-        </div>
-        <div className="cs-tb-cell">
-          <dt>{ship.labels.window}</dt>
-          <dd>{contributions}</dd>
-        </div>
-      </dl>
-
       <svg
         className="cs-svg"
         viewBox={compact ? VIEWBOX_COMPACT : VIEWBOX_FULL}
