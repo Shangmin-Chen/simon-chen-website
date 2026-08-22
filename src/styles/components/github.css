@@ -7,7 +7,9 @@
   display: flex;
   gap: var(--gh-gap);
   margin-top: 0.25rem;
-  padding-bottom: 4px;
+  /* overflow-x: auto makes the other axis a scroll box too, which clipped the
+     top row's hover outline — this is the room it needs to draw. */
+  padding: 3px 0 4px 3px;
   overflow-x: auto;
 }
 
@@ -27,6 +29,13 @@
 
 .gh-cell--empty {
   background: transparent;
+  pointer-events: none;
+}
+
+/* Which day you're reading. */
+.gh-cell:hover {
+  outline: 1px solid var(--text-primary);
+  outline-offset: 1px;
 }
 
 .gh-cell.lvl-0 { background: var(--gh-empty); }
