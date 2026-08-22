@@ -14,6 +14,7 @@ export const githubData = {
     rowDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
     // Her particulars, in the register's own vocabulary.
     labels: {
+      vessel: 'Vessel',
       captain: 'Captain',
       // Labels the count rather than sitting beside it, so the number can
       // never read as an all-time total.

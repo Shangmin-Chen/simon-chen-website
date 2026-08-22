@@ -1,8 +1,12 @@
 const IMAGE_HOST = 'https://images.simon-chen.com';
 
 export const heroData = {
-  // The hero's headline is the vessel the contribution plate draws. Two-tone,
-  // the way "Relentlessly Curious" was.
+  // The claim, and the vessel named after it — the headline names the trait,
+  // the drawing below proves it.
+  headline: {
+    lead: 'Relentlessly',
+    accent: 'Curious',
+  },
   vessel: {
     lead: 'The',
     accent: 'Curiosity',

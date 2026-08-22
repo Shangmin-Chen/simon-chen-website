@@ -18,11 +18,11 @@
 }
 
 .hero-plate-col {
-  flex: 0 1 640px;
+  flex: 0 1 620px;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: clamp(1rem, 2vh, 1.5rem);
+  gap: clamp(0.8rem, 1.7vh, 1.25rem);
 }
 
 /* Left-anchored under the plate — the far right stays open. */

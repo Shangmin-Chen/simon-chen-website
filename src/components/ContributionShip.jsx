@@ -102,10 +102,9 @@ function toGrid(days) {
   return cells;
 }
 
-// `title` is the vessel's name, supplied by the caller so the heading level
-// stays with the page that owns it — in the hero it is the h1. `note` is her
-// remarks, revealed by hovering the name rather than set beside it.
-const ContributionShip = ({ title, note }) => {
+// `vessel` is her name and `note` her remarks, both supplied by the caller so
+// the hero keeps ownership of its own copy.
+const ContributionShip = ({ vessel, note }) => {
   const { days, loading, error } = useGithubContributions();
   const { frameRef: plateRef, tip, onPointerOver, onPointerOut } = useHoverLabel('.cs-cell');
   const [compact, setCompact] = useState(false);
@@ -142,31 +141,31 @@ const ContributionShip = ({ title, note }) => {
         .filter(Boolean)
         .join(' ')}
     >
-      {/* The name letters the sheet with her particulars directly beneath it;
-          the note is annotation below the hull, in the same hand as the
-          station numbers. */}
-      <div className="cs-plate-head">
-        {title}
-        <dl className="cs-tb-specs">
-          <div className="cs-tb-cell">
-            <dt>{ship.labels.captain}</dt>
-            <dd>
-              <a
-                href={githubData.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`${githubData.handle} on GitHub`}
-              >
-                {githubData.handle}
-              </a>
-            </dd>
-          </div>
-          <div className="cs-tb-cell">
-            <dt>{ship.labels.window}</dt>
-            <dd>{contributions}</dd>
-          </div>
-        </dl>
-      </div>
+      {/* Her particulars head the sheet; the note annotates it below the hull,
+          both in the same hand as the station numbers on the drawing. */}
+      <dl className="cs-tb-specs">
+        <div className="cs-tb-cell">
+          <dt>{ship.labels.vessel}</dt>
+          <dd className="cs-vessel">{vessel}</dd>
+        </div>
+        <div className="cs-tb-cell">
+          <dt>{ship.labels.captain}</dt>
+          <dd>
+            <a
+              href={githubData.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${githubData.handle} on GitHub`}
+            >
+              {githubData.handle}
+            </a>
+          </dd>
+        </div>
+        <div className="cs-tb-cell">
+          <dt>{ship.labels.window}</dt>
+          <dd>{contributions}</dd>
+        </div>
+      </dl>
 
       <svg
         className="cs-svg"

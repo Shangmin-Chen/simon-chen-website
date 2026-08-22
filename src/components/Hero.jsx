@@ -38,11 +38,22 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, ease: EASE, delay: 0.05 }}
           >
+            <motion.h1
+              className="hero-claim"
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, ease: EASE, delay: 0.05 }}
+            >
+              {heroData.headline.lead}
+              <br />
+              <em className="accent">{heroData.headline.accent}</em>
+            </motion.h1>
+
             <ContributionShip
-              title={
-                <h1 className="hero-vessel">
+              vessel={
+                <>
                   {heroData.vessel.lead} <em className="accent">{heroData.vessel.accent}</em>
-                </h1>
+                </>
               }
               note={heroData.shipNote}
             />
