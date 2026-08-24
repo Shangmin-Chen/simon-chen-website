@@ -48,8 +48,7 @@ const About = () => {
               , and I often put my thoughts out on X.
             </p>
             <p>
-              {/* eslint-disable-next-line react/no-unescaped-entities -- copy content, not an attribute */}
-              If you want to chat about anything, don't hesistate to reach out!
+              If you want to chat about anything, don&apos;t hesistate to reach out!
             </p>
             <div className="skills">
               <h3>{aboutData.skillsTitle}</h3>
