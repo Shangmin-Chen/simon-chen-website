@@ -52,10 +52,17 @@
   transition: transform 0.15s ease-in-out;
 }
 
-.skip-link:focus-visible {
+.skip-link:focus-visible,
+.skip-link:focus {
   transform: translateY(0);
   outline: 2px solid var(--text-primary);
   outline-offset: 2px;
+}
+
+/* Programmatic focus target for the skip link — suppress ring (keyboard users
+   already saw the skip link's own focus indicator). */
+#main-content:focus {
+  outline: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
