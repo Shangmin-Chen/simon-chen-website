@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 
 const HANDLE = 'simonlovestocode';
-const CACHE_KEY = `cf-data:${HANDLE}`;
+// -v2 suffix invalidates pre-proxy sessionStorage entries (old shape).
+const CACHE_KEY = `cf-data:${HANDLE}-v2`;
+const CACHE_TTL_MS = 60 * 60 * 1000;
 
 // Cache shared across every mount in this page session so re-opening the
 // preview is instant and never refires the API. `memoryCache` survives
@@ -12,7 +14,19 @@ let inflight = null;
 function readSessionCache() {
   try {
     const raw = sessionStorage.getItem(CACHE_KEY);
-    return raw ? JSON.parse(raw) : null;
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    // Tolerate corrupt or stale entries gracefully.
+    if (
+      !parsed ||
+      typeof parsed !== 'object' ||
+      !Array.isArray(parsed.contests) ||
+      typeof parsed.cachedAt !== 'number' ||
+      Date.now() - parsed.cachedAt > CACHE_TTL_MS
+    ) {
+      return null;
+    }
+    return parsed;
   } catch {
     return null;
   }
@@ -27,23 +41,21 @@ function writeSessionCache(data) {
 }
 
 async function fetchCodeforces() {
-  const [contestsRes, infoRes] = await Promise.all([
-    fetch(`https://codeforces.com/api/user.rating?handle=${HANDLE}`),
-    fetch(`https://codeforces.com/api/user.info?handles=${HANDLE}`),
-  ]);
-  const contestsData = await contestsRes.json();
-  const infoData = await infoRes.json();
-
-  if (contestsData.status !== 'OK') {
+  const res = await fetch('/api/codeforces');
+  if (!res.ok) {
+    throw new Error('Failed to fetch contest history');
+  }
+  const payload = await res.json();
+  if (!payload || typeof payload !== 'object') {
     throw new Error('Failed to fetch contest history');
   }
 
-  const contests = [...contestsData.result].sort(
+  const ratings = Array.isArray(payload.ratings) ? payload.ratings : [];
+  const contests = [...ratings].sort(
     (a, b) => b.ratingUpdateTimeSeconds - a.ratingUpdateTimeSeconds
   );
-  const userInfo = infoData.status === 'OK' ? infoData.result?.[0] ?? null : null;
 
-  return { contests, userInfo };
+  return { contests, userInfo: payload.user ?? null, cachedAt: Date.now() };
 }
 
 const useCodeforcesData = () => {
