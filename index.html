@@ -2,26 +2,61 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f1ea" />
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#21201c" />
+  <meta
+    name="description"
+    content="Personal website of Simon Chen, a recent computer science graduate from Boston University based in NYC — projects, photography, and whatever rabbit hole comes next."
+  />
+  <link rel="canonical" href="https://simon-chen.com/" />
+  <meta property="og:image" content="https://simon-chen.com/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Preview of Simon Chen's personal website" />
+  <meta property="og:title" content="Simon Chen · Computer Science Grad" />
+  <meta property="og:description" content="Personal website of Simon Chen, a recent computer science graduate from Boston University based in NYC — projects, photography, and whatever rabbit hole comes next." />
+  <meta property="og:url" content="https://simon-chen.com/" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Simon Chen · Computer Science Grad" />
+  <meta name="twitter:description" content="Personal website of Simon Chen, a recent computer science graduate from Boston University based in NYC — projects, photography, and whatever rabbit hole comes next." />
+  <meta name="twitter:image" content="https://simon-chen.com/og-image.jpg" />
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('theme');
+        if (t !== 'dark' && t !== 'light') {
+          t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.classList.add(t);
+      } catch (e) {}
+    })();
+  </script>
   <link rel="icon" type="image/svg+xml" href="/favicon-light.svg" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#f5f1ea" />
-  <meta
-    name="description"
-    content="Simon's personal website, showcasing his portfolio and projects. A place to share his work and thoughts with the world."
-  />
-  <meta property="og:image" content="https://simon-chen.com/og-image.png" />
-  <meta property="og:title" content="Simon Chen" />
-  <meta property="og:description" content="Simon's personal website, showcasing his portfolio and projects." />
-  <meta property="og:url" content="https://simon-chen.com" />
-  <meta property="og:type" content="website" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..900,0..100&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="manifest" href="/manifest.json" />
-  <title>Simon Chen</title>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Simon Chen",
+      "url": "https://simon-chen.com/",
+      "jobTitle": "Recent Computer Science Graduate",
+      "sameAs": [
+        "https://github.com/Shangmin-Chen",
+        "https://linkedin.com/in/shangmin-chen",
+        "https://x.com/simonchen0",
+        "https://www.instagram.com/the.simonchen/"
+      ]
+    }
+  </script>
+  <title>Simon Chen · Computer Science Grad</title>
 </head>
 <body>
   <noscript>You need to enable JavaScript to run this app.</noscript>
