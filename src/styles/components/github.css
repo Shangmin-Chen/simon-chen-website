@@ -30,9 +30,9 @@
 }
 
 .gh-cell.lvl-0 { background: var(--gh-empty); }
-.gh-cell.lvl-1 { background: color-mix(in srgb, var(--accent-color) 28%, transparent); }
-.gh-cell.lvl-2 { background: color-mix(in srgb, var(--accent-color) 52%, transparent); }
-.gh-cell.lvl-3 { background: color-mix(in srgb, var(--accent-color) 76%, transparent); }
+.gh-cell.lvl-1 { background: color-mix(in srgb, var(--accent-color) 80%, transparent); }
+.gh-cell.lvl-2 { background: color-mix(in srgb, var(--accent-color) 88%, transparent); }
+.gh-cell.lvl-3 { background: color-mix(in srgb, var(--accent-color) 94%, transparent); }
 .gh-cell.lvl-4 { background: var(--accent-color); }
 
 .gh-preview-foot {

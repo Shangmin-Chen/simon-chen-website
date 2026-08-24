@@ -13,7 +13,7 @@
   --color-bg-tertiary-hsl: 38 24% 88%;      /* #e8e2d8 */
   --color-text-primary-hsl: 0 0% 10%;        /* #1a1a1a */
   --color-text-secondary-hsl: 0 0% 29%;      /* #4a4a4a */
-  --color-text-muted-hsl: 39 13% 38%;        /* #6f6655 ≥4.5:1 */
+  --color-text-muted-hsl: 39 13% 36%;        /* #685f50 ≥4.8:1 */
   --color-text-tertiary-hsl: 28 10% 38%;     /* #6b6158 ≥4.5:1 */
   --color-border-hsl: 40 25% 80%;           /* #d8d0c0 */
   --color-border-light-hsl: 39 26% 86%;     /* #e5dfd4 */
@@ -69,7 +69,7 @@
   --color-bg-tertiary-hsl: 43 8% 18%;      /* #32302b */
   --color-text-primary-hsl: 42 40% 88%;    /* #ede6d6 */
   --color-text-secondary-hsl: 38 15% 67%;  /* #b8afa0 */
-  --color-text-muted-hsl: 40 10% 58%;      /* #9e9789 ≥4.5:1 */
+  --color-text-muted-hsl: 40 10% 61%;      /* #a59f92 ≥5.0:1 */
   --color-text-tertiary-hsl: 28 8% 56%;    /* #90867d ≥4.5:1 */
   --color-border-hsl: 40 8% 22%;           /* #3d3a34 */
   --color-border-light-hsl: 30 6% 19%;     /* #34322e */
