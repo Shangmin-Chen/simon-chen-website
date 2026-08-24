@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import useGallery from '../hooks/useGallery';
+import usePageTitle from '../hooks/usePageTitle';
 import { galleryConfig, imageUrl } from '../data/galleryData';
 import Lightbox from './Lightbox';
 import BlurhashImage from './ui/BlurhashImage';
@@ -90,6 +91,8 @@ const GalleryPage = () => {
 
   const album = albumId ? galleries.find((g) => g.id === albumId) : null;
 
+  usePageTitle(album ? album.title : 'Gallery');
+
   let body;
   if (loading) {
     body = <p className="cf-preview-msg cf-loading-msg">{galleryConfig.messages.loading}</p>;
@@ -130,18 +133,20 @@ const GalleryPage = () => {
                   All galleries
                 </Link>
               </div>
-              <h2>
+              <h1 style={{ fontSize: '1.5em' }}>
                 {album.title} <em>- Frames</em>
-              </h2>
+              </h1>
             </>
           ) : (
             <>
               <Link to="/#gallery" className="gallery-back">
                 ← Back home
               </Link>
-              <h2>
+              {/* No author CSS targets this heading (UA-default sizing); pin
+                  the h1 to the h2 scale so promoting the tag changes nothing visually. */}
+              <h1 style={{ fontSize: '1.5em' }}>
                 Gallery <em>- Albums</em>
-              </h2>
+              </h1>
             </>
           )}
         </motion.div>
