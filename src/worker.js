@@ -15,6 +15,7 @@ const SECURITY_HEADERS = {
   'X-Frame-Options': 'DENY',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
   'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
 };
 
 // Attach security headers to a response without clobbering existing values
@@ -263,6 +264,10 @@ async function handleRequest(request, env, ctx) {
         });
       }
 
+      // Scale the cache TTL by response completeness: a degraded response
+      // (one endpoint down) must not pin the degradation at every PoP for
+      // 6h — retry after a short window instead.
+      const complete = infoData && ratingData;
       const response = new Response(
         JSON.stringify({
           user: infoData?.result?.[0] ?? null,
@@ -272,7 +277,7 @@ async function handleRequest(request, env, ctx) {
           status: 200,
           headers: {
             'Content-Type': 'application/json',
-            'Cache-Control': 'public, max-age=21600',
+            'Cache-Control': `public, max-age=${complete ? 21600 : 300}`,
           },
         }
       );
@@ -289,8 +294,10 @@ async function handleRequest(request, env, ctx) {
 
   // Handle contact form submissions
   if (url.pathname === '/api/contact' && request.method === 'POST') {
-    // Reject oversized bodies before parsing. A missing/invalid content-length
-    // header skips the cap gracefully and falls through to JSON validation.
+    // Reject oversized bodies before parsing. The header check below is only
+    // a cheap fast-path — the authoritative cap is applied to the actual byte
+    // count after buffering, so chunked/telescoped bodies without a truthful
+    // content-length can't bypass it.
     const MAX_CONTACT_BODY_BYTES = 32 * 1024;
     const lenHeader = request.headers.get('content-length');
     const contentLength = lenHeader !== null ? Number.parseInt(lenHeader, 10) : NaN;
@@ -302,7 +309,14 @@ async function handleRequest(request, env, ctx) {
     }
 
     try {
-      const raw = await request.json();
+      const bodyBytes = await request.arrayBuffer();
+      if (bodyBytes.byteLength > MAX_CONTACT_BODY_BYTES) {
+        return new Response(JSON.stringify({ error: 'Request body too large' }), {
+          status: 413,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+      const raw = JSON.parse(new TextDecoder().decode(bodyBytes));
 
       // Reject non-object bodies (arrays, strings, numbers, null) safely.
       if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) {
