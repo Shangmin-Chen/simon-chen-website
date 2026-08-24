@@ -191,7 +191,7 @@ const Gallery = () => {
 
         <div className="carousel-bar">
           <figcaption className="carousel-caption" aria-live="polite">
-            <span className="carousel-cap-text">{active.caption}</span>
+            <span className="carousel-cap-text">{active.caption || `Photo ${index + 1}`}</span>
             {active.location && (
               <span className="carousel-cap-loc">{active.location}</span>
             )}
@@ -226,7 +226,7 @@ const Gallery = () => {
               type="button"
               key={slide.full}
               className={`carousel-dot ${i === index ? 'is-active' : ''}`}
-              aria-label={`Go to photo ${i + 1}: ${slide.caption}`}
+              aria-label={`Go to photo ${i + 1}${slide.caption ? `: ${slide.caption}` : ''}`}
               aria-current={i === index ? 'true' : undefined}
               onClick={() => go(i)}
             />
