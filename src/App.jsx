@@ -39,7 +39,11 @@ function App() {
         <AppToaster />
         <Router>
           <div className="App">
-            <a href="#main-content" className="skip-link">
+            <a
+              href="#main-content"
+              className="skip-link"
+              onClick={() => document.getElementById('main-content')?.focus()}
+            >
               Skip to main content
             </a>
             <Navbar />
