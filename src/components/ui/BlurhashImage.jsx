@@ -43,6 +43,7 @@ const BlurhashImage = ({
   }, [blurhash, canvasWidth, canvasHeight]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reset load state whenever src changes
     setLoaded(false);
     setHasError(false);
     if (imgRef.current && imgRef.current.complete && imgRef.current.naturalWidth !== 0) {

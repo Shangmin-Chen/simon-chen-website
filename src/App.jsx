@@ -1,4 +1,5 @@
 import './styles/index.css';
+// eslint-disable-next-line no-unused-vars -- reserved for upcoming route-level code splitting
 import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router';
 import { MotionConfig } from 'framer-motion';
