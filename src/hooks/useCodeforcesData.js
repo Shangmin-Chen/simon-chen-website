@@ -3,7 +3,15 @@ import { useState, useEffect } from 'react';
 const HANDLE = 'simonlovestocode';
 // -v2 suffix invalidates pre-proxy sessionStorage entries (old shape).
 const CACHE_KEY = `cf-data:${HANDLE}-v2`;
+// Pre-v2 entries use a different shape and are never read — drop them once.
+const LEGACY_CACHE_KEY = `cf-data:${HANDLE}`;
 const CACHE_TTL_MS = 60 * 60 * 1000;
+
+try {
+  sessionStorage.removeItem(LEGACY_CACHE_KEY);
+} catch {
+  // sessionStorage unavailable (private mode) — nothing to clean up.
+}
 
 // Cache shared across every mount in this page session so re-opening the
 // preview is instant and never refires the API. `memoryCache` survives

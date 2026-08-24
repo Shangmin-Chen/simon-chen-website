@@ -16,7 +16,15 @@ export const sendEmail = async (formData) => {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
+      // Prefer field-level validation messages so users see WHICH field
+      // failed (take the first one for a clean single-line toast), falling
+      // back to the generic top-level error text.
+      const fieldMessages =
+        data.fields && typeof data.fields === 'object'
+          ? Object.values(data.fields).filter((m) => typeof m === 'string' && m.trim())
+          : [];
       const msg =
+        fieldMessages[0] ||
         data.error ||
         data.detail ||
         `Request failed with status ${response.status}`;

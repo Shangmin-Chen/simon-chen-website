@@ -10,7 +10,7 @@ const UPSTREAM_TIMEOUT_MS = 5000;
 // adding an inline theme bootstrap script in index.html — do not remove.
 const SECURITY_HEADERS = {
   'Content-Security-Policy':
-    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://images.simon-chen.com; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
+    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://images.simon-chen.com https://i.gr-assets.com; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
   'X-Content-Type-Options': 'nosniff',
   'X-Frame-Options': 'DENY',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
@@ -75,6 +75,24 @@ function parseGoodreadsRss(xml) {
     });
   }
   return books;
+}
+
+// Fetch one Codeforces API endpoint and return its parsed body, or null on
+// ANY failure mode (non-2xx HTTP, non-OK status field, network/timeout error)
+// so a single-endpoint outage can be tolerated independently.
+async function fetchCodeforcesJson(url) {
+  try {
+    const res = await fetch(url, {
+      headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.status === 'OK' ? data : null;
+  } catch {
+    // Includes AbortError/TimeoutError from the upstream timeout above.
+    return null;
+  }
 }
 
 async function handleRequest(request, env, ctx) {
@@ -231,28 +249,14 @@ async function handleRequest(request, env, ctx) {
     if (hit) return hit;
 
     try {
-      const [infoRes, ratingRes] = await Promise.all([
-        fetch(`https://codeforces.com/api/user.info?handles=${CODEFORCES_HANDLE}`, {
-          headers: { Accept: 'application/json' },
-          signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
-        }),
-        fetch(`https://codeforces.com/api/user.rating?handle=${CODEFORCES_HANDLE}`, {
-          headers: { Accept: 'application/json' },
-          signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
-        }),
+      const [infoData, ratingData] = await Promise.all([
+        fetchCodeforcesJson(`https://codeforces.com/api/user.info?handles=${CODEFORCES_HANDLE}`),
+        fetchCodeforcesJson(`https://codeforces.com/api/user.rating?handle=${CODEFORCES_HANDLE}`),
       ]);
 
-      if (!infoRes.ok || !ratingRes.ok) {
-        return new Response(JSON.stringify({ error: 'Upstream error' }), {
-          status: 502,
-          headers: { 'Content-Type': 'application/json' },
-        });
-      }
-
-      const infoData = await infoRes.json();
-      const ratingData = await ratingRes.json();
-
-      if (infoData.status !== 'OK' || ratingData.status !== 'OK') {
+      // Tolerate a single-endpoint failure (the old client rendered ratings
+      // even when user.info was down); both failing is a real outage → 502.
+      if (!infoData && !ratingData) {
         return new Response(JSON.stringify({ error: 'Upstream error' }), {
           status: 502,
           headers: { 'Content-Type': 'application/json' },
@@ -261,8 +265,8 @@ async function handleRequest(request, env, ctx) {
 
       const response = new Response(
         JSON.stringify({
-          user: infoData.result?.[0] ?? null,
-          ratings: ratingData.result ?? [],
+          user: infoData?.result?.[0] ?? null,
+          ratings: ratingData?.result ?? [],
         }),
         {
           status: 200,
@@ -285,6 +289,18 @@ async function handleRequest(request, env, ctx) {
 
   // Handle contact form submissions
   if (url.pathname === '/api/contact' && request.method === 'POST') {
+    // Reject oversized bodies before parsing. A missing/invalid content-length
+    // header skips the cap gracefully and falls through to JSON validation.
+    const MAX_CONTACT_BODY_BYTES = 32 * 1024;
+    const lenHeader = request.headers.get('content-length');
+    const contentLength = lenHeader !== null ? Number.parseInt(lenHeader, 10) : NaN;
+    if (Number.isFinite(contentLength) && contentLength > MAX_CONTACT_BODY_BYTES) {
+      return new Response(JSON.stringify({ error: 'Request body too large' }), {
+        status: 413,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
     try {
       const raw = await request.json();
 
