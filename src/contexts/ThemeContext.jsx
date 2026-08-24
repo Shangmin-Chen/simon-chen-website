@@ -51,9 +51,16 @@ export const ThemeProvider = ({ children }) => {
     svgIcon.href = isDarkMode ? '/favicon-dark.svg' : '/favicon-light.svg';
     }
 
-    const themeMeta = document.querySelector('meta[name="theme-color"]');
-    if (themeMeta) {
-      themeMeta.setAttribute('content', isDarkMode ? THEME_COLOR_DARK : THEME_COLOR_LIGHT);
+    // Both media-scoped metas reflect the app's current theme so browser
+    // chrome matches app reality regardless of OS scheme
+    const lightMeta = document.querySelector('meta[name="theme-color"][media*="light"]');
+    const darkMeta = document.querySelector('meta[name="theme-color"][media*="dark"]');
+    const themeColor = isDarkMode ? THEME_COLOR_DARK : THEME_COLOR_LIGHT;
+    if (lightMeta) {
+      lightMeta.setAttribute('content', themeColor);
+    }
+    if (darkMeta) {
+      darkMeta.setAttribute('content', themeColor);
     }
   }, [isDarkMode]);
 

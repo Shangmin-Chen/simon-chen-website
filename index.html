@@ -7,7 +7,7 @@
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#21201c" />
   <meta
     name="description"
-    content="Personal website of Simon Chen, a recent computer science graduate from Boston University based in NYC — projects, photography, and whatever rabbit hole comes next."
+    content="Personal website of Simon Chen, a recent computer science graduate from Boston University in NYC — projects, photography, and whatever rabbit hole comes next."
   />
   <link rel="canonical" href="https://simon-chen.com/" />
   <meta property="og:image" content="https://simon-chen.com/og-image.jpg" />
@@ -15,18 +15,20 @@
   <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="Preview of Simon Chen's personal website" />
   <meta property="og:title" content="Simon Chen · Computer Science Grad" />
-  <meta property="og:description" content="Personal website of Simon Chen, a recent computer science graduate from Boston University based in NYC — projects, photography, and whatever rabbit hole comes next." />
+  <meta property="og:description" content="Personal website of Simon Chen, a recent computer science graduate from Boston University in NYC — projects, photography, and whatever rabbit hole comes next." />
   <meta property="og:url" content="https://simon-chen.com/" />
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Simon Chen · Computer Science Grad" />
-  <meta name="twitter:description" content="Personal website of Simon Chen, a recent computer science graduate from Boston University based in NYC — projects, photography, and whatever rabbit hole comes next." />
+  <meta name="twitter:description" content="Personal website of Simon Chen, a recent computer science graduate from Boston University in NYC — projects, photography, and whatever rabbit hole comes next." />
   <meta name="twitter:image" content="https://simon-chen.com/og-image.jpg" />
   <script>
     (function () {
       try {
         var t = localStorage.getItem('theme');
-        if (t !== 'dark' && t !== 'light') {
+        if (t) {
+          t = t === 'dark' ? 'dark' : 'light';
+        } else {
           t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         }
         document.documentElement.classList.add(t);
