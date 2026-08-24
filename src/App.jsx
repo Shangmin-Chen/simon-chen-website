@@ -1,5 +1,4 @@
 import './styles/index.css';
-import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router';
 import { MotionConfig } from 'framer-motion';
 import { Toaster } from 'sonner';
@@ -40,12 +39,17 @@ function App() {
         <AppToaster />
         <Router>
           <div className="App">
+            <a href="#main-content" className="skip-link">
+              Skip to main content
+            </a>
             <Navbar />
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/gallery" element={<GalleryPage />} />
-              <Route path="/gallery/:albumId" element={<GalleryPage />} />
-            </Routes>
+            <main id="main-content">
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/gallery" element={<GalleryPage />} />
+                <Route path="/gallery/:albumId" element={<GalleryPage />} />
+              </Routes>
+            </main>
             <Footer />
           </div>
         </Router>
