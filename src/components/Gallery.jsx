@@ -140,13 +140,14 @@ const Gallery = () => {
     body = (
       <div
         className="carousel"
-        role="group"
+        role="region"
         aria-roledescription="carousel"
-        aria-label={featured?.title ? `${featured.title} photo gallery` : 'Photo gallery'}
+        aria-label={featured?.title || 'Featured photos'}
       >
         <div
           ref={viewportRef}
           className="carousel-viewport"
+          role="group"
           tabIndex={0}
           onKeyDown={onKeyDown}
           onPointerDown={onPointerDown}
@@ -219,7 +220,7 @@ const Gallery = () => {
           </div>
         </div>
 
-        <div className="carousel-dots" aria-label="Choose photo">
+        <div className="carousel-dots" role="group" aria-label="Choose photo">
           {slides.map((slide, i) => (
             <button
               type="button"
