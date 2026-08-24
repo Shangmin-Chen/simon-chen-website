@@ -27,14 +27,17 @@ const Footer = () => {
 
         <nav className="footer-nav" aria-label="Footer">
           {footerData.navLinks.map((link) => (
-            <button
+            <a
               key={link.sectionId}
-              type="button"
+              href={`#${link.sectionId}`}
               className="footer-nav-link"
-              onClick={() => handleNavClick(link.sectionId)}
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavClick(link.sectionId);
+              }}
             >
               {link.label}
-            </button>
+            </a>
           ))}
         </nav>
 

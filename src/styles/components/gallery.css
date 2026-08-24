@@ -253,25 +253,41 @@
 .carousel-dots {
   display: flex;
   gap: 10px;
-  margin-top: 20px;
+  /* Dots are 24px-tall hit areas around a 4px visual bar; reduced margin
+     keeps the bar at the same optical position as a bare 20px gap would. */
+  margin-top: 10px;
 }
 
 .carousel-dot {
+  position: relative;
   width: 28px;
-  height: 4px;
+  height: 24px;
   padding: 0;
   border: none;
+  background: none;
+  cursor: pointer;
+}
+
+/* The visible bar is painted on a pseudo-element so the clickable area is a
+   full 28x24 target while the resting appearance stays a slim 28x4 bar. */
+.carousel-dot::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 4px;
   border-radius: 2px;
   background: var(--border-color);
-  cursor: pointer;
   transition: background 0.25s, transform 0.25s;
 }
 
-.carousel-dot:hover {
+.carousel-dot:hover::before {
   background: var(--text-muted);
 }
 
-.carousel-dot.is-active {
+.carousel-dot.is-active::before {
   background: var(--accent-color);
 }
 
