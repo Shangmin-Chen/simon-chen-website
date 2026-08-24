@@ -58,6 +58,7 @@ const useGoodreads = () => {
     }
 
     let active = true;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch-on-mount loading state
     setLoading(true);
     setError(null);
 

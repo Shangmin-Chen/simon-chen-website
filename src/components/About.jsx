@@ -48,7 +48,7 @@ const About = () => {
               , and I often put my thoughts out on X.
             </p>
             <p>
-              If you want to chat about anything, don't hesistate to reach out!
+              If you want to chat about anything, don&apos;t hesistate to reach out!
             </p>
             <div className="skills">
               <h3>{aboutData.skillsTitle}</h3>

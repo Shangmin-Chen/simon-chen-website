@@ -44,6 +44,7 @@ const Gallery = () => {
 
   // Reset to the first frame whenever the active album changes.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reset carousel position on album switch
     setIndex(0);
   }, [featured?.id]);
 
@@ -120,6 +121,7 @@ const Gallery = () => {
       node.removeEventListener('pointerup', endDrag);
       node.removeEventListener('pointercancel', endDrag);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- resubscribe only when handlers change, not every render
   }, [next, prev]);
 
   const pad = (n) => String(n + 1).padStart(2, '0');
@@ -157,6 +159,7 @@ const Gallery = () => {
             className="carousel-track"
             style={{
               transform: `translateX(calc(${-index * 100}% + ${dragX}px))`,
+              // eslint-disable-next-line react-hooks/refs -- disable transition only while a drag is live
               transition: dragRef.current.active
                 ? 'none'
                 : 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',

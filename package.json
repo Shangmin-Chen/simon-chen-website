@@ -27,13 +27,8 @@
     "dev:worker": "npm run build && wrangler dev",
     "gallery:resize": "node scripts/resize-gallery.mjs",
     "check:tokens": "node scripts/check-architecture.mjs",
+    "lint": "eslint .",
     "verify": "npm run build && npm run check:tokens"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
   },
   "browserslist": {
     "production": [
@@ -48,8 +43,13 @@
     ]
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
     "@vitejs/plugin-react": "^5.1.2",
+    "eslint": "^9.39.5",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
     "gh-pages": "^6.3.0",
+    "globals": "^17.11.0",
     "sharp": "^0.35.1",
     "vite": "^7.2.7",
     "wrangler": "^4.54.0"

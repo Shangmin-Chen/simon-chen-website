@@ -1,5 +1,4 @@
 import './styles/index.css';
-import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router';
 import { MotionConfig } from 'framer-motion';
 import { Toaster } from 'sonner';
