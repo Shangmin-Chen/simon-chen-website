@@ -8,7 +8,7 @@ const GENERIC_CAPTION_RE = /^(?:[^,]+,\s*)?photo\s+\d+$/i;
 
 const composeAlt = (photo) => {
   const alt = typeof photo?.alt === 'string' ? photo.alt.trim() : '';
-  if (alt) return alt;
+  if (alt && !GENERIC_CAPTION_RE.test(alt)) return alt;
   const caption = typeof photo?.caption === 'string' ? photo.caption.trim() : '';
   if (caption && !GENERIC_CAPTION_RE.test(caption)) return caption;
   const location = typeof photo?.location === 'string' ? photo.location.trim() : '';
