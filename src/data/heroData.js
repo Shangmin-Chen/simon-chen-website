@@ -29,7 +29,7 @@ export const heroData = {
   ],
   album: {
     to: '/gallery/shanghai-study-abroad',
-    label: 'Ports of call',
+    label: 'Most recent adventure',
     caption: 'Shanghai Study Abroad',
   },
   // Scattered on the right, largest first — the first carries the caption

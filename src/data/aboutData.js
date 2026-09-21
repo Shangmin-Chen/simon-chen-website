@@ -1,7 +1,6 @@
 export const aboutData = {
   paragraphs: [
-    "Hi! Welcome to my site!",
-    "I'm a recent computer science graduate from Boston University. I'm drawn to startups and I love meeting new people from all walks of life.",
+    "Hi, my name is Simon. I take a lot of pride in the things I build and I love meeting new people from all walks of life.",
+    "I'm always trying new things and learning.",
   ],
-  skillsTitle: 'Skills',
 };

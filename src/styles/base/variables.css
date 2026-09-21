@@ -6,6 +6,7 @@
   --nav-height: 4.5rem;
   --font-serif: 'Fraunces', 'Times New Roman', Georgia, serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-script: 'Alex Brush', cursive;
 
   /* Layer 1: Primitives (HSL Raw Channel Triplets) */
   --color-bg-primary-hsl: 38 33% 94%;       /* #f5f1ea */
