@@ -35,3 +35,4 @@
 /* Utility Styles */
 @import './utils/responsive.css';
 @import './utils/scroll-reveal.css';
+@import './utils/a11y.css';
