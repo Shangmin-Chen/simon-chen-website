@@ -4,13 +4,25 @@ import Zoom from 'yet-another-react-lightbox/plugins/zoom';
 import 'yet-another-react-lightbox/styles.css';
 import { imageUrl } from '../data/galleryData';
 
+const GENERIC_CAPTION_RE = /^(?:[^,]+,\s*)?photo\s+\d+$/i;
+
+const composeAlt = (photo) => {
+  const alt = typeof photo?.alt === 'string' ? photo.alt.trim() : '';
+  if (alt && !GENERIC_CAPTION_RE.test(alt)) return alt;
+  const caption = typeof photo?.caption === 'string' ? photo.caption.trim() : '';
+  if (caption && !GENERIC_CAPTION_RE.test(caption)) return caption;
+  const location = typeof photo?.location === 'string' ? photo.location.trim() : '';
+  if (location) return `${location} photograph`;
+  return 'Photograph';
+};
+
 // Enhanced photo viewer supporting touch swipe & multi-touch pinch zoom.
 const Lightbox = ({ photos = [], index, onIndex, onClose }) => {
   const isOpen = index !== null && index !== undefined && index >= 0 && index < photos.length;
 
   const slides = photos.map((photo) => ({
     src: imageUrl(photo?.full),
-    alt: photo?.alt || '',
+    alt: composeAlt(photo),
     caption: photo?.caption,
     location: photo?.location,
   }));
