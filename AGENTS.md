@@ -78,6 +78,7 @@ All network requests originating from the client target local relative routes (`
 | `/api/github-contributions` | `GET` | `https://github-contributions-api.jogruber.de/v4/Shangmin-Chen?y=last` | Edge-cached for **3600 seconds** (`max-age=3600`). Prevents API rate-limiting on upstream contribution graph service. |
 | `/api/goodreads` | `GET` | `https://www.goodreads.com/review/list_rss/141302044?shelf=currently-reading` | Edge-cached for **3600 seconds**. Fetches RSS XML with custom browser `User-Agent`, parses items into JSON array (`title`, `author`, `cover`, `link`, `rating`). |
 | `/api/gallery` | `GET` | `https://images.simon-chen.com/gallery.json` | Edge-cached for **300 seconds**. Fetches photo gallery metadata manifest from Cloudflare R2 bucket. Short TTL enables fast updates without site redeploy. |
+| `/api/codeforces` | `GET` | `https://codeforces.com/api/user.info` + `https://codeforces.com/api/user.rating` | Edge-cached for **21600 seconds** (`max-age=21600`). Fetches profile info and rating history in parallel; tolerates a single-endpoint failure (`user: null`) and returns 502 only when both fail. |
 | `/api/contact` | `POST` | `https://api.emailjs.com/api/v1.0/email/send` | Non-cached. Validates `name`, `email`, `subject`, and `message`. Injects Cloudflare secrets (`EMAILJS_SERVICE_ID`, `EMAILJS_TEMPLATE_ID`, `EMAILJS_PUBLIC_KEY`) to transmit message safely. |
 
 ---

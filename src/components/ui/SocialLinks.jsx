@@ -20,7 +20,7 @@ const SocialLinks = ({ className = '', linkClassName = '', iconSize = 18 }) => (
           target="_blank"
           rel="noopener noreferrer"
           className={linkClassName}
-          aria-label={link.label}
+          aria-label={`${link.label} (opens in new tab)`}
         >
           <Icon size={iconSize} strokeWidth={1.75} />
         </a>

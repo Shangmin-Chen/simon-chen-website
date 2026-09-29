@@ -1,0 +1,38 @@
+/* Accessibility Utilities */
+
+/* Skip navigation link — first focusable element, sits above navbar z-index */
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translateY(-120%);
+  z-index: 1100;
+  padding: 0.75rem 1.25rem;
+  background-color: var(--accent-color);
+  color: var(--bg-primary);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom-right-radius: 6px;
+  transition: transform 0.15s ease-in-out;
+}
+
+.skip-link:focus-visible,
+.skip-link:focus {
+  transform: translateY(0);
+  outline: 2px solid var(--text-primary);
+  outline-offset: 2px;
+}
+
+/* Programmatic focus target for the skip link — suppress ring (keyboard users
+   already saw the skip link's own focus indicator). */
+#main-content:focus {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skip-link {
+    transition: none;
+  }
+}

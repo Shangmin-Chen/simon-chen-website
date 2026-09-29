@@ -39,12 +39,21 @@ function App() {
         <AppToaster />
         <Router>
           <div className="App">
+            <a
+              href="#main-content"
+              className="skip-link"
+              onClick={() => document.getElementById('main-content')?.focus()}
+            >
+              Skip to main content
+            </a>
             <Navbar />
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/gallery" element={<GalleryPage />} />
-              <Route path="/gallery/:albumId" element={<GalleryPage />} />
-            </Routes>
+            <main id="main-content" tabIndex={-1}>
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/gallery" element={<GalleryPage />} />
+                <Route path="/gallery/:albumId" element={<GalleryPage />} />
+              </Routes>
+            </main>
             <Footer />
           </div>
         </Router>
