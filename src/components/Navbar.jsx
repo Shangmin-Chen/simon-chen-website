@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router';
-import { scrollToSection } from '../utils/scrollUtils';
+import { Link, useLocation, useNavigate } from 'react-router';
+import { scrollToSection, scrollToTop } from '../utils/scrollUtils';
 import { useTheme } from '../contexts/ThemeContext';
 import { navbarData } from '../data/navbarData';
 
@@ -52,27 +52,29 @@ const Navbar = () => {
     }
   };
 
-  const handleLogoClick = () => {
+  const handleLogoClick = (e) => {
+    setIsMenuOpen(false);
     if (location.pathname !== '/') {
       navigate('/');
+      window.scrollTo({ top: 0 });
     } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      e.preventDefault();
+      scrollToTop();
     }
-    setIsMenuOpen(false);
   };
 
   return (
     <header className="navbar-shell">
       <nav className="navbar" aria-label="Site">
         <div className="nav-container">
-          <button
-            type="button"
+          <Link
+            to="/"
             className="nav-logo"
             onClick={handleLogoClick}
             aria-label="Simon Chen — home"
           >
             {navbarData.logo}
-          </button>
+          </Link>
 
           <div
             id="primary-navigation"

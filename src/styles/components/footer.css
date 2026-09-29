@@ -45,6 +45,7 @@
   background: none;
   padding: 0;
   cursor: pointer;
+  text-decoration: none;
   text-align: left;
   font-family: var(--font-mono);
   font-size: 0.85rem;
