@@ -47,7 +47,7 @@ const About = () => {
               .
             </p>
             <p>
-              If you want to chat about anything, don't hesistate to{' '}
+              If you want to chat about anything, don&apos;t hesistate to{' '}
               <a href="#contact">reach out</a>!
             </p>
 
