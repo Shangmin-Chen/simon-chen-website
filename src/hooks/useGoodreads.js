@@ -1,30 +1,16 @@
 import { useState, useEffect } from 'react';
 import { goodreadsData } from '../data/goodreadsData';
+import sessionCache from '../utils/sessionCache';
 
-const CACHE_KEY = `goodreads:${goodreadsData.userId}:${goodreadsData.shelf}`;
+const CACHE_KEY = `goodreads:${goodreadsData.userId}:${goodreadsData.shelf}:v2`;
+const CACHE_TTL_MS = 60 * 60 * 1000;
 
 // Cache shared across every mount in this page session so re-opening the
 // preview is instant and never refires the API. `memoryCache` survives
-// remounts; `sessionStorage` survives reloads within the same tab session.
+// remounts; `sessionStorage` survives reloads within the same tab session,
+// expiring after CACHE_TTL_MS (aligned with the Worker's edge cache).
 let memoryCache = null;
 let inflight = null;
-
-function readSessionCache() {
-  try {
-    const raw = sessionStorage.getItem(CACHE_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-}
-
-function writeSessionCache(data) {
-  try {
-    sessionStorage.setItem(CACHE_KEY, JSON.stringify(data));
-  } catch {
-    // sessionStorage unavailable (private mode / quota) — memoryCache still applies.
-  }
-}
 
 async function fetchBooks() {
   // Same-origin proxy (Cloudflare Worker) — Goodreads only exposes an
@@ -43,7 +29,7 @@ async function fetchBooks() {
 }
 
 const useGoodreads = () => {
-  const cached = memoryCache ?? readSessionCache();
+  const cached = memoryCache ?? sessionCache.read(CACHE_KEY, CACHE_TTL_MS);
   const [data, setData] = useState(cached);
   const [loading, setLoading] = useState(!cached);
   const [error, setError] = useState(null);
@@ -51,7 +37,7 @@ const useGoodreads = () => {
   useEffect(() => {
     if (memoryCache) return;
 
-    const sessionCached = readSessionCache();
+    const sessionCached = sessionCache.read(CACHE_KEY, CACHE_TTL_MS);
     if (sessionCached) {
       memoryCache = sessionCached;
       return;
@@ -66,7 +52,7 @@ const useGoodreads = () => {
     inflight
       .then((result) => {
         memoryCache = result;
-        writeSessionCache(result);
+        sessionCache.write(CACHE_KEY, result);
         if (active) {
           setData(result);
           setLoading(false);
