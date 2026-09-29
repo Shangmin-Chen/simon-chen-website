@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo } from 'react';
 import { toast } from 'sonner';
 import useGithubContributions from '../hooks/useGithubContributions';
+import useHoverLabel from '../hooks/useHoverLabel';
+import { contributionDayLabel } from '../utils/contributionLabel';
 import { githubData } from '../data/githubData';
 
 // Lay the flat day list out into GitHub-style week columns (one column per
@@ -25,6 +27,7 @@ function toWeeks(days) {
 const GitHubPreview = () => {
   const { days, total, loading, error } = useGithubContributions();
   const weeks = useMemo(() => toWeeks(days), [days]);
+  const { frameRef, tip, onPointerOver, onPointerOut } = useHoverLabel('.gh-cell');
 
   useEffect(() => {
     if (error) {
@@ -47,11 +50,13 @@ const GitHubPreview = () => {
   }
 
   return (
-    <div className="gh-preview">
+    <div className="gh-preview hover-tip-frame" ref={frameRef}>
       <div
         className="gh-cal"
         role="img"
         aria-label={`${total} GitHub contributions in the last year`}
+        onPointerOver={onPointerOver}
+        onPointerOut={onPointerOut}
       >
         {weeks.map((week, wi) => (
           <div className="gh-col" key={wi}>
@@ -59,16 +64,19 @@ const GitHubPreview = () => {
               <span
                 key={di}
                 className={day ? `gh-cell lvl-${day.level}` : 'gh-cell gh-cell--empty'}
-                title={
-                  day
-                    ? `${day.count} contribution${day.count === 1 ? '' : 's'} on ${day.date}`
-                    : undefined
+                data-label={
+                  day ? contributionDayLabel(new Date(`${day.date}T00:00:00`), day.count) : undefined
                 }
               />
             ))}
           </div>
         ))}
       </div>
+      {tip && (
+        <span className="hover-tip" style={{ left: tip.x, top: tip.y }} aria-hidden="true">
+          {tip.label}
+        </span>
+      )}
       <div className="gh-preview-foot">
         <span className="gh-total">{total} contributions in the last year</span>
         <a

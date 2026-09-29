@@ -1,0 +1,21 @@
+/* Hover readout for grids of day cells — see hooks/useHoverLabel.js.
+   Replaces the native tooltip, which only appears after a browser delay and
+   can't be themed. */
+
+.hover-tip-frame {
+  position: relative;
+}
+
+.hover-tip {
+  position: absolute;
+  z-index: 5;
+  transform: translate(-50%, calc(-100% - 7px));
+  padding: 0.3rem 0.5rem;
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  pointer-events: none;
+}

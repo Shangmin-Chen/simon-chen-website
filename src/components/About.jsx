@@ -1,8 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { aboutData } from '../data/aboutData';
-import { skills } from '../data/skills';
-import Tag from './ui/Tag';
+
 
 const About = () => {
   return (
@@ -43,23 +42,15 @@ const About = () => {
             <p>
               Check out some of my{' '}
               <a href="https://github.com/Shangmin-Chen" target="_blank" rel="noopener noreferrer">
-                projects on GitHub
+                work
               </a>
-              , and I often put my thoughts out on X.
+              .
             </p>
             <p>
-              If you want to chat about anything, don't hesistate to reach out!
+              If you want to chat about anything, don't hesistate to{' '}
+              <a href="#contact">reach out</a>!
             </p>
-            <div className="skills">
-              <h3>{aboutData.skillsTitle}</h3>
-              <div className="skills-grid">
-                {skills.map((skill, index) => (
-                  <Tag key={index} variant="skill">
-                    {skill}
-                  </Tag>
-                ))}
-              </div>
-            </div>
+
           </motion.div>
         </div>
       </div>
