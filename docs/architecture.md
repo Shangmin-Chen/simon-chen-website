@@ -1,59 +1,59 @@
-# Website Architecture & Technical Reference
+# Portfolio architecture
 
-This document outlines the current technical architecture, data flow, features, and optimizations implemented on the portfolio website.
-
----
-
-## 🏗️ Folder Structure & Component Layout
+The portfolio uses practical hexagonal boundaries. Pure behavior is independent
+of browser APIs; React application hooks accept ports; adapters implement the
+external dependencies. `src/App.jsx` is the composition root.
 
 ```text
-simon-chen-website/
-├── docs/                 # Documentation (this architecture overview)
-├── src/
-│   ├── App.jsx           # Main routing (React Router) & global hook bindings
-│   ├── components/       # UI elements and section layouts (About, Experience, etc.)
-│   │   └── ui/           # Reusable atomic design components (Button, Tag, FormField)
-│   ├── data/             # Static configurations & mock/portfolio metadata
-│   ├── hooks/            # Reusable React hooks (useGallery, useScrollReveal)
-│   ├── styles/           # Modular CSS structure (base resets, layout grids, components)
-│   ├── utils/            # Shared helper scripts (scroll, email services)
-│   └── worker.js         # Cloudflare Worker script for API proxies & form handlers
-└── wrangler.jsonc        # Cloudflare configuration file
+src/portfolio/
+  domain/       navigation, wheel geometry, ASCII frames, contributions, validation
+  application/  resource subscriptions and contact submission use case
+  adapters/     same-origin HTTP, TTL resource cache, optional browser storage
+  ui/           React shell, crew wheel, portrait, intro, section views
+  assets/       character grids, palettes, eye masks, approved intro glyph
+src/data/       actual projects, experience, links, integration configuration
+src/worker.js   Cloudflare API proxy and contact transport
 ```
 
----
+Dependencies point toward the domain. Domain modules import no React, DOM,
+router, storage, or network code. Application hooks depend on port contracts,
+not concrete adapters. UI receives services through props; it never fetches.
+The Worker shares pure contact validation with the browser, and retains its
+body cap, upstream timeout, edge cache, and security headers.
 
-## 🔄 Data Flow & Backend Integrations
+A resource port implements `getSnapshot()`, `subscribe(listener)`, and `load()`.
+Snapshots contain `{data, status, error}`. HTTP adapters validate response
+shapes; the cache deduplicates concurrent requests and applies TTL to memory
+and session storage. Storage failures are tolerated. Errors support explicit
+retry; no preview data is shipped. `sendMessage(values)` resolves on confirmed
+success and throws on failure. Tests inject transports, storage, and clocks.
 
-The website runs fully serverless using **Cloudflare Workers**. 
+The router is a UI adapter: `/#whoami`, `/#projects`, `/#hobbies`, `/#contact`,
+`/gallery`, and `/gallery/:albumId`. Legacy `#gallery` maps to pictures and
+`#now` to hobbies. Browser Back restores the selected character. Section views
+stay mounted and use `hidden`, preserving contact drafts and file expansion.
+The content buffer scrolls within the fixed shell. Below the minimum usable
+viewport height (650px desktop / 550px mobile), the document can scroll too,
+so landscape and browser zoom never hide the controls. Gallery photos remain actual R2 content and
+use the existing accessible touch/zoom lightbox; all new decorative assets
+are character data and CSS textures.
 
-The front-end does not make requests directly to third-party endpoints to avoid CORS limits and preserve API credentials. Instead, requests are proxied via `src/worker.js`:
+Portrait animation is local to its component. It updates at 65ms, pauses in
+background tabs, cleans up timers/listeners, and never changes page position.
+Eye movement copies the original iris inside its eyelid mask; Maine's visor
+stays intact. Intro and wheel transitions honor system reduced motion and
+the saved motion toggle. The intro makes the shell inert, traps focus on the
+skip button, then restores focus. Keyboard wheel controls use native buttons.
 
-1. **GitHub Contributions Grid:** `GET /api/github-contributions` fetches, parses, and edge-caches contribution maps.
-2. **Goodreads Currently Reading Shelf:** `GET /api/goodreads` fetches RSS XML from Goodreads, parses it into light JSON, and edge-caches results.
-3. **Photo Gallery Manifest:** `GET /api/gallery` proxies `gallery.json` hosted on a secure Cloudflare R2 bucket (`https://images.simon-chen.com`) with a 300-second Edge CDN TTL.
-4. **Contact Form Submissions:** `POST /api/contact` accepts name, email, subject, and message, validates the content, and calls the private EmailJS API using Cloudflare Environment secrets.
+API routes: GitHub and Goodreads cache for 3600s, gallery for 300s, and contact
+POST is uncached. All client requests stay under `/api/*`; secrets remain in
+the Worker. Unknown API paths return JSON 404 instead of the SPA.
 
----
+CSS preserves the three-layer HSL token architecture. Portrait palette values
+are sampled channels in asset data, exposed as CSS variables at one boundary.
+No hardcoded HEX/RGB colors belong in component CSS.
 
-## 🎨 Interactive Features & Implementation Notes
-
-### 1. Hero Polaroid Picture Frame
-- restyled `Hero.jsx` using `hero-avatar.css` to feature an elegant polaroid-style image box containing the profile photo (`shanghai_08-full.jpg` from the R2 domain).
-- Built with a subtle rotation (`rotate(2deg)`) that straightens and scales gently on hover (`rotate(0deg) scale(1.03)`) for a premium tactile feel.
-- The photo caption is an active route link (`/gallery/shanghai-study-abroad`) resolving directly to the gallery page.
-
-### 2. Smooth Scrolling & Navigation Fixes
-- Section navigation is managed via `src/utils/scrollUtils.js` which performs smooth browser window scrolling with offsets to account for the fixed header height.
-- **Mobile Menu Fix:** Solved a critical issue where mobile navigation links failed to scroll because the body scroll lock (`overflow: hidden`) remained active during the scroll request. The drawer menu now toggles `isMenuOpen` to `false` and schedules the scroll action (using `300ms` on the home page and `350ms` when navigating) to allow the drawer's `280ms` close transition to finish and WebKit/Safari to fully release the body scroll lock. Additionally, resolved a z-index stacking context bug where `.nav-backdrop` (z-index 998) was stacking *above* `.navbar` (previously z-index auto) and intercepting all mobile link tap gestures (closing the menu but failing to fire the link `onClick` handlers). Giving `.navbar` `z-index: 1000` guarantees links sit on top and receive click events.
-
-### 3. Route Chunk Loading Optimization (Eager Loading)
-- Changed routing from lazy loading (`React.lazy`) to static imports for `GalleryPage`.
-- **Why:** Navigating to lazy routes caused layout suspension while downloading separate JS chunks. Because dynamically mounted images initially render in zero-height containers before styles settle, the browser's intersection engine incorrectly deferred loading `loading="lazy"` images. By importing the route statically and switching images to `loading="eager"`, pages mount immediately, and all assets load simultaneously.
-
----
-
-## 🛡️ Security & Dependency Alignments
-
-- **Transitive Vulnerability Mitigation:** Patched **GHSA-g7r4-m6w7-qqqr** (arbitrary file read/directory traversal on Windows) in `esbuild`. 
-- Since `vite` depends on `esbuild` versions that resolved to vulnerable packages (like `0.27.3`), we specified a dependency override (`"overrides": { "esbuild": "0.28.1" }`) in `package.json` to force npm to resolve the patched, secure version.
+Validation: `npm run lint`, `npm run verify` (Node tests + build + token checks),
+and UI checks using the Cloudflare development Worker on port 8787. Node tests
+cover navigation wraparound, frame integrity/immutability, contribution dates,
+validation parity, cache TTL/deduplication/recovery, and HTTP/Worker contracts.

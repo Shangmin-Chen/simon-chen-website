@@ -42,9 +42,11 @@ const COLOR_PROPERTIES = [
 
 // Target component files for interactive elements
 const INTERACTIVE_COMPONENT_FILES = [
-  'button.css',
-  'card.css',
-  'form.css'
+  'portrait.css',
+  'crew-wheel.css',
+  'terminal-files.css',
+  'intro.css',
+  'portfolio.css'
 ];
 
 /**

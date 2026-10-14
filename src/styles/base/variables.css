@@ -1,136 +1,37 @@
-/* CSS Custom Properties (3-Layer Design System) */
+/* Layer 1: raw HSL channels. This portfolio has one night palette. */
+:root {
+  color-scheme: dark;
+  --color-bg-primary-hsl: 258 24% 5%;
+  --color-bg-secondary-hsl: 258 24% 8%;
+  --color-text-primary-hsl: 62 16% 87%;
+  --color-text-muted-hsl: 251 13% 65%;
+  --color-border-hsl: 251 20% 30%;
+  --color-accent-hsl: 68 100% 63%;
+  --color-cyan-hsl: 175 86% 65%;
+  --color-pink-hsl: 329 100% 68%;
+  --color-error-hsl: 340 100% 76%;
 
-:root,
-:root.light {
-  /* Layout & Typography */
-  --nav-height: 4.5rem;
-  --font-serif: 'Fraunces', 'Times New Roman', Georgia, serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
-  --font-script: 'Alex Brush', cursive;
-
-  /* Layer 1: Primitives (HSL Raw Channel Triplets) */
-  --color-bg-primary-hsl: 38 33% 94%;       /* #f5f1ea */
-  --color-bg-secondary-hsl: 39 25% 90%;     /* #ede8df */
-  --color-bg-tertiary-hsl: 38 24% 88%;      /* #e8e2d8 */
-  --color-text-primary-hsl: 0 0% 10%;        /* #1a1a1a */
-  --color-text-secondary-hsl: 0 0% 29%;      /* #4a4a4a */
-  --color-text-muted-hsl: 39 13% 36%;        /* #685f50 ≥4.8:1 */
-  --color-text-tertiary-hsl: 28 10% 38%;     /* #6b6158 ≥4.5:1 */
-  --color-border-hsl: 40 25% 80%;           /* #d8d0c0 */
-  --color-border-light-hsl: 39 26% 86%;     /* #e5dfd4 */
-  --color-accent-hsl: 11 68% 44%;           /* #be3e25 */
-  --color-code-bg-hsl: 40 25% 89%;          /* #ebe6dc */
-  --color-code-header-bg-hsl: 39 23% 86%;   /* #e3ddd2 */
-  --color-success-hsl: 153 40% 30%;         /* #2d6a4f */
-  --color-error-hsl: 8 68% 39%;             /* #a83220 */
-
-  /* Layer 2: Semantic Tokens (Derived from Layer 1) */
+  /* Layer 2: semantic surfaces and colors. */
   --bg-primary: hsl(var(--color-bg-primary-hsl));
   --bg-secondary: hsl(var(--color-bg-secondary-hsl));
-  --bg-tertiary: hsl(var(--color-bg-tertiary-hsl));
   --text-primary: hsl(var(--color-text-primary-hsl));
-  --text-secondary: hsl(var(--color-text-secondary-hsl));
-  --text-muted: hsl(var(--color-text-muted-hsl));
-  --text-tertiary: hsl(var(--color-text-tertiary-hsl));
+  --text-secondary: hsl(var(--color-text-muted-hsl));
+  --text-muted: var(--text-secondary);
   --border-color: hsl(var(--color-border-hsl));
-  --border-light: hsl(var(--color-border-light-hsl));
   --accent-color: hsl(var(--color-accent-hsl));
-  --hover-bg: hsl(var(--color-text-primary-hsl) / 0.06);
-  --navbar-bg: hsl(var(--color-bg-primary-hsl) / 0.88);
-  --code-bg: hsl(var(--color-code-bg-hsl));
-  --code-header-bg: hsl(var(--color-code-header-bg-hsl));
-  --card-bg: hsl(var(--color-bg-secondary-hsl));
-  --accent-bg: hsl(var(--color-accent-hsl) / 0.12);
-  --stripe-bg: hsl(var(--color-text-primary-hsl) / 0.04);
-  --success-color: hsl(var(--color-success-hsl));
+  --link-color: hsl(var(--color-cyan-hsl));
+  --highlight-color: hsl(var(--color-pink-hsl));
   --error-color: hsl(var(--color-error-hsl));
+  --texture-color: hsl(var(--color-text-primary-hsl) / 0.07);
+  --overlay-bg: hsl(var(--color-bg-primary-hsl) / 0.9);
 
-  /* Glassmorphism Tokens */
-  --glass-bg: hsl(var(--color-bg-primary-hsl) / 0.75);
-  --glass-border: hsl(var(--color-border-hsl) / 0.5);
-  --glass-blur: 12px;
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
-
-  /* Layer 3: Component & Recharts Tokens */
-  --chart-stroke: var(--accent-color);
-  --chart-fill-top: hsl(var(--color-accent-hsl) / 0.25);
-  --chart-fill-bottom: hsl(var(--color-accent-hsl) / 0.02);
-  --chart-grid-stroke: var(--border-light);
-  --chart-axis-text: var(--text-secondary);
-  --chart-tooltip-bg: var(--glass-bg);
-  --chart-tooltip-border: var(--glass-border);
-  --chart-tooltip-text: var(--text-primary);
-}
-
-/* Dark Theme Variables */
-:root.dark {
-  /* Layer 1: Primitives (HSL Raw Channel Triplets) */
-  --color-bg-primary-hsl: 48 8% 12%;       /* #22211d */
-  --color-bg-secondary-hsl: 40 8% 15%;     /* #2a2824 */
-  --color-bg-tertiary-hsl: 43 8% 18%;      /* #32302b */
-  --color-text-primary-hsl: 42 40% 88%;    /* #ede6d6 */
-  --color-text-secondary-hsl: 38 15% 67%;  /* #b8afa0 */
-  --color-text-muted-hsl: 40 10% 61%;      /* #a59f92 ≥5.0:1 */
-  --color-text-tertiary-hsl: 28 8% 56%;    /* #90867d ≥4.5:1 */
-  --color-border-hsl: 40 8% 22%;           /* #3d3a34 */
-  --color-border-light-hsl: 30 6% 19%;     /* #34322e */
-  --color-accent-hsl: 13 76% 62%;          /* #e87555 */
-  --color-code-bg-hsl: 43 8% 17%;          /* #2f2d28 */
-  --color-code-header-bg-hsl: 45 7% 21%;   /* #3a3832 */
-  --color-success-hsl: 146 52% 62%;        /* #6bcf97 */
-  --color-error-hsl: 13 76% 62%;          /* #e87555 */
-
-  /* Layer 2: Semantic Tokens (Derived from Layer 1) */
-  --bg-primary: hsl(var(--color-bg-primary-hsl));
-  --bg-secondary: hsl(var(--color-bg-secondary-hsl));
-  --bg-tertiary: hsl(var(--color-bg-tertiary-hsl));
-  --text-primary: hsl(var(--color-text-primary-hsl));
-  --text-secondary: hsl(var(--color-text-secondary-hsl));
-  --text-muted: hsl(var(--color-text-muted-hsl));
-  --text-tertiary: hsl(var(--color-text-tertiary-hsl));
-  --border-color: hsl(var(--color-border-hsl));
-  --border-light: hsl(var(--color-border-light-hsl));
-  --accent-color: hsl(var(--color-accent-hsl));
-  --hover-bg: hsl(var(--color-text-primary-hsl) / 0.08);
-  --navbar-bg: hsl(var(--color-bg-primary-hsl) / 0.88);
-  --code-bg: hsl(var(--color-code-bg-hsl));
-  --code-header-bg: hsl(var(--color-code-header-bg-hsl));
-  --card-bg: hsl(var(--color-bg-secondary-hsl));
-  --accent-bg: hsl(var(--color-accent-hsl) / 0.15);
-  --stripe-bg: hsl(var(--color-text-primary-hsl) / 0.04);
-  --success-color: hsl(var(--color-success-hsl));
-  --error-color: hsl(var(--color-error-hsl));
-
-  /* Glassmorphism Tokens */
-  --glass-bg: hsl(var(--color-bg-primary-hsl) / 0.75);
-  --glass-border: hsl(var(--color-border-hsl) / 0.4);
-  --glass-blur: 12px;
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-
-  /* Layer 3: Component & Recharts Tokens */
-  --chart-stroke: var(--accent-color);
-  --chart-fill-top: hsl(var(--color-accent-hsl) / 0.25);
-  --chart-fill-bottom: hsl(var(--color-accent-hsl) / 0.02);
-  --chart-grid-stroke: var(--border-light);
-  --chart-axis-text: var(--text-secondary);
-  --chart-tooltip-bg: var(--glass-bg);
-  --chart-tooltip-border: var(--glass-border);
-  --chart-tooltip-text: var(--text-primary);
-}
-
-/* Glassmorphism Utilities */
-.glass,
-.glass-card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
-}
-
-@supports not ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
-  .glass,
-  .glass-card {
-    background: var(--bg-secondary);
-  }
+  /* Layer 3: component tokens. Portrait palettes are HSL channels sampled
+     from the reference frames, bound to --portrait-* at the portrait boundary. */
+  --portrait-frame: var(--text-muted);
+  --portrait-title: var(--link-color);
+  --wheel-rail: var(--border-color);
+  --activity-empty: var(--text-muted);
+  --activity-low: var(--link-color);
+  --activity-high: var(--accent-color);
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Consolas, monospace;
 }

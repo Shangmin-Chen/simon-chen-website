@@ -17,55 +17,33 @@ The application is a high-performance personal portfolio, gallery, and data dash
 
 ## 2. 3-Layer Design Token System
 
-The styling architecture in [`src/styles/base/variables.css`](src/styles/base/variables.css) follows a strict **3-Layer Design Token Architecture**, enabling smooth theme switching (light/dark mode) and maintaining color consistency without hardcoded hex colors.
+The styling architecture in [`src/styles/base/variables.css`](src/styles/base/variables.css) follows a strict **3-Layer Design Token Architecture**, maintaining color consistency through raw channels, semantic colors, and component tokens without hardcoded hex colors.
 
-```
-┌─────────────────────────────────────────────────────────┐
-│ Layer 1: Primitives (HSL Raw Channel Triplets)           │
-│ e.g., --color-bg-primary-hsl: 38 33% 94%                │
-└───────────────────────────┬─────────────────────────────┘
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────┐
-│ Layer 2: Semantic Tokens & Glassmorphism Variables      │
-│ e.g., --bg-primary: hsl(var(--color-bg-primary-hsl))    │
-│ e.g., --glass-bg: hsl(var(--color-bg-primary-hsl) / 0.75)│
-└───────────────────────────┬─────────────────────────────┘
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────┐
-│ Layer 3: Component & Recharts Tokens                    │
-│ e.g., --chart-stroke: var(--accent-color)               │
-│ e.g., --chart-tooltip-bg: var(--glass-bg)               │
-└───────────────────────────┴─────────────────────────────┘
+```text
+Layer 1: --color-bg-primary-hsl: 258 24% 5%
+                  ↓
+Layer 2: --bg-primary: hsl(var(--color-bg-primary-hsl))
+                  ↓
+Layer 3: --wheel-rail: var(--border-color)
 ```
 
 ### Layer 1: Primitives (HSL Channel Triplets)
 Raw color channels defined without `hsl()` wrappers to allow dynamic alpha compositing:
-- **Light Theme**: `--color-bg-primary-hsl: 38 33% 94%`, `--color-text-primary-hsl: 0 0% 10%`, `--color-accent-hsl: 11 68% 44%`.
-- **Dark Theme** (`:root.dark`): `--color-bg-primary-hsl: 48 8% 12%`, `--color-text-primary-hsl: 42 40% 88%`, `--color-accent-hsl: 13 76% 62%`.
+- **Portfolio palette**: `--color-bg-primary-hsl: 258 24% 5%`, `--color-text-primary-hsl: 62 16% 87%`, `--color-accent-hsl: 68 100% 63%`.
+- The ASCII portfolio uses one dark palette; motion preferences are independent of color.
+- Frame-specific sampled palettes are bound at the portrait UI boundary as `--portrait-*` variables.
 
-### Layer 2: Semantic Tokens & Glassmorphism
-High-level tokens representing layout intent, using channel triplets:
-- **Colors**: `--bg-primary`, `--bg-secondary`, `--text-primary`, `--text-secondary`, `--text-muted`, `--border-color`, `--accent-color`.
-- **Alpha Compositing**: `--hover-bg: hsl(var(--color-text-primary-hsl) / 0.06)`, `--navbar-bg: hsl(var(--color-bg-primary-hsl) / 0.88)`.
-- **Glassmorphism Variables**:
-  - `--glass-bg`: `hsl(var(--color-bg-primary-hsl) / 0.75)`
-  - `--glass-border`: `hsl(var(--color-border-hsl) / 0.5)`
-  - `--glass-blur`: `12px`
-  - `--glass-shadow`: `0 8px 32px 0 rgba(0, 0, 0, 0.08)`
-  - Class `.glass-card` uses `backdrop-filter: blur(var(--glass-blur))` with standard `@supports not (backdrop-filter: ...)` fallbacks.
+### Layer 2: Semantic Tokens
 
-### Layer 3: Component & Charting Tokens
-Specific tokens consumed directly by visualization libraries ([Recharts](https://recharts.org/)) and complex UI components:
-- `--chart-stroke`: `var(--accent-color)`
-- `--chart-fill-top`: `hsl(var(--color-accent-hsl) / 0.25)`
-- `--chart-fill-bottom`: `hsl(var(--color-accent-hsl) / 0.02)`
-- `--chart-grid-stroke`: `var(--border-light)`
-- `--chart-axis-text`: `var(--text-secondary)`
-- `--chart-tooltip-bg`: `var(--glass-bg)`
-- `--chart-tooltip-border`: `var(--glass-border)`
-- `--chart-tooltip-text`: `var(--text-primary)`
+Use `--bg-primary`, `--bg-secondary`, `--text-primary`, `--text-muted`,
+`--border-color`, `--accent-color`, `--link-color`, and `--highlight-color`.
+Alpha surfaces derive from the raw channels, e.g. `--texture-color`.
+
+### Layer 3: Component Tokens
+
+Components consume `--portrait-frame`, `--portrait-title`, `--wheel-rail`,
+`--activity-empty`, `--activity-low`, and `--activity-high`. Portrait colors
+bind sampled HSL data to component-scoped `--portrait-*` variables.
 
 ---
 
@@ -78,7 +56,6 @@ All network requests originating from the client target local relative routes (`
 | `/api/github-contributions` | `GET` | `https://github-contributions-api.jogruber.de/v4/Shangmin-Chen?y=last` | Edge-cached for **3600 seconds** (`max-age=3600`). Prevents API rate-limiting on upstream contribution graph service. |
 | `/api/goodreads` | `GET` | `https://www.goodreads.com/review/list_rss/141302044?shelf=currently-reading` | Edge-cached for **3600 seconds**. Fetches RSS XML with custom browser `User-Agent`, parses items into JSON array (`title`, `author`, `cover`, `link`, `rating`). |
 | `/api/gallery` | `GET` | `https://images.simon-chen.com/gallery.json` | Edge-cached for **300 seconds**. Fetches photo gallery metadata manifest from Cloudflare R2 bucket. Short TTL enables fast updates without site redeploy. |
-| `/api/codeforces` | `GET` | `https://codeforces.com/api/user.info` + `https://codeforces.com/api/user.rating` | Edge-cached for **21600 seconds** (`max-age=21600`). Fetches profile info and rating history in parallel; tolerates a single-endpoint failure (`user: null`) and returns 502 only when both fail. |
 | `/api/contact` | `POST` | `https://api.emailjs.com/api/v1.0/email/send` | Non-cached. Validates `name`, `email`, `subject`, and `message`. Injects Cloudflare secrets (`EMAILJS_SERVICE_ID`, `EMAILJS_TEMPLATE_ID`, `EMAILJS_PUBLIC_KEY`) to transmit message safely. |
 
 ---
@@ -93,7 +70,7 @@ Use the following CLI commands during development, testing, asset generation, an
 | `npx wrangler dev` | Starts local Cloudflare Worker development environment on port 8787. |
 | `npm run dev` | Launches standalone Vite local development server. |
 | `npm run check:tokens` | Executes architecture sanity checks on CSS design tokens and component compliance. |
-| `npm run verify` | Runs `npm run build && npm run check:tokens` for complete build and token verification. |
+| `npm run verify` | Runs domain/adapter/Worker tests, production build, and token checks for complete build and token verification. |
 | `npm run build` | Compiles production assets into `./build` folder using Vite. |
 | `npm run gallery:resize` | Executes [`scripts/resize-gallery.mjs`](scripts/resize-gallery.mjs) via Sharp to process images and generate Blurhash string placeholders for the gallery manifest. |
 | `npm run deploy` | Runs production build and deploys worker and static assets to Cloudflare via `wrangler deploy`. |
@@ -117,3 +94,11 @@ Use the following CLI commands during development, testing, asset generation, an
 ### Cloudflare Deployment Protocol
 - Ensure `wrangler.jsonc` matches Worker configurations.
 - Client static SPA fallback is enforced via `not_found_handling: "single-page-application"`.
+
+## 6. Portfolio boundaries
+
+`src/portfolio/domain` is pure JavaScript, independent of React, HTTP, storage,
+and routing. `application` holds use cases and resource subscriptions, accepting
+ports. `adapters` implements HTTP, cache, and browser storage. `ui` owns React,
+DOM effects, accessibility, and routing. `src/App.jsx` composes these layers.
+See `docs/architecture.md` for dependency rules and tests.

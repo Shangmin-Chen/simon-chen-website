@@ -1,5 +1,7 @@
 /* Accessibility Utilities */
 
+.sr-only { position: absolute; height: 1px; width: 1px; overflow: hidden; white-space: nowrap; clip-path: inset(50%); }
+
 /* Skip navigation link — first focusable element, sits above navbar z-index */
 .skip-link {
   position: absolute;

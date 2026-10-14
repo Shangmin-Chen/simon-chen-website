@@ -1,0 +1,14 @@
+.intro { position: absolute; inset: 0; z-index: 20; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--bg-primary); color: var(--text-primary); }
+.intro-emblem { position: relative; margin-top: 10px; }
+.intro-mark { font: 400 9px/9px var(--font-mono); white-space: pre; margin: 0; color: var(--accent-color); }
+.intro-ghost { position: absolute; inset: 0; opacity: 0.85; color: var(--link-color); transform: translate(-4px, 0); animation: logo-cut 2.4s steps(1) both; clip-path: polygon(0 31%, 100% 31%, 100% 34%, 0 34%, 0 72%, 100% 72%, 100% 75%, 0 75%); }
+.intro-pink { color: var(--highlight-color); transform: translate(5px, 0); clip-path: polygon(0 17%, 100% 17%, 100% 20%, 0 20%, 0 59%, 100% 59%, 100% 62%, 0 62%); }
+.intro-title { margin-top: 22px; font: 800 italic 28px/0.9 'Barlow Condensed', sans-serif; letter-spacing: -0.02em; }
+.intro-code { font-size: 11px; margin-top: 9px; color: var(--text-muted); }
+.intro button { color: var(--link-color); padding: 8px 20px; margin-top: 18px; min-height: 44px; }
+.intro::after { content: ''; position: absolute; left: 0; right: 0; top: 30%; height: 2px; background: var(--accent-color); pointer-events: none; animation: intro-cut 2.4s steps(1) both; }
+[data-motion='false'] .intro::after, [data-motion='false'] .intro-ghost { animation: none; opacity: 0; }
+@keyframes logo-cut { 0%, 14% { opacity: 0.85; } 15%, 29% { opacity: 0; } 30%, 34% { opacity: 0.9; } 35%, 67% { opacity: 0; } 68%, 72% { opacity: 0.9; } 73%, 100% { opacity: 0; } }
+@keyframes intro-cut { 0%, 13%, 31%, 100% { opacity: 0; } 14%, 16% { opacity: 1; top: 33%; } 29%, 30% { opacity: 1; top: 55%; } 55%, 57% { opacity: 0.65; top: 27%; } 58% { opacity: 0; } }
+@media (max-width: 650px), (max-height: 720px) { .intro-mark { font-size: 5.5px; line-height: 5.5px; } .intro-title { font-size: 24px; } }
+@media (prefers-reduced-motion: reduce) { .intro::after, .intro-ghost { animation: none; opacity: 0; } }

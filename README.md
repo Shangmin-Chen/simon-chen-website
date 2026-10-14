@@ -1,6 +1,6 @@
 # Simon Chen - Portfolio Website
 
-A modern, responsive portfolio website built with React and Vite, featuring custom animations, dynamic API integrations (GitHub contributions, Goodreads bookshelf, Codeforces stats, photo gallery, and contact form), hosted and served on **Cloudflare Pages & Workers**.
+An ASCII portfolio inspired by Cyberpunk: Edgerunners, built with React and Vite. A character wheel opens projects, photography, hobbies, and contact. Live GitHub and Goodreads feeds and the contact API run through **Cloudflare Workers**.
 
 ## 🚀 Live Demo
 
@@ -9,7 +9,7 @@ Visit the live website: [https://simon-chen.com](https://simon-chen.com)
 ## 🛠️ Tech Stack
 
 - **Frontend**: React 19.1.0, JavaScript (ES6+), Vite
-- **Styling**: CSS3 with custom animations and dynamic Light/Dark mode themes
+- **Styling**: Tokenized CSS, colored ASCII portraits, and reduced-motion support
 - **APIs & Workers**: Cloudflare Worker (`src/worker.js`) proxying:
   - `GET /api/github-contributions` for contribution graphs
   - `GET /api/goodreads` for the currently reading list
@@ -95,9 +95,9 @@ This runs `vite build` followed by `wrangler deploy`. Ensure all environment sec
 
 Want to use this as a starting point for your own site?
 
-- **Portfolio content** (experience, projects, skills, links): edit the data files in `src/data/`.
+- **Portfolio content** (experience, projects, links): edit the data files in `src/data/`.
 - **Photo gallery**: host your own `gallery.json` and images on Cloudflare R2 (see [Image Gallery Optimization](#-image-gallery-optimization)), or remove the gallery routes.
-- **Widgets**: the GitHub contributions, Goodreads, and Codeforces widgets are configured with usernames in `src/data/` and proxied through `src/worker.js` — swap in your own handles or delete the ones you don't want.
+- **Widgets**: the GitHub contributions and Goodreads feeds are configured with usernames in `src/data/` and proxied through `src/worker.js` — swap in your own handles or delete the ones you don't want.
 
 For a deeper look at how everything fits together, see the [architecture & technical reference](docs/architecture.md).
 
@@ -116,3 +116,17 @@ This project is open source and available under the [MIT License](LICENSE).
 ---
 
 **Built with ❤️ by Simon Chen**
+
+## Crew navigation
+
+David opens `whoami`, Lucy projects, Rebecca pictures, Maine hobbies, and Falco
+contact. Click the crew names, scroll or drag the wheel, use its arrow keys,
+or press 1–5. Content scrolls inside the fixed shell. Gallery URLs remain
+`/gallery` and `/gallery/:albumId`; other sections use `/#projects` etc.
+
+The intro enters automatically. Replay and motion controls are in the shell;
+the system reduced-motion preference takes priority. GitHub and Goodreads
+load when their files are opened, with retry states and expiring session caches.
+
+Run `npm run lint` and `npm run verify` before submitting changes. Verification
+includes domain, cache, HTTP-adapter, and Worker tests, build, and CSS token checks.

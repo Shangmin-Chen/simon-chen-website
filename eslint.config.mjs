@@ -46,7 +46,7 @@ export default [
 
   {
     // Build/dev tooling runs in Node.
-    files: ['scripts/**/*.{js,mjs,cjs}', '*.config.{js,mjs,cjs}'],
+    files: ['scripts/**/*.{js,mjs,cjs}', 'tests/**/*.js', '*.config.{js,mjs,cjs}'],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'module',
