@@ -47,8 +47,9 @@ Eye movement copies the original iris inside its eyelid mask; Maine's visor
 stays intact. The pure domain glitch plan translates bounded horizontal bands
 without wrapping and keeps glyph/color cells together; each band reuses one
 sampled source timestamp during its cadence before jumping ahead or behind.
-UI callers provide the clock and seed, while portrait and intro consume the
-same cadence. Intro and
+It also supplies deterministic signal colors and shared wash/speckle masks;
+the UI maps those signals to portrait palette slots or semantic CSS tokens.
+Intro and portrait consume the same cadence. Intro and
 wheel transitions honor system reduced motion and
 the saved motion toggle. The intro makes the shell inert, traps focus on the
 skip button, then restores focus. Keyboard wheel controls use native buttons.

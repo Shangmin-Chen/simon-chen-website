@@ -1,7 +1,13 @@
-import { Fragment, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import glyph from '../assets/intro.json';
 import { introFrame } from '../domain/portrait';
-import { glitchPlan } from '../domain/glitch';
+import { glitchPlan, interferenceBandText } from '../domain/glitch';
+
+const interferenceColors = {
+  cyan: 'var(--link-color)',
+  pink: 'var(--highlight-color)',
+  amber: 'var(--accent-color)',
+};
 
 export default function Intro({ motion, onFinish }) {
   const buttonRef = useRef(null);
@@ -23,12 +29,15 @@ export default function Intro({ motion, onFinish }) {
       {glitch.bands.map((band, index) => {
         const top = (band.y / glyph.length) * 100;
         const bottom = 100 - ((band.y + band.height) / glyph.length) * 100;
-        const style = { clipPath: `inset(${top}% 0 ${bottom}% 0)`, transform: `translateX(${band.dx}ch)` };
+        const style = {
+          clipPath: `inset(${top}% 0 ${bottom}% 0)`,
+          transform: `translateX(${band.dx}ch)`,
+          color: interferenceColors[band.interference.signal],
+          opacity: band.interference.mode === 'wash' ? .82 : .62,
+        };
         const bandText = introFrame(glyph, band.refreshTick, true, { bands: [] });
-        return <Fragment key={`${band.y}-${index}`}>
-          <pre className="intro-mark intro-glitch-band" style={style}>{bandText}</pre>
-          <pre className="intro-mark intro-glitch-band intro-pink" style={style}>{bandText}</pre>
-        </Fragment>;
+        const maskedBandText = interferenceBandText(bandText.split('\n'), band);
+        return <pre key={`${band.y}-${index}`} className="intro-mark intro-glitch-band" style={style}>{maskedBandText}</pre>;
       })}
     </div>
     <div className="intro-title">SIMON CHEN</div>

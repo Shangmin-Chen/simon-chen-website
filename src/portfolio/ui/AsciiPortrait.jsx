@@ -65,10 +65,20 @@ export default function AsciiPortrait({ member, motion }) {
     };
   }, [motion, portrait]);
 
-  const grid = portraitFrame(portrait, { ...frame, glitchTick: frame.burstAge, motion }, masks);
-  const glitch = motion ? portraitGlitchPlan(portrait, frame.burst ? frame.burstAge : frame.tick, frame.burst, masks) : { active: false, bands: [] };
   const palette = [...portrait.palette, '270 48% 7%', portrait.scleraHsl, '292 62% 70%', '279 48% 38%', '157 85% 84%', portrait.skinHsl];
-  const colors = Object.fromEntries(palette.map((value, i) => [`--portrait-${i}`, `hsl(${value})`]));
+  const interferencePalette = { cyan: palette.length, pink: palette.length + 1, amber: palette.length + 2 };
+  const interferenceTokens = { cyan: 'var(--link-color)', pink: 'var(--highlight-color)', amber: 'var(--accent-color)' };
+  const grid = portraitFrame(portrait, {
+    ...frame,
+    glitchTick: frame.burstAge,
+    motion,
+    colorForSignal: signal => interferencePalette[signal],
+  }, masks);
+  const glitch = motion ? portraitGlitchPlan(portrait, frame.burst ? frame.burstAge : frame.tick, frame.burst, masks) : { active: false, bands: [] };
+  const colors = Object.fromEntries([
+    ...palette.map((value, i) => [`--portrait-${i}`, `hsl(${value})`]),
+    ...Object.entries(interferenceTokens).map(([signal, color]) => [`--portrait-${interferencePalette[signal]}`, color]),
+  ]);
   const label = `[ ${member.name.toUpperCase()} ]`;
   return (
     <>

@@ -65,12 +65,12 @@ function portraitBaseFrame(portrait, { gaze = { x: 0, y: 0 }, tick = 0, motion =
   return matrix;
 }
 
-export function portraitFrame(portrait, { gaze = { x: 0, y: 0 }, tick = 0, glitchTick = tick, motion = false, burst = false } = {}, masks = eyeCells(portrait)) {
+export function portraitFrame(portrait, { gaze = { x: 0, y: 0 }, tick = 0, glitchTick = tick, motion = false, burst = false, colorForSignal } = {}, masks = eyeCells(portrait)) {
   const matrix = portraitBaseFrame(portrait, { gaze, tick, motion }, masks);
   if (!motion) return matrix;
   // Keep the iris rows stationary so tracer origins continue to point at them.
   const plan = portraitGlitchPlan(portrait, burst ? glitchTick : tick, burst, masks);
-  return applyGlitchBands(matrix, plan.bands, { sampleFrame: sampleTick => portraitBaseFrame(portrait, { gaze, tick: sampleTick, motion }, masks) });
+  return applyGlitchBands(matrix, plan.bands, { sampleFrame: sampleTick => portraitBaseFrame(portrait, { gaze, tick: sampleTick, motion }, masks), colorForSignal });
 }
 
 export function colorRuns(row) {

@@ -7,6 +7,24 @@ const hash = value => {
   return (n ^ (n >>> 16)) >>> 0;
 };
 
+const interferenceSignals = ['cyan', 'pink', 'amber'];
+
+export function interferenceAt(interference, x, y) {
+  if (!interference) return false;
+  return interference.mode === 'wash' || hash(interference.seed + y * 257 + x * 37) % 100 < 58;
+}
+
+// Return only interference-visible glyphs after the band shift, padding the
+// clipped edge with spaces. This matches the cell matrix transform below.
+export function interferenceBandText(lines, band) {
+  return lines.map((line, y) => Array.from(line, (character, x) => {
+    const destinationX = x + band.dx;
+    const inBand = y >= band.y && y < band.y + band.height;
+    return inBand && character !== ' ' && destinationX >= 0 && destinationX < line.length && interferenceAt(band.interference, destinationX, y)
+      ? character : ' ';
+  }).join('')).join('\n');
+}
+
 export function glitchPlan(seed, tick, { width, height, burst = false } = {}) {
   if (width < 1 || height < 1 || tick < 0) return { active: false, bands: [] };
   const burstFrame = burst && tick < 25;
@@ -24,19 +42,30 @@ export function glitchPlan(seed, tick, { width, height, burst = false } = {}) {
     const magnitude = 1 + (h >>> 8) % Math.max(1, Math.min(5, Math.ceil(width / 8)));
     const sampleShift = cadence % 3 === 0 ? -1 : cadence % 3 === 1 ? 1 : 0;
     const refreshTick = Math.max(0, cadence * cadenceSize + sampleShift);
-    bands.push({ y, height: bandHeight, dx: (h & 0x1000) ? magnitude : -magnitude, refreshTick });
+    const interferenceSeed = hash(h + cadence * 17);
+    bands.push({
+      y,
+      height: bandHeight,
+      dx: (h & 0x1000) ? magnitude : -magnitude,
+      refreshTick,
+      interference: {
+        signal: interferenceSignals[interferenceSeed % interferenceSignals.length],
+        mode: cadence % 3 === 0 ? 'wash' : 'speckle',
+        seed: interferenceSeed,
+      },
+    });
   }
   return { active: bands.length > 0, bands };
 }
 
 // Translate whole bands without wrapping. Row cells may be characters or
 // [character, color] tuples; source data and dimensions are never changed.
-export function applyGlitchBands(matrix, bands, { sampleFrame = () => matrix } = {}) {
+export function applyGlitchBands(matrix, bands, { sampleFrame = () => matrix, colorForSignal } = {}) {
   if (!bands.length) return matrix;
   const result = matrix.map(row => row.map(cell => Array.isArray(cell) ? [...cell] : cell));
   const height = matrix.length;
   const width = matrix[0]?.length ?? 0;
-  for (const { y, height: bandHeight, dx, refreshTick } of bands) {
+  for (const { y, height: bandHeight, dx, refreshTick, interference } of bands) {
     const sampled = refreshTick === undefined ? matrix : sampleFrame(refreshTick);
     for (let rowIndex = Math.max(0, y); rowIndex < Math.min(height, y + bandHeight); rowIndex++) {
       const source = sampled[rowIndex] ?? matrix[rowIndex];
@@ -45,7 +74,13 @@ export function applyGlitchBands(matrix, bands, { sampleFrame = () => matrix } =
         const sourceX = x - dx;
         if (sourceX < 0 || sourceX >= width) return Array.isArray(blank) ? [...blank] : blank;
         const cell = source[sourceX];
-        return Array.isArray(cell) ? [...cell] : cell;
+        if (!Array.isArray(cell)) return cell;
+        const translated = [...cell];
+        if (colorForSignal && cell[0] !== ' ' && interferenceAt(interference, x, rowIndex)) {
+          const mappedColor = colorForSignal(interference.signal, { character: cell[0], color: cell[1], x, y: rowIndex });
+          if (mappedColor !== undefined && mappedColor !== null) translated[1] = mappedColor;
+        }
+        return translated;
       });
     }
   }

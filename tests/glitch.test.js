@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { applyGlitchBands, glitchPlan } from '../src/portfolio/domain/glitch.js';
+import { applyGlitchBands, glitchPlan, interferenceAt, interferenceBandText } from '../src/portfolio/domain/glitch.js';
 import { introFrame } from '../src/portfolio/domain/portrait.js';
 
 test('band translation moves glyph and color together, clips both edges, and preserves input', () => {
@@ -39,6 +39,34 @@ test('bands hold a sampled source frame through their cadence, then jump to the 
   assert.deepEqual(heldAt2[1], heldAt3[1]);
   assert.deepEqual(heldAt2[1], Array(8).fill('3'));
   assert.deepEqual(jumpedAt4[1], Array(8).fill('4'));
+});
+
+test('color interference tints shifted sampled glyphs and leaves other cells intact', () => {
+  const current = [
+    [['a', 1], ['b', 2], ['c', 3], ['d', 4]],
+    [['e', 5], ['f', 6], ['g', 7], ['h', 8]],
+  ];
+  const sampled = [
+    [['A', 11], ['B', 12], ['C', 13], ['D', 14]],
+    [['E', 15], ['F', 16], ['G', 17], ['H', 18]],
+  ];
+  const band = { y: 0, height: 1, dx: 1, refreshTick: 3, interference: { signal: 'pink', mode: 'wash', seed: 7 } };
+  const result = applyGlitchBands(current, [band], {
+    sampleFrame: tick => tick === 3 ? sampled : current,
+    colorForSignal: signal => signal === 'pink' ? 22 : 24,
+  });
+  assert.deepEqual(result[0], [[' ', 11], ['A', 22], ['B', 22], ['C', 22]]);
+  assert.deepEqual(result[1], current[1]);
+  assert.deepEqual(current[0], [['a', 1], ['b', 2], ['c', 3], ['d', 4]]);
+  assert(interferenceAt({ mode: 'speckle', seed: 4 }, 2, 1));
+  assert.equal(applyGlitchBands(current, []), current);
+});
+
+test('intro interference masks honor shifted clipping and preserve blank columns', () => {
+  const lines = ['A CD', 'E FG'];
+  const base = { y: 0, height: 1, interference: { mode: 'wash', seed: 0, signal: 'cyan' } };
+  assert.equal(interferenceBandText(lines, { ...base, dx: -1 }), '  CD\n    ');
+  assert.equal(interferenceBandText(lines, { ...base, dx: 1 }), 'A C \n    ');
 });
 
 test('intro settles at frame 25 and motion off returns the approved static glyph', () => {
