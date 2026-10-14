@@ -21,6 +21,8 @@ export default function Portfolio({ services, preferences }) {
   const albumId = matchPath('/gallery/:albumId', location.pathname)?.params.albumId;
   const rootRef = useRef(null);
   const previousFocus = useRef(null);
+  const focusCrewForSection = useRef('');
+  const [crewFocusVersion, setCrewFocusVersion] = useState(0);
   const [introOpen, setIntroOpen] = useState(() => location.pathname === '/' && (!location.hash || location.hash === '#whoami'));
   const wasIntroOpen = useRef(introOpen);
   const { motion, reduced, toggle } = useMotion(preferences);
@@ -41,10 +43,21 @@ export default function Portfolio({ services, preferences }) {
     }
     wasIntroOpen.current = introOpen;
   }, [introOpen]);
+  useEffect(() => {
+    if (focusCrewForSection.current !== section) return;
+    focusCrewForSection.current = '';
+    rootRef.current?.querySelector('.crew-option[aria-pressed="true"]:not([hidden])')?.focus();
+  }, [crewFocusVersion, section]);
 
   return <div className="portfolio" ref={rootRef} data-motion={motion} onKeyDown={event => {
-    if (introOpen || event.ctrlKey || event.altKey || event.metaKey || event.defaultPrevented || event.target.closest('input,textarea,select,[role="dialog"]')) return;
-    if (/^[1-5]$/.test(event.key)) { event.preventDefault(); select(Number(event.key) - 1); }
+    if (introOpen || event.isComposing || event.keyCode === 229 || event.ctrlKey || event.altKey || event.metaKey || event.defaultPrevented || event.target.closest('input,textarea,select,[role="dialog"]')) return;
+    if (/^[1-5]$/.test(event.key)) {
+      event.preventDefault();
+      const nextSection = crew[Number(event.key) - 1].section;
+      focusCrewForSection.current = nextSection;
+      setCrewFocusVersion(version => version + 1);
+      select(Number(event.key) - 1);
+    }
   }}>
     <div className="portfolio-surface" inert={introOpen}>
       <a className="skip-link" href="#main-content" onClick={event => { event.preventDefault(); rootRef.current.querySelector('main').focus(); }}>Skip to main content</a>

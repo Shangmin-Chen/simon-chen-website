@@ -58,7 +58,7 @@ export default function CrewWheel({ crew, selected, onSelect }) {
         aria-label="Character switcher wheel"
         ref={wheelRef}
         onKeyDown={event => {
-          if (event.altKey || event.metaKey || event.ctrlKey) return;
+          if (event.isComposing || event.keyCode === 229 || event.altKey || event.metaKey || event.ctrlKey) return;
           if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
             event.preventDefault();
             choose(selected + (event.key === 'ArrowRight' ? 1 : -1), true);

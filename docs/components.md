@@ -8,24 +8,27 @@
   Eye gaze follows the pointer horizontally; CSS tracer rays originate at each
   source iris center and are suppressed for frames without eye data.
 - `CrewWheel`: native selection controls and scoped drag/scroll/keyboard gestures.
-- `ContentPanel`: compact section file indexes and route-aware reader state.
-- `ReaderFrame`: shared breadcrumb, title, Back, scrollable-text or bounded-media
-  body, and footer navigation for focused readers.
+- `ContentPanel`: stable character scene, per-section selected card state, and
+  mounted Contact/Pictures sections.
+- `InspectPanel`: in-scene text inspection over the card area; the underlying
+  scene stays dimmed and inert while the card selection is retained.
+- `ReaderFrame`: shared breadcrumb, title, Back, scrollable text body, and footer
+  navigation for focused text inspections.
 - `SequenceNavigation`: native previous/next controls and an item count for
-  multi-entry file sequences, albums, and photo sets.
-- `MediaStage`: source-agnostic image stage that measures available space and
-  natural dimensions, then asks pure orientation helpers for ratio-preserving
-  contain sizing.
+  multi-entry text file sequences.
+- `CardDeck` / `GameCard`: responsive scene cards with scoped keyboard paging,
+  focusable selection, and one-step activation.
 - `Intro`: approved ASCII emblem with the shared domain glitch plan, automatic
   entry, focus and skip behavior.
 - `File`: terminal-style file content inside the shared text reader.
 - `ResourceState`: loading, failure/retry, and empty-state presentation.
-- Section views: real whoami/GitHub activity, projects, albums/photos, hobbies/
+- Section views: real whoami/GitHub activity, projects, photo galleries, hobbies/
   Goodreads, and contact. These receive ports and do not call fetch directly.
-  ContentPanel retains per-section selected and opener IDs. It renders text
-  bodies for the active section, keeps the Contact frame mounted while hidden
-  to preserve drafts/validation, and keeps the Pictures container mounted to
-  preserve per-album selection.
+  ContentPanel retains the selected card ID for each text section. It renders
+  card and inspection bodies for the active section, keeps the Contact form
+  mounted while hidden to preserve drafts/validation, and keeps Pictures
+  mounted to preserve per-album photo selection. Gallery cards use R2 thumbnails and open
+  the selected full image directly in `Lightbox`.
 - `Lightbox`: existing gallery viewer, retained for swipe and pinch zoom.
 
 New views should consume structured `src/data` content or a supplied resource

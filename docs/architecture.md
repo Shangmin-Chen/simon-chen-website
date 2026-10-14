@@ -6,10 +6,10 @@ external dependencies. `src/App.jsx` is the composition root.
 
 ```text
 src/portfolio/
-  domain/       navigation, wheel geometry, media sizing/orientation, ASCII frames and glitch plans, contributions, validation
+  domain/       navigation, card paging, wheel geometry, photo selection, ASCII frames and glitch plans, contributions, validation
   application/  resource subscriptions and contact submission use case
   adapters/     same-origin HTTP, TTL resource cache, optional browser storage
-  ui/           React shell, reader primitives, media stage, crew wheel, portrait, intro, section views
+  ui/           React shell, card deck and inspection reader, crew wheel, portrait, intro, section views
   assets/       character grids, palettes, eye masks, approved intro glyph
 src/data/       actual projects, experience, links, integration configuration
 src/worker.js   Cloudflare API proxy and contact transport
@@ -31,18 +31,20 @@ success and throws on failure. Tests inject transports, storage, and clocks.
 The router is a UI adapter: `/#whoami`, `/#projects`, `/#hobbies`, `/#contact`,
 `/gallery`, and `/gallery/:albumId`. Legacy `#gallery` maps to pictures and
 `#now` to hobbies. Browser Back restores the selected character. ContentPanel
-keeps selected file IDs and opener IDs per section while rendering only the
-active Whoami, Projects, or Hobbies body. The Contact frame and Pictures
-container remain mounted while hidden, preserving form drafts and per-album
-photo selections. Each section has a compact, data-backed home index; selecting
-a file opens a ReaderFrame with shared breadcrumb, title, Back, and footer
-SequenceNavigation. Text files read in a naturally scrollable, visually
-scrollbar-free body, with long prose kept near 68 characters per line; the
-GitHub graph retains its useful width. Gallery uses the same frame with a
-bounded media body. MediaStage measures available space and loaded source
-dimensions; pure `media-orientation` helpers classify orientation and contain
-fit without upscaling. The document never scrolls. Gallery photos remain actual
-R2 content and use the existing accessible touch/zoom lightbox.
+retains a selected card ID per section. Whoami keeps the short bio visible above
+cards for the two experience roles and live GitHub activity; Projects and
+Hobbies use the same deck. One activation opens an in-scene InspectPanel over
+the card area, with a shared ReaderFrame, breadcrumb, Close/Escape behavior,
+and previous/next card controls. The character art and crew wheel keep the same
+geometry while a card is inspected. Text reads in a naturally scrollable,
+visually scrollbar-free body, with long prose kept near 68 characters per line;
+the GitHub graph keeps its useful width. CardDeck pages actual cards to fit the
+available area and supports roving keyboard selection, Enter activation,
+wheel/swipe paging, and PageUp/PageDown. Contact opens directly to its mounted
+form, preserving drafts and validation while hidden. Pictures retains its
+album/photo selections and uses actual R2 thumbnails; choosing a photo opens
+the existing accessible touch/zoom Lightbox directly. The document never
+scrolls.
 
 Portrait animation is local to its component. It updates at 65ms, pauses in
 background tabs, cleans up timers/listeners, and never changes page position.

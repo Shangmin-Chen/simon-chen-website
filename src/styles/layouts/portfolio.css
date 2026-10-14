@@ -16,29 +16,15 @@
 @keyframes name-cycle-caret { to { visibility: hidden; } }
 .terminal-header button, .terminal-footer button { min-height: 40px; font-size: 11px; padding: 8px 0; }
 .ascii-rule { white-space: nowrap; overflow: hidden; color: var(--border-color); letter-spacing: 1px; font-size: 11px; align-self: center; }
-.workspace { display: grid; grid-template-columns: 350px minmax(0, 1fr); gap: 48px; align-items: center; min-height: 0; padding: 12px 0; }
-.character-profile, .readme { min-width: 0; }
+.workspace { display: grid; grid-template-columns: 350px minmax(0, 1fr); gap: 48px; align-items: stretch; min-height: 0; padding: 12px 0; }
+.character-profile, .readme { min-width: 0; min-height: 0; }
 .character-profile { align-self: center; }
 .terminal-footer { font-size: 11px; color: var(--text-muted); }
-
-.workspace:where(:has(.readme[data-view='reader'])) { grid-template-columns: minmax(165px, 220px) minmax(0, 1fr); gap: clamp(16px, 3vw, 34px); align-items: stretch; }
-.workspace:where(:has(.readme[data-view='reader'])) .character-profile { align-self: center; }
-.workspace:where(:has(.readme[data-view='reader'])) .owner-name,
-.workspace:where(:has(.readme[data-view='reader'])) .section-command { display: none; }
-.workspace:where(:has(.readme[data-view='reader'])) .ascii-portrait-text { font-size: 3.4px; line-height: 3.4px; }
-.workspace:where(:has(.readme[data-view='reader'])) .portrait-caption { margin-top: 5px; font-size: 9px; }
-.workspace:where(:has(.readme[data-view='reader'])) .portrait-caption strong { font-size: 10px; }
-.workspace:where(:has(.readme[data-view='reader'])) .crew-wheel { height: 100px; max-width: 220px; margin-top: 0; }
-.workspace:where(:has(.readme[data-view='reader'])) .wheel-rail { height: 98px; }
-.workspace:where(:has(.readme[data-view='reader'])) .crew-option { width: 48px; min-height: 46px; }
-.workspace:where(:has(.readme[data-view='reader'])) .wheel-controls { max-width: 100%; gap: 3px; font-size: 8px; }
-.workspace:where(:has(.readme[data-view='reader'])) .wheel-controls button { min-width: 34px; min-height: 34px; }
 
 @media (prefers-reduced-motion: reduce) { .name-cycle-visual::after { animation: none !important; } }
 @media (max-width: 850px) and (min-width: 651px) {
   .portfolio { padding: 15px 25px 10px; }
   .workspace { grid-template-columns: 310px minmax(0, 1fr); gap: 25px; }
-  .workspace:where(:has(.readme[data-view='reader'])) { grid-template-columns: minmax(150px, 185px) minmax(0, 1fr); gap: 18px; }
 }
 @media (max-width: 650px) {
   .portfolio { padding: 10px 18px 8px; }
@@ -46,54 +32,35 @@
   .terminal-name-caption { font-size: 7px; }
   .portfolio-surface { grid-template-rows: 36px 12px minmax(0, 1fr) 12px 36px; }
   .terminal-header button, .terminal-footer button { min-height: 36px; }
-  .workspace { display: flex; flex-direction: column; gap: 6px; padding: 4px 0; align-items: stretch; }
-  .character-profile { flex: 0 0 auto; }
-  .readme { flex: 1 1 0; width: 100%; }
-  .workspace:where(:has(.readme[data-view='reader'])) { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(72px, 0.25fr) minmax(0, 1fr); gap: 4px; padding: 2px 0; }
-  .workspace:where(:has(.readme[data-view='reader'])) .character-profile { display: grid; grid-template-columns: minmax(90px, 0.8fr) minmax(0, 1.2fr); align-items: center; gap: 5px; min-height: 0; }
-  .workspace:where(:has(.readme[data-view='reader'])) .character-art,
-  .workspace:where(:has(.readme[data-view='reader'])) .character-navigation { min-width: 0; min-height: 0; }
-  .workspace:where(:has(.readme[data-view='reader'])) .character-art { display: flex; flex-direction: column; align-items: center; }
-  .workspace:where(:has(.readme[data-view='reader'])) .character-navigation { display: flex; flex-direction: column; align-items: stretch; }
-  .workspace:where(:has(.readme[data-view='reader'])) .ascii-portrait-text { font-size: 2.1px; line-height: 2.1px; }
-  .workspace:where(:has(.readme[data-view='reader'])) .portrait-caption { margin-top: 2px; gap: 3px; font-size: 8px; }
-  .workspace:where(:has(.readme[data-view='reader'])) .portrait-caption strong { font-size: 9px; }
-  .workspace:where(:has(.readme[data-view='reader'])) .portrait-caption button { min-height: 30px; }
-  .workspace:where(:has(.readme[data-view='reader'])) .crew-wheel { height: 100px; max-width: none; margin: 0; }
-  .workspace:where(:has(.readme[data-view='reader'])) .wheel-rail { height: 98px; }
-  .workspace:where(:has(.readme[data-view='reader'])) .crew-option { width: 48px; min-height: 42px; }
-  .workspace:where(:has(.readme[data-view='reader'])) .crew-option strong { font-size: 9px; }
-  .workspace:where(:has(.readme[data-view='reader'])) .crew-option small { font-size: 8px; }
-  .workspace:where(:has(.readme[data-view='reader'])) .wheel-controls { gap: 4px; font-size: 8px; }
-  .workspace:where(:has(.readme[data-view='reader'])) .wheel-controls button { min-width: 32px; min-height: 28px; }
-  .workspace:where(:has(.readme[data-view='reader'])) .character-navigation { align-self: start; }
-  .workspace:where(:has(.readme[data-view='reader'])) .portrait-caption .character-role,
-  .workspace:where(:has(.readme[data-view='reader'])) .portrait-caption .character-section { display: none; }
+  .workspace { grid-template-columns: minmax(0, 1fr); grid-template-rows: 128px minmax(0, 1fr); gap: 5px; padding: 4px 0; }
+  .character-profile { display: grid; grid-template-columns: minmax(0, 1fr) minmax(150px, 1fr); align-items: center; gap: 6px; min-height: 0; }
+  .character-art, .character-navigation { min-width: 0; min-height: 0; }
+  .character-art { display: flex; flex-direction: column; align-items: center; }
+  .character-navigation { display: flex; flex-direction: column; align-items: stretch; }
+  .character-profile .ascii-portrait-text { font-size: clamp(1.6px, 0.24vh, 2.1px); line-height: clamp(1.6px, 0.24vh, 2.1px); }
+  .character-profile .portrait-caption { margin-top: 2px; gap: 3px; font-size: 7px; }
+  .character-profile .portrait-caption strong { font-size: 8px; }
+  .character-profile .portrait-caption button { min-height: 25px; }
+  .character-profile .portrait-caption .character-role, .character-profile .portrait-caption .character-section { display: none; }
+  .character-profile .crew-wheel { height: 96px; max-width: none; margin: 0; }
+  .character-profile .wheel-rail { height: 94px; }
+  .character-profile .crew-option { width: 48px; min-height: 40px; }
+  .character-profile .crew-option strong { font-size: 9px; }
+  .character-profile .crew-option small { font-size: 8px; }
+  .character-profile .wheel-controls { max-width: 100%; gap: 4px; font-size: 8px; }
+  .character-profile .wheel-controls button { min-width: 32px; min-height: 28px; }
+  .readme { width: 100%; }
 }
 @media (max-height: 700px) and (max-width: 650px) {
   .portfolio { padding: 6px 14px; }
   .portfolio-surface { grid-template-rows: 30px 10px minmax(0, 1fr) 10px 30px; }
   .terminal-header button, .terminal-footer button { min-height: 30px; }
-  .workspace { padding: 2px 0; gap: 2px; }
-  .workspace:where(:has(.readme[data-view='reader'])) { grid-template-rows: minmax(80px, 0.16fr) minmax(0, 1fr); gap: 2px; }
-  .workspace:where(:has(.readme[data-view='reader'])) .character-profile { grid-template-columns: minmax(72px, 0.7fr) minmax(0, 1.3fr); }
-  .workspace:where(:has(.readme[data-view='reader'])) .ascii-portrait-text { font-size: 1.4px; line-height: 1.4px; }
-  .workspace:where(:has(.readme[data-view='reader'])) .character-navigation .crew-wheel { height: 54px; }
-  .workspace:where(:has(.readme[data-view='reader'])) .character-navigation .wheel-rail { height: 52px; }
-  .workspace:where(:has(.readme[data-view='reader'])) .wheel-controls button { min-height: 24px; }
-  .workspace:where(:has(.readme[data-view='reader'])) .portrait-caption .character-role,
-  .workspace:where(:has(.readme[data-view='reader'])) .portrait-caption .character-section { display: none; }
-  .workspace:where(:not(:has(.readme[data-view='reader']))) .character-profile { display: grid; grid-template-columns: minmax(80px, 0.8fr) minmax(0, 1.2fr); align-items: center; gap: 4px; min-height: 0; }
-  .workspace:where(:not(:has(.readme[data-view='reader']))) .character-art,
-  .workspace:where(:not(:has(.readme[data-view='reader']))) .character-navigation { min-width: 0; min-height: 0; }
-  .workspace:where(:not(:has(.readme[data-view='reader']))) .character-art { display: flex; flex-direction: column; align-items: center; }
-  .workspace:where(:not(:has(.readme[data-view='reader']))) .character-navigation { display: flex; flex-direction: column; align-items: stretch; }
-  .workspace:where(:not(:has(.readme[data-view='reader']))) .ascii-portrait-text { font-size: 1.4px; line-height: 1.4px; }
-  .workspace:where(:not(:has(.readme[data-view='reader']))) .portrait-caption { margin-top: 1px; font-size: 8px; }
-  .workspace:where(:not(:has(.readme[data-view='reader']))) .portrait-caption button { min-height: 25px; }
-  .workspace:where(:not(:has(.readme[data-view='reader']))) .crew-wheel { height: 54px; margin: 0; }
-  .workspace:where(:not(:has(.readme[data-view='reader']))) .wheel-rail { height: 46px; }
-  .workspace:where(:not(:has(.readme[data-view='reader']))) .wheel-controls { gap: 4px; font-size: 8px; }
-  .workspace:where(:not(:has(.readme[data-view='reader']))) .crew-option { width: 48px; min-height: 42px; }
-  .workspace:where(:not(:has(.readme[data-view='reader']))) .wheel-controls button { min-width: 32px; min-height: 25px; }
+  .workspace { gap: 2px; padding: 2px 0; grid-template-rows: 112px minmax(0, 1fr); }
+  .character-profile { grid-template-columns: minmax(0, 0.85fr) minmax(135px, 1.15fr); }
+  .character-profile .ascii-portrait-text { font-size: 1.55px; line-height: 1.55px; }
+  .character-profile .portrait-caption { margin-top: 1px; }
+  .character-profile .portrait-caption button { min-height: 22px; }
+  .character-profile .crew-wheel { height: 84px; }
+  .character-profile .wheel-rail { height: 82px; }
+  .character-profile .wheel-controls button { min-width: 32px; min-height: 22px; }
 }

@@ -121,16 +121,19 @@ This project is open source and available under the [MIT License](LICENSE).
 
 David opens `whoami`, Lucy projects, Rebecca pictures, Maine hobbies, and Falco
 contact. Click the crew names, scroll or drag the wheel, use its arrow keys,
-or press 1–5. Each section opens as a compact file index; choosing a file moves
-to a focused reader with a shared breadcrumb, title, Back button, and footer
-sequence controls. Text has a natural hidden-scrollbar reading region; albums
-use the same frame with a bounded media stage. The document itself stays fixed.
-Gallery URLs remain `/gallery` and `/gallery/:albumId`; other sections use
-`/#projects` etc.
+or press 1–5. Each text section is a compact card deck. Arrow keys select cards,
+Enter or one click opens an in-scene inspection panel, and Escape returns focus
+to the selected card; the character scene stays at the same size while
+inspecting. Cards page to fit the available area and accept arrow,
+PageUp/PageDown, scroll-wheel, or swipe navigation. Contact opens straight to
+its form, whose draft stays in place when switching characters. Pictures uses
+actual R2 thumbnails and opens the selected full image directly in the existing
+Lightbox. The document itself stays fixed. Gallery URLs remain `/gallery` and
+`/gallery/:albumId`; other sections use `/#projects` etc.
 
 The intro enters automatically. Replay and motion controls are in the shell;
-the system reduced-motion preference takes priority. GitHub and Goodreads
-load when their files are opened, with retry states and expiring session caches.
+the system reduced-motion preference takes priority. GitHub and Goodreads load
+when their cards are inspected, with retry states and expiring session caches.
 
 Run `npm run lint` and `npm run verify` before submitting changes. Verification
 includes domain, cache, HTTP-adapter, and Worker tests, build, and CSS token checks.
