@@ -2,10 +2,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { matchPath, useLocation, useNavigate } from 'react-router';
 import crew from '../assets/crew.json';
 import { sectionFromLocation, wrapIndex } from '../domain/navigation';
+import { nameVariants, staticName } from '../../data/nameVariants';
 import AsciiPortrait from './AsciiPortrait';
 import CrewWheel from './CrewWheel';
 import ContentPanel from './ContentPanel';
 import Intro from './Intro';
+import NameCycle from './NameCycle';
 import { useMotion } from './useMotion';
 
 const rule = '-'.repeat(160);
@@ -46,7 +48,13 @@ export default function Portfolio({ services, preferences }) {
   }}>
     <div className="portfolio-surface" inert={introOpen}>
       <a className="skip-link" href="#main-content" onClick={event => { event.preventDefault(); rootRef.current.querySelector('main').focus(); }}>Skip to main content</a>
-      <header className="terminal-header"><span className="terminal-host">simon<span>@afterhours:~</span></span><button type="button" onClick={() => { previousFocus.current = document.activeElement; setIntroOpen(true); }}>[ replay intro ]</button></header>
+      <header className="terminal-header">
+        <div className="terminal-brand">
+          <span className="terminal-host"><NameCycle entries={nameVariants} staticEntry={staticName} motion={motion} active={!introOpen} /><span className="terminal-host-suffix">@afterhours:~</span></span>
+          <span className="terminal-name-caption">{'// my name in the languages I speak'}</span>
+        </div>
+        <button type="button" onClick={() => { previousFocus.current = document.activeElement; setIntroOpen(true); }}>[ replay intro ]</button>
+      </header>
       <div className="ascii-rule" aria-hidden="true">{rule}</div>
       <main className="workspace" id="main-content" tabIndex={-1}>
         <section className="character-profile" aria-label="Edgerunners character navigation">

@@ -2,8 +2,18 @@
 .portfolio::after { content: ''; position: absolute; inset: 0; z-index: 12; pointer-events: none; opacity: 0.3; background: repeating-linear-gradient(0deg, var(--texture-color) 0 1px, transparent 1px 4px); }
 .portfolio-surface { height: 100%; display: grid; grid-template-rows: 40px 16px minmax(0, 1fr) 16px 40px; }
 .terminal-header, .terminal-footer { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
-.terminal-host { color: var(--accent-color); font-weight: 500; }
-.terminal-host span, .terminal-header button { color: var(--text-muted); }
+.terminal-host { color: var(--accent-color); font-weight: 500; white-space: nowrap; }
+.terminal-host-suffix, .terminal-header button { color: var(--text-muted); }
+.terminal-header button { flex: 0 0 auto; white-space: nowrap; }
+.terminal-brand { display: flex; min-width: 0; flex-direction: column; justify-content: center; line-height: 1.15; }
+.terminal-name-caption { color: var(--text-muted); font-size: 8px; font-weight: 400; }
+.name-cycle { display: inline-grid; vertical-align: bottom; }
+.name-cycle-sizer, .name-cycle-visual { grid-area: 1 / 1; white-space: pre; }
+.name-cycle-sizer { display: grid; visibility: hidden; pointer-events: none; }
+.name-cycle-sizer > span { grid-area: 1 / 1; white-space: pre; }
+.name-cycle-sizer > span::after { content: '▍'; }
+.name-cycle[data-animated='true'] .name-cycle-visual::after { content: '▍'; color: var(--link-color); animation: name-cycle-caret 1s steps(2, start) infinite; }
+@keyframes name-cycle-caret { to { visibility: hidden; } }
 .terminal-header button, .terminal-footer button { min-height: 40px; font-size: 11px; padding: 8px 0; }
 .ascii-rule { white-space: nowrap; overflow: hidden; color: var(--border-color); letter-spacing: 1px; font-size: 11px; align-self: center; }
 .workspace { display: grid; grid-template-columns: 350px minmax(0, 1fr); gap: 48px; align-items: center; min-height: 0; padding: 12px 0; }
@@ -20,13 +30,15 @@
 .content-pager button { min-height: 40px; padding: 6px 4px; color: var(--link-color); }
 .content-pager button:disabled { opacity: 0.4; }
 .terminal-footer { font-size: 11px; color: var(--text-muted); }
+@media (prefers-reduced-motion: reduce) { .name-cycle-visual::after { animation: none !important; } }
 @media (max-width: 850px) and (min-width: 651px) {
   .portfolio { padding: 15px 25px 10px; }
   .workspace { grid-template-columns: 310px minmax(0, 1fr); gap: 25px; }
 }
 @media (max-width: 650px) {
   .portfolio { padding: 10px 18px 8px; }
-  .terminal-header { font-size: 11px; }
+  .terminal-header { gap: 8px; font-size: 11px; }
+  .terminal-name-caption { font-size: 7px; }
   .portfolio-surface { grid-template-rows: 36px 12px minmax(0, 1fr) 12px 36px; }
   .terminal-header button, .terminal-footer button { min-height: 36px; }
   .workspace { display: flex; flex-direction: column; gap: 6px; padding: 4px 0; align-items: stretch; }

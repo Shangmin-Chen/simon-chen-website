@@ -1,6 +1,8 @@
 # Portfolio components
 
 - `Portfolio`: URL-to-character mapping, shell, intro lifecycle, motion controls.
+- `NameCycle`: terminal-style multilingual display name; one accessible static
+  label and locally timed grapheme typing when motion is enabled.
 - `AsciiPortrait`: colored text runs, local gaze/blink timer and shared domain
   glitch plan, frame border.
   Eye gaze follows the pointer horizontally; CSS tracer rays start at each source
