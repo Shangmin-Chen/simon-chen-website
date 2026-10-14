@@ -20,7 +20,6 @@
 .content-pager button { min-height: 40px; padding: 6px 4px; color: var(--link-color); }
 .content-pager button:disabled { opacity: 0.4; }
 .terminal-footer { font-size: 11px; color: var(--text-muted); }
-.terminal-footer a { color: var(--text-muted); text-decoration: none; min-height: 40px; display: flex; align-items: center; }
 @media (max-width: 850px) and (min-width: 651px) {
   .portfolio { padding: 15px 25px 10px; }
   .workspace { grid-template-columns: 310px minmax(0, 1fr); gap: 25px; }
@@ -29,7 +28,7 @@
   .portfolio { padding: 10px 18px 8px; }
   .terminal-header { font-size: 11px; }
   .portfolio-surface { grid-template-rows: 36px 12px minmax(0, 1fr) 12px 36px; }
-  .terminal-header button, .terminal-footer button, .terminal-footer a { min-height: 36px; }
+  .terminal-header button, .terminal-footer button { min-height: 36px; }
   .workspace { display: flex; flex-direction: column; gap: 6px; padding: 4px 0; align-items: stretch; }
   .character-profile { flex: 0 0 auto; }
   .readme { flex: 1 1 0; width: 100%; height: auto; }
@@ -43,7 +42,7 @@
 @media (max-height: 700px) and (max-width: 650px) {
   .portfolio { padding: 6px 14px; }
   .portfolio-surface { grid-template-rows: 30px 10px minmax(0, 1fr) 10px 30px; }
-  .terminal-header button, .terminal-footer button, .terminal-footer a, .content-pager, .content-pager button { min-height: 30px; }
+  .terminal-header button, .terminal-footer button, .content-pager, .content-pager button { min-height: 30px; }
   .workspace { padding: 2px 0; gap: 2px; }
   .buffer-head { display: none; }
   .owner-name { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; white-space: nowrap; clip-path: inset(50%); }

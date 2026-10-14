@@ -56,7 +56,7 @@ export default function Portfolio({ services, preferences }) {
         <ContentPanel member={member} services={services} albumId={albumId} />
       </main>
       <div className="ascii-rule" aria-hidden="true">{rule}</div>
-      <footer className="terminal-footer"><span>~/simon-chen</span><a href={member.source} target="_blank" rel="noopener noreferrer" aria-label={`${member.name} portrait frame reference`}>frame ↗</a><button type="button" disabled={reduced} aria-pressed={motion} aria-label={reduced ? 'Animation disabled by your reduced motion preference' : 'Toggle animation'} onClick={toggle}>[ motion {motion ? 'on' : 'off'} ]</button></footer>
+      <footer className="terminal-footer"><span>~/simon-chen</span><button type="button" disabled={reduced} aria-pressed={motion} aria-label={reduced ? 'Animation disabled by your reduced motion preference' : 'Toggle animation'} onClick={toggle}>[ motion {motion ? 'on' : 'off'} ]</button></footer>
       <div className="sr-only" aria-live="polite">{member.name} / {member.role} / {member.section}</div>
     </div>
     {introOpen && <Intro motion={motion} onFinish={finishIntro} />}
