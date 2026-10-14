@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { colorRuns, eyeCells, portraitFrame } from '../domain/portrait';
+import { colorRuns, eyeCells, portraitFrame, portraitGlitchPlan } from '../domain/portrait';
 import { portraitEyePoints, tracerSegment } from '../domain/portrait-tracers';
 import PortraitTracers from './PortraitTracers';
 
@@ -8,7 +8,8 @@ export default function AsciiPortrait({ member, motion }) {
   const portraitRef = useRef(null);
   const textRef = useRef(null);
   const burstUntil = useRef(0);
-  const [frame, setFrame] = useState({ tick: 0, gaze: { x: 0 }, burst: false, cursor: null });
+  const burstStarted = useRef(0);
+  const [frame, setFrame] = useState({ tick: 0, gaze: { x: 0 }, burst: false, burstAge: 0, cursor: null });
   const masks = useMemo(() => eyeCells(member.portrait), [member]);
   useEffect(() => {
     if (!motion) return;
@@ -16,6 +17,7 @@ export default function AsciiPortrait({ member, motion }) {
     let target = { x: 0, y: 0 };
     let gaze = { x: 0, y: 0 };
     let cursor = null;
+    const transmissionStart = performance.now();
     const transmissionEnd = performance.now() + 220;
     const clearPointer = () => {
       target = { x: 0, y: 0 };
@@ -49,7 +51,12 @@ export default function AsciiPortrait({ member, motion }) {
         const endpoint = { x: cursor.x - rootRect.left, y: cursor.y - rootRect.top };
         tracers = eyes.map(eye => tracerSegment(eye, endpoint));
       }
-      setFrame({ tick, gaze, cursor, tracers, burst: performance.now() < Math.max(transmissionEnd, burstUntil.current) });
+      const now = performance.now();
+      const clickedBurst = now < burstUntil.current;
+      const initialTransmission = now < transmissionEnd;
+      const burst = clickedBurst || initialTransmission;
+      const burstAge = Math.floor((now - (clickedBurst ? burstStarted.current : transmissionStart)) / 65);
+      setFrame({ tick, gaze, cursor, tracers, burst, burstAge });
     }, 65);
     return () => {
       window.clearInterval(timer);
@@ -58,7 +65,8 @@ export default function AsciiPortrait({ member, motion }) {
     };
   }, [motion, portrait]);
 
-  const grid = portraitFrame(portrait, { ...frame, motion }, masks);
+  const grid = portraitFrame(portrait, { ...frame, glitchTick: frame.burstAge, motion }, masks);
+  const glitch = motion ? portraitGlitchPlan(portrait, frame.burst ? frame.burstAge : frame.tick, frame.burst, masks) : { active: false, bands: [] };
   const palette = [...portrait.palette, '270 48% 7%', portrait.scleraHsl, '292 62% 70%', '279 48% 38%', '157 85% 84%', portrait.skinHsl];
   const colors = Object.fromEntries(palette.map((value, i) => [`--portrait-${i}`, `hsl(${value})`]));
   const label = `[ ${member.name.toUpperCase()} ]`;
@@ -72,9 +80,11 @@ export default function AsciiPortrait({ member, motion }) {
         data-character={member.id}
         data-gaze-x={motion ? frame.gaze.x.toFixed(2) : '0'}
         data-gaze-y="0"
+        data-glitch-active={glitch.active}
+        data-glitch-bands={glitch.bands.length}
         aria-label={`${member.name} from Cyberpunk Edgerunners in colored ASCII.${motion && portrait.eyes.length ? ' Eyes follow your cursor.' : ''}${motion ? ' Click to glitch.' : ' Animation off.'}`}
         disabled={!motion}
-        onClick={() => { burstUntil.current = performance.now() + 430; }}
+        onClick={() => { burstStarted.current = performance.now(); burstUntil.current = burstStarted.current + 430; }}
       >
         <span ref={textRef} className="ascii-portrait-text" aria-hidden="true">
           <span className="portrait-title">{'+--' + label + '-'.repeat(portrait.width - label.length - 2) + '+'}</span>{'\n'}
@@ -87,7 +97,7 @@ export default function AsciiPortrait({ member, motion }) {
       <PortraitTracers segments={motion ? frame.tracers : []} />
       <div className="portrait-caption">
         <div><strong>{member.name}</strong><span className="character-role"> / {member.role}</span><span className="character-section"> / {member.section}</span></div>
-        <button type="button" disabled={!motion} onClick={() => { burstUntil.current = performance.now() + 430; }}>[ glitch ]</button>
+        <button type="button" disabled={!motion} onClick={() => { burstStarted.current = performance.now(); burstUntil.current = burstStarted.current + 430; }}>[ glitch ]</button>
       </div>
     </>
   );

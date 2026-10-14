@@ -1,3 +1,5 @@
+import { applyGlitchBands, applyGlitchToLines, glitchPlan } from './glitch.js';
+
 export function inPolygon(x, y, points) {
   let inside = false;
   for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
@@ -27,9 +29,16 @@ export function portraitEyeCenters(portrait, gazeX = 0) {
   return (portrait.eyes ?? []).map(eye => ({ x: eye.center[0] + shiftX, y: eye.center[1] }));
 }
 
+export function portraitGlitchPlan(portrait, tick, burst = false, masks = eyeCells(portrait)) {
+  const plan = glitchPlan(0x504f5254, tick, { width: portrait.width, height: portrait.height, burst });
+  const eyeRows = new Set(masks.flatMap(cells => cells.map(cell => cell.y)));
+  const bands = plan.bands.filter(band => !Array.from({ length: band.height }, (_, i) => band.y + i).some(y => eyeRows.has(y)));
+  return { ...plan, bands, active: bands.length > 0 };
+}
+
 // Every frame is derived from immutable source characters, preserving iris
 // texture while moving it inside the original eyelid mask. Maine has no eyes.
-export function portraitFrame(portrait, { gaze = { x: 0, y: 0 }, tick = 0, motion = false, burst = false } = {}, masks = eyeCells(portrait)) {
+function portraitBaseFrame(portrait, { gaze = { x: 0, y: 0 }, tick = 0, motion = false } = {}, masks) {
   const matrix = portrait.grid.map(row => row.map(cell => [...cell]));
   if (!motion) return matrix;
   const blink = tick % 121 >= 118;
@@ -53,17 +62,15 @@ export function portraitFrame(portrait, { gaze = { x: 0, y: 0 }, tick = 0, motio
       }
     });
   });
-  if (burst || tick % 104 < 1) {
-    const row = burst ? tick * 7 % portrait.height : 12;
-    for (const y of [row, Math.min(row + 1, portrait.height - 1)]) {
-      const line = matrix[y];
-      matrix[y] = Array.from({ length: portrait.width }, (_, x) => {
-        const cell = line[(x + (burst ? 3 : 2)) % portrait.width];
-        return (x + tick) % 9 === 0 && cell[0] !== ' ' ? ['/X#:'[(x + tick) % 4], 22] : [...cell];
-      });
-    }
-  }
   return matrix;
+}
+
+export function portraitFrame(portrait, { gaze = { x: 0, y: 0 }, tick = 0, glitchTick = tick, motion = false, burst = false } = {}, masks = eyeCells(portrait)) {
+  const matrix = portraitBaseFrame(portrait, { gaze, tick, motion }, masks);
+  if (!motion) return matrix;
+  // Keep the iris rows stationary so tracer origins continue to point at them.
+  const plan = portraitGlitchPlan(portrait, burst ? glitchTick : tick, burst, masks);
+  return applyGlitchBands(matrix, plan.bands, { sampleFrame: sampleTick => portraitBaseFrame(portrait, { gaze, tick: sampleTick, motion }, masks) });
 }
 
 export function colorRuns(row) {
@@ -76,12 +83,15 @@ export function colorRuns(row) {
   return runs;
 }
 
-export function introFrame(lines, tick) {
-  const settled = Math.min(1, tick / 25);
-  return lines.map((line, y) => {
-    let current = Array.from(line, (char, x) => char === ' ' || ((x * 17 + y * 11 + tick * 13) % 101) / 101 < settled
-      ? char : '/:#X-+'[(x + y + tick) % 6]).join('');
-    if (tick < 18 && y % 9 >= 6 && tick % 7 < 2) current = '   ' + current.slice(0, -3);
-    return current;
-  }).join('\n');
+export function introFrame(lines, tick, motion = true, suppliedPlan) {
+  const sample = sampleTick => {
+    const settled = Math.min(1, sampleTick / 25);
+    return lines.map((line, y) => {
+      return Array.from(line, (char, x) => char === ' ' || ((x * 17 + y * 11 + sampleTick * 13) % 101) / 101 < settled
+        ? char : '/:#X-+'[(x + y + sampleTick) % 6]).join('');
+    });
+  };
+  if (!motion) return lines.join('\n');
+  const plan = tick < 25 ? (suppliedPlan ?? glitchPlan(0x494e5452, tick, { width: Math.max(...lines.map(line => line.length)), height: lines.length, burst: true })) : { bands: [] };
+  return applyGlitchToLines(sample(tick), plan.bands, { sampleFrame: sampleTick => sample(sampleTick) }).join('\n');
 }

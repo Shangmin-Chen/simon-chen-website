@@ -6,7 +6,7 @@ external dependencies. `src/App.jsx` is the composition root.
 
 ```text
 src/portfolio/
-  domain/       navigation, paging, wheel geometry, ASCII frames, contributions, validation
+  domain/       navigation, paging, wheel geometry, ASCII frames and shared glitch plans, contributions, validation
   application/  resource subscriptions and contact submission use case
   adapters/     same-origin HTTP, TTL resource cache, optional browser storage
   ui/           React shell, crew wheel, portrait, intro, section views
@@ -44,7 +44,12 @@ are character data and CSS textures.
 Portrait animation is local to its component. It updates at 65ms, pauses in
 background tabs, cleans up timers/listeners, and never changes page position.
 Eye movement copies the original iris inside its eyelid mask; Maine's visor
-stays intact. Intro and wheel transitions honor system reduced motion and
+stays intact. The pure domain glitch plan translates bounded horizontal bands
+without wrapping and keeps glyph/color cells together; each band reuses one
+sampled source timestamp during its cadence before jumping ahead or behind.
+UI callers provide the clock and seed, while portrait and intro consume the
+same cadence. Intro and
+wheel transitions honor system reduced motion and
 the saved motion toggle. The intro makes the shell inert, traps focus on the
 skip button, then restores focus. Keyboard wheel controls use native buttons.
 
