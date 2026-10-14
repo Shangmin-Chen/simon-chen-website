@@ -1,10 +1,11 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { adjacentFileId, filesFor, isReaderOpen, selectionFor, sequenceFor } from '../domain/reader';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { adjacentFileId, filesFor, selectionFor, sequenceFor } from '../domain/reader';
 import Whoami from './sections/Whoami';
 import Projects from './sections/Projects';
 import Pictures from './sections/Pictures';
 import Hobbies from './sections/Hobbies';
 import Contact from './sections/Contact';
+import ReaderFrame from './reader/ReaderFrame';
 
 const commands = { whoami: 'whoami', projects: 'ls projects/', pictures: 'ls pictures/', hobbies: 'ls hobbies/', contact: 'write contact' };
 
@@ -13,110 +14,140 @@ function commandFor(section, albumId) {
   return commands[section];
 }
 
+function titleFor(section, entry) {
+  if (section === 'contact') return 'contact/';
+  return entry?.label ?? '';
+}
+
 export default function ContentPanel({ member, services, albumId, onPortfolioHome, onGalleryHome, motion }) {
   const section = member.section;
   const [selections, setSelections] = useState({});
   const selectedId = selections[section] ?? '';
   const files = useMemo(() => filesFor(section), [section]);
   const sequence = useMemo(() => sequenceFor(section), [section]);
-  const focused = isReaderOpen(section, selectedId, albumId);
+  const currentIndex = sequence.findIndex(entry => entry.id === selectedId);
+  const currentEntry = sequence[currentIndex];
+  const isContact = section === 'contact';
+  const isAlbum = section === 'pictures' && Boolean(albumId);
+  const isTextReader = isContact || (section !== 'pictures' && Boolean(selectedId));
+  const isReader = isTextReader || isAlbum;
   const openerId = useRef({});
   const heading = useRef(null);
-  const viewport = useRef(null);
-  const lastFocusKey = useRef('');
+  const body = useRef(null);
+  const contactHeading = useRef(null);
+  const contactBody = useRef(null);
   const latestSection = useRef(section);
-  const focusFrame = useRef(0);
+  const entryFocusFrame = useRef(0);
+  const openerFocusFrame = useRef(0);
+  const focusKeyRef = useRef('');
+  const key = `${section}:${selectedId}:${albumId ?? ''}`;
 
-  useLayoutEffect(() => { latestSection.current = section; }, [section]);
-  useEffect(() => () => cancelAnimationFrame(focusFrame.current), []);
+  useEffect(() => { latestSection.current = section; }, [section]);
+  useEffect(() => () => {
+    cancelAnimationFrame(entryFocusFrame.current);
+    cancelAnimationFrame(openerFocusFrame.current);
+  }, []);
 
   const selectFile = (id, trigger) => {
     if (trigger) openerId.current[section] = id;
     setSelections(current => ({ ...current, [section]: selectionFor(section, id) }));
   };
-  const setSelection = id => setSelections(current => ({ ...current, [section]: id }));
   const closeReader = () => {
-    setSelection('');
     const sectionKey = section;
     const fileId = openerId.current[sectionKey];
-    cancelAnimationFrame(focusFrame.current);
-    focusFrame.current = requestAnimationFrame(() => {
+    setSelections(current => ({ ...current, [sectionKey]: '' }));
+    cancelAnimationFrame(openerFocusFrame.current);
+    openerFocusFrame.current = requestAnimationFrame(() => {
       if (latestSection.current !== sectionKey) return;
-      const item = [...(viewport.current?.querySelectorAll('.reader-section:not([hidden]) .file-index-item[data-file-id]') ?? [])]
-        .find(candidate => candidate.dataset.fileId === fileId);
+      const item = [...(document.querySelectorAll('.readme[data-view="index"] .file-index-item[data-file-id]'))]
+        .find(candidate => candidate.dataset.fileId === fileId && candidate.getClientRects().length);
       if (item?.isConnected) item.focus();
     });
   };
-  const currentIndex = sequence.findIndex(entry => entry.id === selectedId);
-  const currentEntry = sequence[currentIndex];
-  const moveEntry = direction => {
-    setSelection(adjacentFileId(sequence, selectedId, direction));
-  };
+  const moveEntry = direction => setSelections(current => ({
+    ...current,
+    [section]: adjacentFileId(sequence, selectedId, direction),
+  }));
 
-  const focusKey = `${section}:${selectedId}:${albumId ?? ''}`;
-  useLayoutEffect(() => {
-    if (focused && viewport.current) viewport.current.scrollTop = 0;
-  }, [focused, focusKey]);
   useEffect(() => {
-    if (!focused) { lastFocusKey.current = ''; return undefined; }
-    if (focusKey === lastFocusKey.current) return undefined;
-    lastFocusKey.current = focusKey;
-    const frame = requestAnimationFrame(() => {
+    if (!isTextReader) { focusKeyRef.current = ''; return undefined; }
+    if (key === focusKeyRef.current) return undefined;
+    focusKeyRef.current = key;
+    const activeBody = isContact ? contactBody.current : body.current;
+    if (activeBody) activeBody.scrollTop = 0;
+    const expectedSection = section;
+    const expectedKey = key;
+    cancelAnimationFrame(entryFocusFrame.current);
+    entryFocusFrame.current = requestAnimationFrame(() => {
+      if (latestSection.current !== expectedSection || focusKeyRef.current !== expectedKey) return;
       if (document.activeElement?.closest('.contact-field')) return;
-      heading.current?.focus();
+      (isContact ? contactHeading.current : heading.current)?.focus();
     });
-    return () => cancelAnimationFrame(frame);
-  }, [focused, focusKey]);
-
-  const entryLabel = currentEntry?.label ?? (section === 'contact' ? 'contact/' : '');
-  const contact = section === 'contact';
-  const routedAlbum = section === 'pictures' && Boolean(albumId);
+    return () => cancelAnimationFrame(entryFocusFrame.current);
+  }, [isContact, isTextReader, key, section]);
 
   const handleKeyDown = event => {
     if (event.key !== 'Escape' || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey
       || event.target.closest('input,textarea,select,[contenteditable="true"],[role="dialog"]')) return;
-    if (contact) { event.preventDefault(); onPortfolioHome(); }
-    else if (routedAlbum) { event.preventDefault(); onGalleryHome(); }
-    else if (focused) { event.preventDefault(); closeReader(); }
+    if (isContact) { event.preventDefault(); onPortfolioHome(); }
+    else if (isAlbum) { event.preventDefault(); onGalleryHome(); }
+    else if (isTextReader) { event.preventDefault(); closeReader(); }
   };
 
-  return <section className={`readme${focused ? ' focused-reader' : ''}`} aria-label="Simon Chen portfolio files" onKeyDown={handleKeyDown}>
-    <div className="reader-topline">
-      <div className="buffer-head"><span>~/{section}{albumId ? `/${albumId}` : ''}</span></div>
-      {focused && !routedAlbum && <nav className="reader-actions" aria-label="Reader navigation">
-        <button type="button" onClick={contact ? onPortfolioHome : closeReader}>{contact ? '← portfolio home' : '← all files'}</button>
-        {!contact && <span>{currentIndex + 1} / {sequence.length}</span>}
-        {!contact && <>
-          <button type="button" onClick={() => moveEntry(-1)} disabled={currentIndex <= 0} aria-label="Previous file or entry">← Prev</button>
-          <button type="button" onClick={() => moveEntry(1)} disabled={currentIndex >= sequence.length - 1} aria-label="Next file or entry">Next →</button>
-        </>}
-      </nav>}
-    </div>
-    <h1 className="owner-name">Simon Chen</h1>
-    <div className="section-command"><b aria-hidden="true">└─$</b> {commandFor(section, albumId)}</div>
-    {focused && !routedAlbum && <h2 className="reader-focus-heading" ref={heading} tabIndex={-1}>{entryLabel}</h2>}
+  const entryTitle = titleFor(section, currentEntry);
+  const breadcrumbs = `${section}/`;
+  const homeIndex = !isContact && section !== 'pictures' && !isTextReader;
+  const indexKind = homeIndex ? 'files' : section === 'pictures' && !albumId ? 'gallery' : 'none';
 
-    <div className={`reader-viewport${focused ? ' is-focused' : ' is-index'}`} ref={viewport}
-      role={focused ? 'region' : undefined} tabIndex={focused ? 0 : undefined}
-      aria-label={focused ? `${entryLabel} reader` : undefined}>
-      <div className="reader-section" hidden={section !== 'whoami'}>
-        {focused ? <Whoami resource={services.github} active={section === 'whoami' && selectedId === 'github-activity'} fileId={selectedId} /> : <>
-          <div className="about-copy"><p>I build software and chase side quests.</p><p className="terminal-note">NYC / SF · Boston University</p></div>
-          <FileIndex files={files} onSelect={selectFile} />
-        </>}
+  return <section className="readme" data-view={isReader ? 'reader' : 'index'} data-index-kind={indexKind} aria-label="Simon Chen portfolio files" onKeyDown={handleKeyDown}>
+    <h1 className="sr-only">Simon Chen</h1>
+    <div className="section-command"><b aria-hidden="true">└─$</b> {commandFor(section, albumId)}</div>
+    <div className="home-index" hidden={!homeIndex}>
+      <p className="owner-name" aria-hidden="true">Simon Chen</p>
+      {section === 'whoami' && <div className="about-copy"><p>I build software and chase side quests.</p><p className="terminal-note">NYC / SF · Boston University</p></div>}
+      <FileIndex files={files} onSelect={selectFile} />
+    </div>
+
+    <ReaderFrame
+      hidden={!isTextReader || isContact}
+      title={entryTitle}
+      breadcrumb={breadcrumbs}
+      backLabel="← all files"
+      onBack={closeReader}
+      position={currentIndex + 1}
+      total={sequence.length}
+      onPrevious={() => moveEntry(-1)}
+      onNext={() => moveEntry(1)}
+      previousDisabled={currentIndex <= 0}
+      nextDisabled={currentIndex < 0 || currentIndex >= sequence.length - 1}
+      headingRef={heading}
+      bodyRef={body}
+      mode="text"
+      navigationLabel={`${section} entries`}
+    >
+      <div className="reader-section">
+        {section === 'whoami' && <Whoami resource={services.github} active={selectedId === 'github-activity'} fileId={selectedId} />}
+        {section === 'projects' && <Projects fileId={selectedId} />}
+        {section === 'hobbies' && <Hobbies resource={services.goodreads} active={selectedId === 'reading'} fileId={selectedId} />}
       </div>
-      <div className="reader-section" hidden={section !== 'projects'}>
-        {focused ? <Projects fileId={selectedId} /> : <FileIndex files={files} onSelect={selectFile} />}
-      </div>
-      <div className="reader-section" hidden={section !== 'pictures'}>
-        <Pictures resource={services.gallery} active={section === 'pictures'} albumId={albumId} motion={motion} />
-      </div>
-      <div className="reader-section" hidden={section !== 'hobbies'}>
-        {focused ? <Hobbies resource={services.goodreads} active={selectedId === 'reading'} fileId={selectedId} /> : <FileIndex files={files} onSelect={selectFile} />}
-      </div>
-      <div className="reader-section" hidden={section !== 'contact'}>
-        <Contact sendMessage={services.sendMessage} />
-      </div>
+    </ReaderFrame>
+
+    <ReaderFrame
+      hidden={!isContact}
+      title="contact/"
+      breadcrumb="contact/"
+      backLabel="← portfolio home"
+      onBack={onPortfolioHome}
+      headingRef={contactHeading}
+      bodyRef={contactBody}
+      mode="text"
+      navigationLabel="Contact reader"
+    >
+      <Contact sendMessage={services.sendMessage} />
+    </ReaderFrame>
+
+    <div className="pictures-slot" hidden={section !== 'pictures'}>
+      <Pictures resource={services.gallery} active={section === 'pictures'} albumId={albumId} motion={motion} />
     </div>
   </section>;
 }

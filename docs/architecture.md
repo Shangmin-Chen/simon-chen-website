@@ -6,10 +6,10 @@ external dependencies. `src/App.jsx` is the composition root.
 
 ```text
 src/portfolio/
-  domain/       navigation, paging, wheel geometry, ASCII frames and shared glitch plans, contributions, validation
+  domain/       navigation, wheel geometry, media sizing/orientation, ASCII frames and glitch plans, contributions, validation
   application/  resource subscriptions and contact submission use case
   adapters/     same-origin HTTP, TTL resource cache, optional browser storage
-  ui/           React shell, crew wheel, portrait, intro, section views
+  ui/           React shell, reader primitives, media stage, crew wheel, portrait, intro, section views
   assets/       character grids, palettes, eye masks, approved intro glyph
 src/data/       actual projects, experience, links, integration configuration
 src/worker.js   Cloudflare API proxy and contact transport
@@ -30,15 +30,19 @@ success and throws on failure. Tests inject transports, storage, and clocks.
 
 The router is a UI adapter: `/#whoami`, `/#projects`, `/#hobbies`, `/#contact`,
 `/gallery`, and `/gallery/:albumId`. Legacy `#gallery` maps to pictures and
-`#now` to hobbies. Browser Back restores the selected character. Section views
-stay mounted and use `hidden`, preserving contact drafts and selected files.
-Each section has a compact, data-backed home index; selecting a file opens a
-focused reader with explicit previous/next entry controls. The focused reader
-is the only region that scrolls naturally, with its scrollbar visually hidden.
-Contact opens directly in the reader, and album routes select the focused
-gallery layout. The document never scrolls. Gallery photos remain actual R2
-content and use the existing accessible touch/zoom lightbox; all new
-decorative assets are character data and CSS textures.
+`#now` to hobbies. Browser Back restores the selected character. ContentPanel
+keeps selected file IDs and opener IDs per section while rendering only the
+active Whoami, Projects, or Hobbies body. The Contact frame and Pictures
+container remain mounted while hidden, preserving form drafts and per-album
+photo selections. Each section has a compact, data-backed home index; selecting
+a file opens a ReaderFrame with shared breadcrumb, title, Back, and footer
+SequenceNavigation. Text files read in a naturally scrollable, visually
+scrollbar-free body, with long prose kept near 68 characters per line; the
+GitHub graph retains its useful width. Gallery uses the same frame with a
+bounded media body. MediaStage measures available space and loaded source
+dimensions; pure `media-orientation` helpers classify orientation and contain
+fit without upscaling. The document never scrolls. Gallery photos remain actual
+R2 content and use the existing accessible touch/zoom lightbox.
 
 Portrait animation is local to its component. It updates at 65ms, pauses in
 background tabs, cleans up timers/listeners, and never changes page position.
