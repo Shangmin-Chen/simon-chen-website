@@ -3,7 +3,7 @@
 .portfolio-surface { height: 100%; display: grid; grid-template-rows: 40px 16px minmax(0, 1fr) 16px 40px; }
 .terminal-header, .terminal-footer { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
 .terminal-host { color: var(--accent-color); font-weight: 500; white-space: nowrap; }
-.terminal-host-suffix, .terminal-header button { color: var(--text-muted); }
+.terminal-host-prefix, .terminal-header button { color: var(--text-muted); }
 .terminal-header button { flex: 0 0 auto; white-space: nowrap; }
 .terminal-brand { display: flex; min-width: 0; flex-direction: column; justify-content: center; line-height: 1.15; }
 .terminal-name-caption { color: var(--text-muted); font-size: 8px; font-weight: 400; }

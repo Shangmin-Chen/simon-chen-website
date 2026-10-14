@@ -50,7 +50,7 @@ export default function Portfolio({ services, preferences }) {
       <a className="skip-link" href="#main-content" onClick={event => { event.preventDefault(); rootRef.current.querySelector('main').focus(); }}>Skip to main content</a>
       <header className="terminal-header">
         <div className="terminal-brand">
-          <span className="terminal-host"><NameCycle entries={nameVariants} staticEntry={staticName} motion={motion} active={!introOpen} /><span className="terminal-host-suffix">@afterhours:~</span></span>
+          <span className="terminal-host"><span className="terminal-host-prefix">simon@</span><NameCycle entries={nameVariants} staticEntry={staticName} motion={motion} active={!introOpen} /></span>
           <span className="terminal-name-caption">{'// my name in the languages I speak'}</span>
         </div>
         <button type="button" onClick={() => { previousFocus.current = document.activeElement; setIntroOpen(true); }}>[ replay intro ]</button>
