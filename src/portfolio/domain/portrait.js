@@ -20,6 +20,13 @@ export function eyeCells(portrait) {
   });
 }
 
+// Eye centers in source-grid coordinates. Gaze is deliberately horizontal;
+// the portrait's border and title row are accounted for by the UI mapper.
+export function portraitEyeCenters(portrait, gazeX = 0) {
+  const shiftX = Math.round(gazeX * 1.6);
+  return (portrait.eyes ?? []).map(eye => ({ x: eye.center[0] + shiftX, y: eye.center[1] }));
+}
+
 // Every frame is derived from immutable source characters, preserving iris
 // texture while moving it inside the original eyelid mask. Maine has no eyes.
 export function portraitFrame(portrait, { gaze = { x: 0, y: 0 }, tick = 0, motion = false, burst = false } = {}, masks = eyeCells(portrait)) {
@@ -28,7 +35,7 @@ export function portraitFrame(portrait, { gaze = { x: 0, y: 0 }, tick = 0, motio
   const blink = tick % 121 >= 118;
   portrait.eyes.forEach((eye, i) => {
     const shiftX = Math.round(gaze.x * 1.6);
-    const shiftY = Math.round(gaze.y * 0.58);
+    const shiftY = 0;
     const [cx, cy] = eye.center;
     const inIris = (x, y) => ((x + 0.5 - cx) / eye.radius[0]) ** 2 + ((y + 0.5 - cy) / eye.radius[1]) ** 2 < 1.08;
     masks[i].forEach(({ x, y }) => {

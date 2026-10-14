@@ -3,7 +3,6 @@
 `crew.json` contains the approved 72 × 33 character grids, sampled HSL
 palettes, and eyelid masks. No raster source images are bundled or fetched.
 `intro.json` is the approved 60 × 61 interlocked SC emblem; keep its spacing.
-`name.js` is the full-name wordmark used on desktop.
 
 The character artwork comes from Cyberpunk: Edgerunners. Frame references:
 

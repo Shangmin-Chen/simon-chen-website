@@ -1,7 +1,8 @@
 import { experiences } from '../../../data/experiences';
 import File from '../File';
+import GithubActivity from '../GithubActivity';
 
-export default function Whoami() {
+export default function Whoami({ resource, active }) {
   return <>
     <div className="about-copy"><p>I build software and chase side quests.</p><p className="terminal-note">NYC / SF · Boston University</p></div>
     <File name="experience.log">
@@ -9,5 +10,6 @@ export default function Whoami() {
         <h3>{experience.title}</h3><p className="terminal-note">{experience.company} / {experience.location}<br />{experience.period}</p><p>{experience.description}</p>
       </article>)}
     </File>
+    <GithubActivity resource={resource} active={active} />
   </>;
 }

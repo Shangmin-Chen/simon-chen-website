@@ -6,7 +6,7 @@ external dependencies. `src/App.jsx` is the composition root.
 
 ```text
 src/portfolio/
-  domain/       navigation, wheel geometry, ASCII frames, contributions, validation
+  domain/       navigation, paging, wheel geometry, ASCII frames, contributions, validation
   application/  resource subscriptions and contact submission use case
   adapters/     same-origin HTTP, TTL resource cache, optional browser storage
   ui/           React shell, crew wheel, portrait, intro, section views
@@ -32,9 +32,12 @@ The router is a UI adapter: `/#whoami`, `/#projects`, `/#hobbies`, `/#contact`,
 `/gallery`, and `/gallery/:albumId`. Legacy `#gallery` maps to pictures and
 `#now` to hobbies. Browser Back restores the selected character. Section views
 stay mounted and use `hidden`, preserving contact drafts and file expansion.
-The content buffer scrolls within the fixed shell. Below the minimum usable
-viewport height (650px desktop / 550px mobile), the document can scroll too,
-so landscape and browser zoom never hide the controls. Gallery photos remain actual R2 content and
+The content buffer is a fixed paging window with previous/next controls; wheel,
+PageUp/PageDown, touch swipes, and keyboard focus move between discrete pages.
+Page boundaries are measured from rendered content height and recomputed when
+details expand, resources load, or the viewport changes. Page positions are
+retained per section and album while views stay mounted. The document never
+scrolls. Gallery photos remain actual R2 content and
 use the existing accessible touch/zoom lightbox; all new decorative assets
 are character data and CSS textures.
 

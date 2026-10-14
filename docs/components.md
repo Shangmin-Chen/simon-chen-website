@@ -2,8 +2,10 @@
 
 - `Portfolio`: URL-to-character mapping, shell, intro lifecycle, motion controls.
 - `AsciiPortrait`: colored text runs, local gaze/blink/glitch timer, frame border.
+  Eye gaze follows the pointer horizontally; CSS tracer rays start at each source
+  iris center and stay off for frames without eye data.
 - `CrewWheel`: native selection controls and scoped drag/scroll/keyboard gestures.
-- `ContentPanel`: stable name and independently scrolling section buffer.
+- `ContentPanel`: accessible owner identity and stable section paging window.
 - `Intro`: approved ASCII emblem, automatic entry, focus and skip behavior.
 - `File`: native expandable text files; expansion survives section changes.
 - `ResourceState`: loading, failure/retry, and empty-state presentation.

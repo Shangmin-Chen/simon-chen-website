@@ -8,6 +8,11 @@
 .character-role { color: var(--link-color); }
 .character-section { color: var(--accent-color); }
 .portrait-caption button { color: var(--highlight-color); min-height: 40px; padding: 5px 0; }
+.portrait-tracers { position: absolute; z-index: 11; inset: 0; overflow: hidden; clip-path: inset(0); pointer-events: none; }
+.portrait-tracer { position: absolute; height: 1px; transform-origin: 0 50%; border-top: 1px dashed color-mix(in hsl, var(--link-color) 58%, transparent); opacity: .32; }
+.portrait-tracer-1 { border-color: color-mix(in hsl, var(--highlight-color) 55%, transparent); opacity: .24; }
+.portrait-tracer i { position: absolute; right: -2px; top: -2px; width: 4px; height: 4px; border-radius: 50%; background: var(--highlight-color); box-shadow: 0 0 5px color-mix(in hsl, var(--highlight-color) 65%, transparent); }
+[data-motion="false"] .portrait-tracers { display: none; }
 @media (max-width: 850px) and (min-width: 651px) { .ascii-portrait-text { font-size: 6.85px; line-height: 6.85px; } }
 @media (max-width: 650px) {
   .ascii-portrait-text { font-size: clamp(4.9px, 1.35vw, 6.5px); line-height: clamp(4.9px, 1.35vw, 6.5px); }
