@@ -5,6 +5,7 @@
 @import './components/portrait.css';
 @import './components/crew-wheel.css';
 @import './components/terminal-files.css';
+@import './components/gallery-workspace.css';
 @import './components/github-activity.css';
 @import './components/intro.css';
 @import './utils/a11y.css';

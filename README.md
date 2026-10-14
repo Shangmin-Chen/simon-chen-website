@@ -121,9 +121,11 @@ This project is open source and available under the [MIT License](LICENSE).
 
 David opens `whoami`, Lucy projects, Rebecca pictures, Maine hobbies, and Falco
 contact. Click the crew names, scroll or drag the wheel, use its arrow keys,
-or press 1–5. The content window pages through its full content with wheel,
-touch, keyboard, and previous/next controls. Gallery URLs remain
-`/gallery` and `/gallery/:albumId`; other sections use `/#projects` etc.
+or press 1–5. Each section opens as a compact file index; choosing a file moves
+to a focused reader with natural wheel, trackpad, touch, and keyboard scrolling.
+The reader hides its scrollbar while keeping the complete content reachable.
+Gallery URLs remain `/gallery` and `/gallery/:albumId`; other sections use
+`/#projects` etc.
 
 The intro enters automatically. Replay and motion controls are in the shell;
 the system reduced-motion preference takes priority. GitHub and Goodreads

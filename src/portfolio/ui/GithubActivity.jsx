@@ -2,20 +2,18 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { githubData } from '../../data/githubData';
 import { useResource } from '../application/useResource';
 import { contributionDetail, contributionFocusTarget, contributionGlyphs, contributionWeekdays, contributionWindow } from '../domain/contributions';
-import File from './File';
 import ResourceState from './ResourceState';
 
 const WINDOW_WEEKS = 26;
 const MOBILE_WEEKS = 13;
 
 export default function GithubActivity({ resource, active }) {
-  const [open, setOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
   const [focusDate, setFocusDate] = useState('');
   const [mobile, setMobile] = useState(false);
   const [rangePage, setRangePage] = useState(1);
   const dayRefs = useRef(new Map());
-  const result = useResource(resource, active && open);
+  const result = useResource(resource, active);
   const contributions = useMemo(() => contributionWindow(result.data?.contributions ?? [], new Date(), WINDOW_WEEKS), [result.data]);
 
   useEffect(() => {
@@ -64,8 +62,7 @@ export default function GithubActivity({ resource, active }) {
     dayRefs.current.get(target)?.focus();
   };
 
-  return <File name="github-activity.log" onOpen={setOpen}>
-    <section className="github-activity" aria-label="GitHub contribution activity">
+  return <section className="github-activity" aria-label="GitHub contribution activity">
       <ResourceState resource={result} loadingText="Connecting to GitHub…">
         <p className="activity-total">{visibleTotal.toLocaleString()} contributions</p>
         {pageCount > 1 && <div className="activity-range-controls" aria-label="Contribution date range">
@@ -114,6 +111,5 @@ export default function GithubActivity({ resource, active }) {
         <p className="activity-source">Live GitHub feed · 1h cache</p>
         <a className="inline-link" href={githubData.url} target="_blank" rel="noopener noreferrer">GitHub ↗</a>
       </ResourceState>
-    </section>
-  </File>;
+    </section>;
 }

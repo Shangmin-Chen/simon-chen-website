@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { wheelOffset, wheelPosition, wheelRail } from '../domain/navigation';
+import { accumulateWheelDelta, wheelOffset, wheelPosition, wheelRail } from '../domain/navigation';
 
 export default function CrewWheel({ crew, selected, onSelect }) {
   const wheelRef = useRef(null);
@@ -7,26 +7,36 @@ export default function CrewWheel({ crew, selected, onSelect }) {
   const gesture = useRef(null);
   const suppressClick = useRef(0);
   const lastWheel = useRef(0);
+  const wheelDelta = useRef(0);
+  const lastWheelAt = useRef(0);
   const focusRequested = useRef(false);
   const [size, setSize] = useState({ width: 350, compact: false, short: false });
   useEffect(() => {
     const element = wheelRef.current;
-    const observer = new ResizeObserver(() => setSize({
-      width: element.getBoundingClientRect().width,
-      compact: window.innerWidth <= 650,
-      short: window.innerHeight <= 700,
-    }));
+    const update = () => {
+      const width = element.getBoundingClientRect().width;
+      setSize({ width, compact: window.innerWidth <= 650 || width < 260, short: window.innerHeight <= 700 });
+    };
+    const observer = new ResizeObserver(update);
     observer.observe(element);
-    return () => observer.disconnect();
+    window.addEventListener('resize', update);
+    update();
+    return () => { observer.disconnect(); window.removeEventListener('resize', update); };
   }, []);
   useEffect(() => {
     const element = wheelRef.current;
     const scroll = event => {
-      if (event.ctrlKey || Math.abs(event.deltaY) < 10) return;
+      if (event.ctrlKey || !event.deltaY) return;
       event.preventDefault();
-      if (performance.now() - lastWheel.current < 240) return;
-      lastWheel.current = performance.now();
-      onSelect(selected + (event.deltaY > 0 ? 1 : -1));
+      const now = performance.now();
+      if (now - lastWheelAt.current > 180) wheelDelta.current = 0;
+      lastWheelAt.current = now;
+      const accumulated = accumulateWheelDelta(wheelDelta.current, event.deltaY);
+      wheelDelta.current = accumulated.total;
+      if (!accumulated.ready || now - lastWheel.current < 240) return;
+      lastWheel.current = now;
+      wheelDelta.current = 0;
+      onSelect(selected + accumulated.direction);
     };
     element.addEventListener('wheel', scroll, { passive: false });
     return () => element.removeEventListener('wheel', scroll);

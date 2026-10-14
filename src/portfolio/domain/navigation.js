@@ -4,6 +4,16 @@ export function wrapIndex(index, length = sections.length) {
   return ((index % length) + length) % length;
 }
 
+export function accumulateWheelDelta(accumulated, delta, threshold = 10) {
+  if (!Number.isFinite(accumulated) || !Number.isFinite(delta) || !Number.isFinite(threshold) || threshold <= 0) {
+    throw new TypeError('wheel deltas and threshold must be finite, with a positive threshold');
+  }
+  if (!delta) return { total: accumulated, direction: Math.sign(accumulated), ready: Math.abs(accumulated) >= threshold };
+  const directionChanged = accumulated && Math.sign(accumulated) !== Math.sign(delta);
+  const total = directionChanged ? delta : accumulated + delta;
+  return { total, direction: Math.sign(total), ready: Math.abs(total) >= threshold };
+}
+
 export function sectionFromLocation({ pathname, hash }) {
   if (pathname === '/gallery' || pathname.startsWith('/gallery/')) return 'pictures';
   const value = hash.replace(/^#/, '');
@@ -20,7 +30,7 @@ export function wheelOffset(index, selected, length = sections.length) {
 
 function wheelGeometry(compact, short) {
   return compact
-    ? { step: 55, radius: short ? 12 : 33, top: short ? 0 : 12, spread: 0.35, railOffset: 51, rows: short ? 10 : 14 }
+    ? { step: 55, radius: short ? 12 : 33, top: short ? 0 : 12, spread: 0.45, railOffset: 51, rows: short ? 10 : 14 }
     : { step: 40, radius: 90, top: 18, spread: 0.38, railOffset: 42, rows: 20 };
 }
 

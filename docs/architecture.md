@@ -31,15 +31,14 @@ success and throws on failure. Tests inject transports, storage, and clocks.
 The router is a UI adapter: `/#whoami`, `/#projects`, `/#hobbies`, `/#contact`,
 `/gallery`, and `/gallery/:albumId`. Legacy `#gallery` maps to pictures and
 `#now` to hobbies. Browser Back restores the selected character. Section views
-stay mounted and use `hidden`, preserving contact drafts and file expansion.
-The content buffer is a fixed paging window with previous/next controls; wheel,
-PageUp/PageDown, touch swipes, and keyboard focus move between discrete pages.
-Page boundaries are measured from rendered content height and recomputed when
-details expand, resources load, or the viewport changes. Page positions are
-retained per section and album while views stay mounted. The document never
-scrolls. Gallery photos remain actual R2 content and
-use the existing accessible touch/zoom lightbox; all new decorative assets
-are character data and CSS textures.
+stay mounted and use `hidden`, preserving contact drafts and selected files.
+Each section has a compact, data-backed home index; selecting a file opens a
+focused reader with explicit previous/next entry controls. The focused reader
+is the only region that scrolls naturally, with its scrollbar visually hidden.
+Contact opens directly in the reader, and album routes select the focused
+gallery layout. The document never scrolls. Gallery photos remain actual R2
+content and use the existing accessible touch/zoom lightbox; all new
+decorative assets are character data and CSS textures.
 
 Portrait animation is local to its component. It updates at 65ms, pauses in
 background tabs, cleans up timers/listeners, and never changes page position.

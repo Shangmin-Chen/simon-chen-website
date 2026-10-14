@@ -11,7 +11,6 @@ export default function Contact({ sendMessage }) {
     if (form.status === 'invalid') formRef.current.querySelector('[aria-invalid="true"]')?.focus();
   }, [form.status]);
   return <>
-    <h2 className="section-heading">contact/</h2>
     <p>Have a project in mind, or just want to say hello?</p>
     <nav className="terminal-socials" aria-label="Social profiles">{socialLinks.map(link => <a key={link.label} href={link.href} target="_blank" rel="noopener noreferrer">{link.label} ↗</a>)}</nav>
     <form ref={formRef} className="terminal-contact" noValidate onSubmit={event => { event.preventDefault(); void form.submit(); }}>

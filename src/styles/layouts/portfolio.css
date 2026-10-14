@@ -18,22 +18,51 @@
 .ascii-rule { white-space: nowrap; overflow: hidden; color: var(--border-color); letter-spacing: 1px; font-size: 11px; align-self: center; }
 .workspace { display: grid; grid-template-columns: 350px minmax(0, 1fr); gap: 48px; align-items: center; min-height: 0; padding: 12px 0; }
 .character-profile, .readme { min-width: 0; }
-.readme { display: flex; flex-direction: column; height: min(510px, 100%); min-height: 0; }
-.buffer-head { display: flex; align-items: center; min-height: 24px; margin-bottom: 10px; color: var(--link-color); font-size: 11px; overflow-wrap: anywhere; }
-.owner-name { margin: 0 0 8px; color: var(--text-primary); font: 500 14px/1.5 var(--font-mono); }
-.content-buffer { min-height: 0; flex: 1; overflow: clip; padding: 0 12px 0 0; touch-action: pan-x pinch-zoom; }
-.content-document { width: 100%; transform-origin: top left; }
-.section-command { color: var(--text-muted); font-size: 11px; margin: 0 0 12px; }
+.character-profile { align-self: center; }
+.readme { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+.reader-topline { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 12px; min-height: 24px; margin-bottom: 6px; }
+.buffer-head { color: var(--link-color); font-size: 11px; overflow-wrap: anywhere; }
+.owner-name { margin: 0 0 5px; color: var(--text-primary); font: 500 14px/1.4 var(--font-mono); }
+.section-command { flex: 0 0 auto; color: var(--text-muted); font-size: 11px; margin: 0 0 8px; }
 .section-command b { color: var(--highlight-color); font-weight: 500; }
-.section-heading { color: var(--accent-color); font-size: 16px; margin: 0 0 12px; }
-.content-pager { flex: 0 0 auto; min-height: 40px; display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--text-muted); font-size: 10px; }
-.content-pager button { min-height: 40px; padding: 6px 4px; color: var(--link-color); }
-.content-pager button:disabled { opacity: 0.4; }
+.reader-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; min-height: 34px; color: var(--text-muted); font-size: 10px; }
+.reader-actions button { min-height: 36px; padding: 4px 0; color: var(--link-color); white-space: nowrap; }
+.reader-actions button:disabled { opacity: .42; }
+.reader-focus-heading { flex: 0 0 auto; margin: 0 0 9px; color: var(--accent-color); font: 500 15px/1.4 var(--font-mono); overflow-wrap: anywhere; }
+.reader-viewport { min-height: 0; flex: 1 1 auto; }
+.reader-viewport.is-focused { overflow-x: hidden; overflow-y: auto; scrollbar-width: none; overscroll-behavior: contain; }
+.reader-viewport.is-focused::-webkit-scrollbar { display: none; }
+.reader-viewport.is-index { overflow: hidden; }
+.reader-section { min-height: 0; }
+.reader-viewport.is-focused .reader-section:not([hidden]) { height: 100%; min-height: 100%; }
+.about-copy { max-width: 360px; margin: 0 0 8px; }
+.about-copy p { margin-bottom: 6px; }
+.file-index { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px 10px; align-content: start; }
+.file-index-item { display: flex; align-items: center; gap: 9px; min-width: 0; min-height: 48px; padding: 7px 9px; border: 1px solid var(--border-color); text-align: left; }
+.file-index-item:hover, .file-index-item:focus-visible { border-color: var(--link-color); background: var(--bg-secondary); }
+.file-index-tree, .file-index-open { flex: 0 0 auto; color: var(--border-color); }
+.file-index-copy { display: grid; min-width: 0; gap: 3px; }
+.file-index-copy strong { color: var(--link-color); font-size: 11px; font-weight: 500; overflow-wrap: anywhere; }
+.file-index-copy small { color: var(--text-muted); font-size: 9px; line-height: 1.3; }
+.file-index-open { margin-left: auto; color: var(--highlight-color); }
 .terminal-footer { font-size: 11px; color: var(--text-muted); }
+.workspace:has(.readme.focused-reader) { grid-template-columns: minmax(165px, 220px) minmax(0, 1fr); gap: clamp(16px, 3vw, 34px); align-items: stretch; }
+.workspace:has(.readme.focused-reader) .character-profile { align-self: center; }
+.workspace:has(.readme.focused-reader) .owner-name, .workspace:has(.readme.focused-reader) .section-command { display: none; }
+.workspace:has(.readme.focused-reader) .ascii-portrait-text { font-size: 3.4px; line-height: 3.4px; }
+.workspace:has(.readme.focused-reader) .portrait-caption { margin-top: 5px; font-size: 9px; }
+.workspace:has(.readme.focused-reader) .portrait-caption strong { font-size: 10px; }
+.workspace:has(.readme.focused-reader) .crew-wheel { height: 100px; max-width: 220px; margin-top: 0; }
+.workspace:has(.readme.focused-reader) .wheel-rail { height: 98px; }
+.workspace:has(.readme.focused-reader) .crew-option { width: 48px; min-height: 46px; }
+.workspace:has(.readme.focused-reader) .wheel-controls { max-width: 100%; gap: 3px; font-size: 8px; }
+.workspace:has(.readme.focused-reader) .wheel-controls button { min-width: 34px; min-height: 34px; }
+.workspace:has(.readme.focused-reader) .terminal-contact { max-width: 720px; }
 @media (prefers-reduced-motion: reduce) { .name-cycle-visual::after { animation: none !important; } }
 @media (max-width: 850px) and (min-width: 651px) {
   .portfolio { padding: 15px 25px 10px; }
   .workspace { grid-template-columns: 310px minmax(0, 1fr); gap: 25px; }
+  .workspace:has(.readme.focused-reader) { grid-template-columns: minmax(150px, 185px) minmax(0, 1fr); gap: 18px; }
 }
 @media (max-width: 650px) {
   .portfolio { padding: 10px 18px 8px; }
@@ -43,19 +72,67 @@
   .terminal-header button, .terminal-footer button { min-height: 36px; }
   .workspace { display: flex; flex-direction: column; gap: 6px; padding: 4px 0; align-items: stretch; }
   .character-profile { flex: 0 0 auto; }
-  .readme { flex: 1 1 0; width: 100%; height: auto; }
-  .buffer-head { min-height: 18px; margin-bottom: 2px; }
-  .owner-name { font-size: 12px; line-height: 1.3; margin-bottom: 4px; }
-  .content-buffer { padding-right: 0; }
-  .section-command { margin-bottom: 6px; }
-  .section-heading { font-size: 14px; margin-bottom: 8px; }
-  .content-pager, .content-pager button { min-height: 36px; }
+  .readme { flex: 1 1 0; width: 100%; }
+  .reader-topline { min-height: 19px; margin-bottom: 3px; }
+  .buffer-head { font-size: 9px; }
+  .owner-name { font-size: 12px; line-height: 1.3; margin-bottom: 3px; }
+  .section-command { margin-bottom: 5px; font-size: 10px; }
+  .reader-actions { gap: 8px; min-height: 30px; }
+  .reader-actions button { min-height: 32px; font-size: 10px; }
+  .reader-focus-heading { margin-bottom: 6px; font-size: 13px; }
+  .file-index { grid-template-columns: 1fr; gap: 4px; }
+  .file-index-item { min-height: 42px; padding: 5px 8px; }
+  .file-index-copy { display: flex; align-items: baseline; justify-content: space-between; flex: 1 1 auto; gap: 8px; }
+  .file-index-copy strong { font-size: 10px; }
+  .file-index-copy small { text-align: right; }
+  .workspace:has(.readme.focused-reader) { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(72px, 0.25fr) minmax(0, 1fr); gap: 4px; padding: 2px 0; }
+  .workspace:has(.readme.focused-reader) .character-profile { display: grid; grid-template-columns: minmax(90px, 0.8fr) minmax(0, 1.2fr); align-items: center; gap: 5px; min-height: 0; }
+  .workspace:has(.readme.focused-reader) .character-art,
+  .workspace:has(.readme.focused-reader) .character-navigation { min-width: 0; min-height: 0; }
+  .workspace:has(.readme.focused-reader) .character-art { display: flex; flex-direction: column; align-items: center; }
+  .workspace:has(.readme.focused-reader) .character-navigation { display: flex; flex-direction: column; align-items: stretch; }
+  .workspace:has(.readme.focused-reader) .ascii-portrait-text { font-size: 2.1px; line-height: 2.1px; }
+  .workspace:has(.readme.focused-reader) .portrait-caption { margin-top: 2px; gap: 3px; font-size: 8px; }
+  .workspace:has(.readme.focused-reader) .portrait-caption strong { font-size: 9px; }
+  .workspace:has(.readme.focused-reader) .portrait-caption button { min-height: 30px; }
+  .workspace:has(.readme.focused-reader) .crew-wheel { height: 100px; max-width: none; margin: 0; }
+  .workspace:has(.readme.focused-reader) .wheel-rail { height: 98px; }
+  .workspace:has(.readme.focused-reader) .crew-option { width: 48px; min-height: 42px; }
+  .workspace:has(.readme.focused-reader) .crew-option strong { font-size: 9px; }
+  .workspace:has(.readme.focused-reader) .crew-option small { font-size: 8px; }
+  .workspace:has(.readme.focused-reader) .wheel-controls { gap: 4px; font-size: 8px; }
+  .workspace:has(.readme.focused-reader) .wheel-controls button { min-width: 32px; min-height: 28px; }
+  .workspace:has(.readme.focused-reader) .character-navigation { align-self: start; }
+  .workspace:has(.readme.focused-reader) .portrait-caption .character-role,
+  .workspace:has(.readme.focused-reader) .portrait-caption .character-section { display: none; }
 }
 @media (max-height: 700px) and (max-width: 650px) {
   .portfolio { padding: 6px 14px; }
   .portfolio-surface { grid-template-rows: 30px 10px minmax(0, 1fr) 10px 30px; }
-  .terminal-header button, .terminal-footer button, .content-pager, .content-pager button { min-height: 30px; }
+  .terminal-header button, .terminal-footer button { min-height: 30px; }
   .workspace { padding: 2px 0; gap: 2px; }
   .buffer-head { display: none; }
   .owner-name { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; white-space: nowrap; clip-path: inset(50%); }
+  .workspace:has(.readme.focused-reader) { grid-template-rows: minmax(80px, 0.16fr) minmax(0, 1fr); gap: 2px; }
+  .workspace:has(.readme.focused-reader) .character-profile { grid-template-columns: minmax(72px, 0.7fr) minmax(0, 1.3fr); }
+  .workspace:has(.readme.focused-reader) .ascii-portrait-text { font-size: 1.4px; line-height: 1.4px; }
+  .workspace:has(.readme.focused-reader) .character-navigation .crew-wheel { height: 54px; }
+  .workspace:has(.readme.focused-reader) .character-navigation .wheel-rail { height: 52px; }
+  .workspace:has(.readme.focused-reader) .wheel-controls button { min-height: 24px; }
+  .workspace:has(.readme.focused-reader) .portrait-caption .character-role,
+  .workspace:has(.readme.focused-reader) .portrait-caption .character-section { display: none; }
+  .workspace:not(:has(.readme.focused-reader)) .character-profile { display: grid; grid-template-columns: minmax(80px, 0.8fr) minmax(0, 1.2fr); align-items: center; gap: 4px; min-height: 0; }
+  .workspace:not(:has(.readme.focused-reader)) .character-art,
+  .workspace:not(:has(.readme.focused-reader)) .character-navigation { min-width: 0; min-height: 0; }
+  .workspace:not(:has(.readme.focused-reader)) .character-art { display: flex; flex-direction: column; align-items: center; }
+  .workspace:not(:has(.readme.focused-reader)) .character-navigation { display: flex; flex-direction: column; align-items: stretch; }
+  .workspace:not(:has(.readme.focused-reader)) .ascii-portrait-text { font-size: 1.4px; line-height: 1.4px; }
+  .workspace:not(:has(.readme.focused-reader)) .portrait-caption { margin-top: 1px; font-size: 8px; }
+  .workspace:not(:has(.readme.focused-reader)) .portrait-caption button { min-height: 25px; }
+  .workspace:not(:has(.readme.focused-reader)) .crew-wheel { height: 54px; margin: 0; }
+  .workspace:not(:has(.readme.focused-reader)) .wheel-rail { height: 46px; }
+  .workspace:not(:has(.readme.focused-reader)) .wheel-controls { gap: 4px; font-size: 8px; }
+  .workspace:not(:has(.readme.focused-reader)) .crew-option { width: 48px; min-height: 42px; }
+  .workspace:not(:has(.readme.focused-reader)) .wheel-controls button { min-width: 32px; min-height: 25px; }
+  .workspace:not(:has(.readme.focused-reader)) .file-index-item { min-height: 34px; padding-top: 3px; padding-bottom: 3px; }
 }

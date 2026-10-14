@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { sections, wrapIndex, wheelOffset, wheelPosition, sectionFromLocation } from '../src/portfolio/domain/navigation.js';
+import { accumulateWheelDelta, sections, wrapIndex, wheelOffset, wheelPosition, sectionFromLocation } from '../src/portfolio/domain/navigation.js';
 import { validateContact } from '../src/portfolio/domain/contact.js';
 import { contributionWindow } from '../src/portfolio/domain/contributions.js';
 import { portraitFrame, introFrame, colorRuns } from '../src/portfolio/domain/portrait.js';
@@ -28,6 +28,19 @@ test('gallery deep links and legacy anchors map to the appropriate character', (
   assert.equal(sectionFromLocation({ pathname: '/', hash: '#now' }), 'hobbies');
   assert.equal(sectionFromLocation({ pathname: '/', hash: '#gallery' }), 'pictures');
   assert.equal(sectionFromLocation({ pathname: '/', hash: '#unknown' }), 'whoami');
+});
+
+test('crew wheel accumulates small trackpad deltas without losing direction changes', () => {
+  const first = accumulateWheelDelta(0, 3);
+  assert.equal(first.ready, false);
+  const second = accumulateWheelDelta(first.total, 4);
+  assert.equal(second.ready, false);
+  const third = accumulateWheelDelta(second.total, 5);
+  assert.equal(third.ready, true);
+  assert.equal(third.direction, 1);
+  const reverse = accumulateWheelDelta(third.total, -2);
+  assert.equal(reverse.total, -2);
+  assert.equal(reverse.direction, -1);
 });
 
 test('ASCII frame dimensions and palette indices are valid for all five characters', () => {
