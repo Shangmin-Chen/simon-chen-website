@@ -11,6 +11,7 @@ export default function CrewWheel({ crew, selected, onSelect }) {
   const lastWheelAt = useRef(0);
   const focusRequested = useRef(false);
   const [size, setSize] = useState({ width: 350, compact: false, short: false });
+  const focusPosition = wheelPosition(0, size.width, size.compact, size.short);
   useEffect(() => {
     const element = wheelRef.current;
     const update = () => {
@@ -83,6 +84,19 @@ export default function CrewWheel({ crew, selected, onSelect }) {
         onPointerCancel={() => { gesture.current = null; }}
       >
         <pre className="wheel-rail" aria-hidden="true" style={{ fontSize: `${Math.min(8, size.width / (72 * 0.6))}px` }}>{wheelRail(size.compact, size.short)}</pre>
+        <span className="wheel-ambient" aria-hidden="true">
+          <span className="wheel-ambient__track" />
+          <span className="wheel-ambient__packet wheel-ambient__packet--cyan" />
+          <span className="wheel-ambient__packet wheel-ambient__packet--pink" />
+          <span className="wheel-ambient__frame" style={{ '--wheel-x': `${focusPosition.x}px`, '--wheel-y': `${focusPosition.y}px`, '--wheel-scale': focusPosition.scale }}>
+            <span className="wheel-ambient__corner wheel-ambient__corner--tl" />
+            <span className="wheel-ambient__corner wheel-ambient__corner--tr" />
+            <span className="wheel-ambient__corner wheel-ambient__corner--bl" />
+            <span className="wheel-ambient__corner wheel-ambient__corner--br" />
+          </span>
+          <span className="wheel-ambient__shard wheel-ambient__shard--left" />
+          <span className="wheel-ambient__shard wheel-ambient__shard--right" />
+        </span>
         {crew.map((member, index) => {
           const offset = wheelOffset(index, selected, crew.length);
           const position = wheelPosition(offset, size.width, size.compact, size.short);

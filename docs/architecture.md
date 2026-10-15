@@ -73,6 +73,11 @@ motion toggle; text decode frames preserve grapheme and whitespace boundaries,
 while the original title and caption stay semantic and readable to assistive
 technology.
 
+The ambient scene and crew-wheel signal paths use static CSS geometry with
+slow compositor transforms and opacity changes. The shell exposes one
+visibility-aware `data-ambient` boundary to pause those layers; no animation
+tick rerenders the shell or changes navigation targets.
+
 Validation: `npm run lint`, `npm run verify` (Node tests + build + token checks),
 and UI checks using the Cloudflare development Worker on port 8787. Node tests
 cover navigation wraparound, frame integrity/immutability, contribution dates,

@@ -43,6 +43,7 @@ export const GameCard = forwardRef(function GameCard({ item, selected, visual, t
     onMouseEnter={signal.start}
   >
     {face}
+    <span className="game-card__geometry" aria-hidden="true" />
     {motion && signal.tick >= 0 && <SignalBands seed={signalSeedValue} tick={signal.tick} className="game-card__signals">{face}</SignalBands>}
   </button>;
 });
@@ -76,9 +77,17 @@ const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect
 
   const measure = useCallback(node => {
     if (!node) return;
-    const width = node.clientWidth;
-    const height = node.clientHeight;
-    const next = { columns: width >= 600 ? 3 : width >= 280 ? 2 : 1, rows: height >= (hasVisual ? 470 : 400) ? 2 : 1 };
+    const grid = node.querySelector('.card-deck__grid');
+    const width = grid?.clientWidth ?? node.clientWidth;
+    // Reserve the pager and hint whether or not paging is currently rendered;
+    // this keeps row capacity stable when crossing a page-count boundary.
+    const availableGridHeight = Math.max(0, node.clientHeight - 48);
+    const compact = width < 600;
+    const twoRowMinimum = compact ? (hasVisual ? 365 : 345) : (hasVisual ? 485 : 364);
+    const next = {
+      columns: width >= 600 ? 3 : width >= 280 ? 2 : 1,
+      rows: availableGridHeight >= twoRowMinimum ? 2 : 1,
+    };
     setLayout(current => current.columns === next.columns && current.rows === next.rows ? current : next);
   }, [hasVisual]);
 
@@ -181,7 +190,7 @@ const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect
     clearTimeout(suppressTimer.current);
   };
 
-  return <section className="card-deck" ref={deckRef} data-visual={hasVisual} style={{ '--card-columns': layout.columns, '--card-rows': layout.rows }} aria-label={label} onKeyDown={handleKeyDown} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchCancel} onClickCapture={event => {
+  return <section className="card-deck" ref={deckRef} data-visual={hasVisual} data-columns={layout.columns} data-rows={layout.rows} data-motion={motion} style={{ '--card-columns': layout.columns, '--card-rows': layout.rows }} aria-label={label} onKeyDown={handleKeyDown} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchCancel} onClickCapture={event => {
     if (!suppressClick.current) return;
     event.preventDefault();
     event.stopPropagation();

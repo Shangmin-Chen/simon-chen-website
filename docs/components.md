@@ -8,6 +8,10 @@
   Eye gaze follows the pointer horizontally; CSS tracer rays originate at each
   source iris center and are suppressed for frames without eye data.
 - `CrewWheel`: native selection controls and scoped drag/scroll/keyboard gestures.
+- `AmbientScene` / wheel accents: a CSS-routed, asymmetric signal lattice and
+  slow packet/bracket motion behind the portfolio content and around the crew
+  rail. The shell pauses it for the intro, hidden tabs, reduced motion, or the
+  saved motion toggle; it never moves interactive controls.
 - `ContentPanel`: stable character scene, per-section selected card state, and
   mounted Contact/Pictures sections.
 - `InspectPanel`: in-scene text inspection over the card area; the underlying
