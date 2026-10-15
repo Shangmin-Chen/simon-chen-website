@@ -23,21 +23,21 @@ test('portrait eye centers move horizontally only and omit characters without ey
   assert.deepEqual(portraitEyeCenters(crew.find(member => member.id === 'maine').portrait), []);
 });
 
-test('eye point mapping includes the title row and left frame column', () => {
+test('eye points stay in viewport coordinates and include the title row and left frame column', () => {
   const portrait = crew.find(member => member.id === 'david').portrait;
   const points = portraitEyePoints(portrait, {
     textRect: { left: 100, top: 50 },
-    rootRect: { left: 20, top: 10 },
     charWidth: 8,
     lineHeight: 8,
     gazeX: 0,
   });
   assert.equal(points.length, 2);
   const [eyeX, eyeY] = portrait.eyes[0].center;
-  assert.equal(points[0].x, 80 + (eyeX + 1.5) * 8);
-  assert.equal(points[0].y, 40 + (eyeY + 1.5) * 8);
+  assert.equal(points[0].x, 100 + (eyeX + 1.5) * 8);
+  assert.equal(points[0].y, 50 + (eyeY + 1.5) * 8);
+  assert.ok(points[0].x > 100 && points[0].y > 50);
   assert.deepEqual(portraitEyePoints(crew.find(member => member.id === 'maine').portrait, {
-    textRect: { left: 100, top: 50 }, rootRect: { left: 20, top: 10 }, charWidth: 8, lineHeight: 8,
+    textRect: { left: 100, top: 50 }, charWidth: 8, lineHeight: 8,
   }), []);
 });
 

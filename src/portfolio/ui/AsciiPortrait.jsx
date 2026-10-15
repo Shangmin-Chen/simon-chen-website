@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { colorRuns, eyeCells, portraitFrame, portraitGlitchPlan } from '../domain/portrait';
-import { portraitEyePoints, tracerSegment } from '../domain/portrait-tracers';
 import PortraitTracers from './PortraitTracers';
 
 export default function AsciiPortrait({ member, motion }) {
@@ -9,59 +8,42 @@ export default function AsciiPortrait({ member, motion }) {
   const textRef = useRef(null);
   const burstUntil = useRef(0);
   const burstStarted = useRef(0);
-  const [frame, setFrame] = useState({ tick: 0, gaze: { x: 0 }, burst: false, burstAge: 0, cursor: null });
+  const gazeTarget = useRef(0);
+  const [frame, setFrame] = useState({ tick: 0, gaze: { x: 0 }, burst: false, burstAge: 0 });
   const masks = useMemo(() => eyeCells(member.portrait), [member]);
+
+  const updateGazeTarget = useCallback(point => {
+    const box = portraitRef.current?.getBoundingClientRect();
+    if (!point || !box) {
+      gazeTarget.current = 0;
+      return;
+    }
+    gazeTarget.current = Math.max(-1, Math.min(1,
+      (point.x - box.left - box.width / 2) / (window.innerWidth * 0.35),
+    ));
+  }, []);
+
   useEffect(() => {
     if (!motion) return;
     let tick = 0;
-    let target = { x: 0, y: 0 };
     let gaze = { x: 0, y: 0 };
-    let cursor = null;
+    gazeTarget.current = 0;
     const transmissionStart = performance.now();
     const transmissionEnd = performance.now() + 220;
-    const clearPointer = () => {
-      target = { x: 0, y: 0 };
-      cursor = null;
-      setFrame(previous => ({ ...previous, cursor: null, tracers: [] }));
-    };
-    const move = event => {
-      if (event.pointerType === 'touch') { clearPointer(); return; }
-      cursor = { x: event.clientX, y: event.clientY };
-      const box = portraitRef.current.getBoundingClientRect();
-      target = {
-        x: Math.max(-1, Math.min(1, (event.clientX - box.left - box.width / 2) / (window.innerWidth * 0.35))),
-      };
-    };
-    const leave = clearPointer;
-    window.addEventListener('pointermove', move);
-    document.addEventListener('pointerleave', leave);
     const timer = window.setInterval(() => {
       if (document.hidden) return;
       tick++;
-      gaze = { x: gaze.x + (target.x - gaze.x) * 0.18, y: 0 };
-      const text = textRef.current;
-      const root = text?.closest('.portfolio');
-      let tracers = [];
-      if (cursor && root && text && portrait.eyes.length) {
-        const textRect = text.getBoundingClientRect();
-        const rootRect = root.getBoundingClientRect();
-        const lineHeight = Number.parseFloat(getComputedStyle(text).lineHeight);
-        const charWidth = textRect.width / (portrait.width + 2);
-        const eyes = portraitEyePoints(portrait, { textRect, rootRect, charWidth, lineHeight, gazeX: gaze.x });
-        const endpoint = { x: cursor.x - rootRect.left, y: cursor.y - rootRect.top };
-        tracers = eyes.map(eye => tracerSegment(eye, endpoint));
-      }
+      gaze = { x: gaze.x + (gazeTarget.current - gaze.x) * 0.18, y: 0 };
       const now = performance.now();
       const clickedBurst = now < burstUntil.current;
       const initialTransmission = now < transmissionEnd;
       const burst = clickedBurst || initialTransmission;
       const burstAge = Math.floor((now - (clickedBurst ? burstStarted.current : transmissionStart)) / 65);
-      setFrame({ tick, gaze, cursor, tracers, burst, burstAge });
+      setFrame({ tick, gaze, burst, burstAge });
     }, 65);
     return () => {
       window.clearInterval(timer);
-      window.removeEventListener('pointermove', move);
-      document.removeEventListener('pointerleave', leave);
+      gazeTarget.current = 0;
     };
   }, [motion, portrait]);
 
@@ -104,7 +86,13 @@ export default function AsciiPortrait({ member, motion }) {
           <span className="portrait-border">{'+' + '-'.repeat(portrait.width) + '+'}</span>
         </span>
       </button>
-      <PortraitTracers segments={motion ? frame.tracers : []} />
+      <PortraitTracers
+        portrait={portrait}
+        textRef={textRef}
+        gazeX={frame.gaze.x}
+        active={motion && portrait.eyes.length > 0}
+        onPointerTargetChange={updateGazeTarget}
+      />
       <div className="portrait-caption">
         <div><strong>{member.name}</strong><span className="character-role"> / {member.role}</span><span className="character-section"> / {member.section}</span></div>
         <button type="button" disabled={!motion} onClick={() => { burstStarted.current = performance.now(); burstUntil.current = burstStarted.current + 430; }}>[ glitch ]</button>
