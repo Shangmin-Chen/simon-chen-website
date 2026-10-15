@@ -6,6 +6,7 @@ export default function useSelectorPhase(selected, count, enabled) {
   const phaseRef = useRef(selected);
   const targetRef = useRef(selected);
   const logicalRef = useRef(selected);
+  const previewRef = useRef(null);
   const frameRef = useRef(0);
 
   const stop = useCallback(() => {
@@ -16,9 +17,8 @@ export default function useSelectorPhase(selected, count, enabled) {
   const animateToTarget = useCallback(allowMotion => {
     stop();
     if (!allowMotion) {
-      targetRef.current = logicalRef.current;
-      phaseRef.current = logicalRef.current;
-      setPhase(logicalRef.current);
+      phaseRef.current = targetRef.current;
+      setPhase(targetRef.current);
       return;
     }
 
@@ -48,6 +48,10 @@ export default function useSelectorPhase(selected, count, enabled) {
     if (!Number.isFinite(steps)) return logicalRef.current;
     const delta = Math.trunc(steps);
     if (!delta) return logicalRef.current;
+    if (previewRef.current !== null) {
+      targetRef.current += signedCircularOffset(logicalRef.current, targetRef.current, count);
+    }
+    previewRef.current = null;
     logicalRef.current = wrapIndex(logicalRef.current + delta, count);
     targetRef.current += delta;
     animateToTarget(enabled);
@@ -59,11 +63,41 @@ export default function useSelectorPhase(selected, count, enabled) {
     return moveBy(signedCircularOffset(next, logicalRef.current, count));
   }, [count, moveBy]);
 
+  const previewBy = useCallback(steps => {
+    if (!Number.isFinite(steps)) return previewRef.current ?? logicalRef.current;
+    const delta = Math.trunc(steps);
+    if (!delta) return previewRef.current ?? logicalRef.current;
+    const from = previewRef.current ?? logicalRef.current;
+    previewRef.current = wrapIndex(from + delta, count);
+    targetRef.current += delta;
+    animateToTarget(enabled);
+    return previewRef.current;
+  }, [animateToTarget, count, enabled]);
+
+  const commitPreview = useCallback(() => {
+    if (previewRef.current === null) return logicalRef.current;
+    logicalRef.current = previewRef.current;
+    previewRef.current = null;
+    return logicalRef.current;
+  }, []);
+
+  const cancelPreview = useCallback(() => {
+    if (previewRef.current === null) return logicalRef.current;
+    previewRef.current = null;
+    targetRef.current += signedCircularOffset(logicalRef.current, targetRef.current, count);
+    animateToTarget(enabled);
+    return logicalRef.current;
+  }, [animateToTarget, count, enabled]);
+
   useLayoutEffect(() => {
     const next = wrapIndex(selected, count);
     if (next === logicalRef.current) return;
     const delta = signedCircularOffset(next, logicalRef.current, count);
+    if (previewRef.current !== null) {
+      targetRef.current += signedCircularOffset(logicalRef.current, targetRef.current, count);
+    }
     logicalRef.current = next;
+    previewRef.current = null;
     targetRef.current += delta;
     animateToTarget(enabled);
   }, [animateToTarget, count, enabled, selected]);
@@ -75,5 +109,5 @@ export default function useSelectorPhase(selected, count, enabled) {
 
   useEffect(() => stop, [stop]);
 
-  return { phase, moveBy, moveTo };
+  return { phase, moveBy, moveTo, previewBy, commitPreview, cancelPreview };
 }

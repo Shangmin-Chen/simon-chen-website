@@ -28,6 +28,10 @@ export default function PortraitTracers({ portrait, textRef, gazeX = 0, active, 
 
       const text = textRef.current;
       const textRect = text.getBoundingClientRect();
+      if (textRect.width <= 0 || textRect.height <= 0) {
+        setSegments([]);
+        return;
+      }
       const lineHeight = Number.parseFloat(getComputedStyle(text).lineHeight);
       const charWidth = textRect.width / (portrait.width + 2);
       const eyes = portraitEyePoints(portrait, { textRect, charWidth, lineHeight, gazeX: gazeRef.current });
@@ -71,6 +75,8 @@ export default function PortraitTracers({ portrait, textRef, gazeX = 0, active, 
     const fonts = document.fonts;
     fonts?.addEventListener('loadingdone', schedule);
     fonts?.ready?.then(() => { if (!disposed) schedule(); });
+    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(schedule);
+    if (textRef.current) observer?.observe(textRef.current);
 
     return () => {
       disposed = true;
@@ -84,6 +90,7 @@ export default function PortraitTracers({ portrait, textRef, gazeX = 0, active, 
       viewport?.removeEventListener('resize', schedule);
       viewport?.removeEventListener('scroll', schedule);
       fonts?.removeEventListener('loadingdone', schedule);
+      observer?.disconnect();
       onPointerTargetChange(null);
       scheduleRef.current = null;
     };

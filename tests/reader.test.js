@@ -8,6 +8,8 @@ test('home indexes compactly describe real content and map to reader entries', (
   assert.deepEqual(filesFor('whoami').map(file => file.id), [...experiences.map(experienceId), 'github-activity']);
   assert.equal(sequenceFor('whoami')[0].id, experienceId(experiences[0]));
   assert.equal(sequenceFor('whoami').length, experiences.length + 1);
+  assert.deepEqual(filesFor('whoami').slice(0, experiences.length).map(file => file.accessibleLabel), experiences.map(experience => `${experience.title} at ${experience.company}`));
+  assert.deepEqual(sequenceFor('whoami').slice(0, experiences.length).map(entry => entry.navigationLabel), experiences.map(experience => `${experience.title} at ${experience.company}`));
   assert.equal(filesFor('projects').length, projects.length);
   assert.deepEqual(filesFor('hobbies').map(file => file.id), ['reading', 'chess', 'gaming', 'running']);
   assert.equal(filesFor('projects')[0].title, projects[0].title);

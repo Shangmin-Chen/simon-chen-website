@@ -38,9 +38,13 @@ map from project data to two stacked typographic dossiers; the reader retains
 the full project descriptions. Whoami experience records also map their local
 official company marks into supporting card and reader identity. One activation
 opens an in-scene InspectPanel over the card area, with a shared ReaderFrame,
-breadcrumb, Close/Escape behavior,
-and previous/next card controls. The character art and section selector keep
-the same geometry while a card is inspected. The selector is an endless carousel
+breadcrumb, contextual Back/Escape behavior, and previous/next card controls
+whose accessible names include the adjacent item title. Interior sibling
+navigation retains focus on its command; when a move disables that command at a
+sequence edge, focus moves to the reader heading. ContentPanel exposes
+`focusContent()` to the section selector, focusing the active selected slot or
+reader heading and skipping hidden or inert content. The character art and
+section selector keep the same geometry while a card is inspected. The selector is an endless carousel
 with five unique section buttons arranged around a shallow elliptical arc. At
 rest all five destinations are visible; the selected destination settles at
 center/front. During a wrap, a button fades at the outer seam and re-enters from
@@ -52,7 +56,9 @@ phase animation and cancels it when motion is inactive. Text reads in
 a naturally scrollable,
 visually scrollbar-free body, with long prose kept near 68 characters per line;
 the GitHub graph keeps its useful width. CardDeck presents each collection as a
-game inventory inside one perimeter frame. The pure inventory presentation
+game inventory inside one perimeter frame. Its persistent hint names click,
+tap, Enter, and Space as direct open actions; pointer and keyboard hints can
+adapt to focus without repeating action copy on every slot. The pure inventory presentation
 policy receives the rack's usable width and height, item kinds and count, then
 supplies columns and visible rows to both the rendered CSS grid and spatial
 keyboard navigation. Projects stay in one column; photo slots use up to two

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { matchPath, useLocation, useNavigate } from 'react-router';
 import crew from '../assets/crew.json';
-import { sections, sectionFromLocation, wrapIndex } from '../domain/navigation';
+import { sectionFromLocation, wrapIndex } from '../domain/navigation';
 import { nameVariants, staticName } from '../../data/nameVariants';
 import AsciiPortrait from './AsciiPortrait';
 import CharacterSelector from './CharacterSelector';
@@ -11,7 +11,6 @@ import NameCycle from './NameCycle';
 import { useMotion } from './useMotion';
 
 const rule = '-'.repeat(160);
-const selectorHeadingWords = ['character', ...sections].map(text => ({ lang: 'en', text }));
 
 export default function Portfolio({ services, preferences }) {
   const location = useLocation();
@@ -23,6 +22,7 @@ export default function Portfolio({ services, preferences }) {
   const albumId = matchPath('/gallery/:albumId', location.pathname)?.params.albumId;
   const rootRef = useRef(null);
   const selectorRef = useRef(null);
+  const contentRef = useRef(null);
   const previousFocus = useRef(null);
   const [introOpen, setIntroOpen] = useState(() => location.pathname === '/' && (!location.hash || location.hash === '#whoami'));
   const [tabVisible, setTabVisible] = useState(() => document.visibilityState !== 'hidden');
@@ -35,6 +35,7 @@ export default function Portfolio({ services, preferences }) {
     navigate(next.section === 'pictures' ? '/gallery' : `/#${next.section}`);
   }, [navigate]);
   const focusCurrentCharacter = useCallback(() => selectorRef.current?.focusSelected(), []);
+  const focusCurrentContent = useCallback(() => contentRef.current?.focusContent(), []);
 
   useEffect(() => {
     document.title = section === 'whoami' ? 'Simon Chen' : `${section[0].toUpperCase()}${section.slice(1)} · Simon Chen`;
@@ -72,12 +73,12 @@ export default function Portfolio({ services, preferences }) {
             crew={crew}
             selected={selected}
             onSelect={select}
-            headingWords={selectorHeadingWords}
+            onEnterSection={focusCurrentContent}
             motion={motion}
             active={!introOpen && tabVisible}
           /></div>
         </section>
-        <ContentPanel member={member} services={services} albumId={albumId} motion={ambient} sceneKey={location.key} onReturnToCharacters={focusCurrentCharacter} onGalleryHome={() => navigate('/gallery')} />
+        <ContentPanel ref={contentRef} member={member} services={services} albumId={albumId} motion={ambient} sceneKey={location.key} onReturnToCharacters={focusCurrentCharacter} onGalleryHome={() => navigate('/gallery')} />
       </main>
       <div className="ascii-rule" aria-hidden="true">{rule}</div>
       <footer className="terminal-footer"><span>~/simon-chen</span><button type="button" disabled={reduced} aria-pressed={motion} aria-label={reduced ? 'Animation disabled by your reduced motion preference' : 'Toggle animation'} onClick={toggle}>[ motion {motion ? 'on' : 'off'} ]</button></footer>

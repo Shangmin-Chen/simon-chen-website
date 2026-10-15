@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { useContact } from '../../application/useContact';
 import CardDeck from '../CardDeck';
 import InspectPanel from '../InspectPanel';
+import SocialLinks from '../SocialLinks';
 import LetterComposer from './LetterComposer';
 
 const letterId = 'letter-to-simon';
@@ -14,7 +15,7 @@ function letterMeta(status, hasDraft) {
   return hasDraft ? 'Draft in progress' : 'Ready to write';
 }
 
-export default function Contact({ sendMessage, active, motion, sceneKey, onReturnToCharacters }) {
+const Contact = forwardRef(function Contact({ sendMessage, active, motion, sceneKey, onReturnToCharacters }, forwardedRef) {
   const form = useContact(sendMessage);
   const [inspectionScene, setInspectionScene] = useState('');
   const inspecting = active && inspectionScene === sceneKey;
@@ -23,6 +24,22 @@ export default function Contact({ sendMessage, active, motion, sceneKey, onRetur
   const formRef = useRef(null);
   const focusFrame = useRef(0);
   const returnFrame = useRef(0);
+  const workspaceRef = useRef(null);
+
+  useImperativeHandle(forwardedRef, () => ({
+    focusContent() {
+      if (!active) return false;
+      if (inspecting && headingRef.current?.isConnected && !headingRef.current.closest('[hidden],[inert],[aria-hidden="true"]')) {
+        headingRef.current.focus({ preventScroll: true });
+        return document.activeElement === headingRef.current;
+      }
+      if (deckRef.current?.focusContent?.()) return true;
+      const workspace = workspaceRef.current;
+      if (!workspace?.isConnected || workspace.closest('[hidden],[inert],[aria-hidden="true"]')) return false;
+      workspace.focus({ preventScroll: true });
+      return document.activeElement === workspace;
+    },
+  }), [active, inspecting]);
 
   const item = {
     id: letterId,
@@ -67,9 +84,10 @@ export default function Contact({ sendMessage, active, motion, sceneKey, onRetur
     }
   };
 
-  return <div className="contact-workspace" onKeyDown={handleKeyDown}>
+  return <div ref={workspaceRef} tabIndex={-1} className="contact-workspace" onKeyDown={handleKeyDown}>
     <div className="contact-workspace__index" inert={inspecting} aria-hidden={inspecting}>
       <p className="contact-workspace__prompt">Select the letter to start a conversation.</p>
+      <SocialLinks className="contact-workspace__social" />
       {active && <CardDeck
         ref={deckRef}
         items={[item]}
@@ -87,6 +105,7 @@ export default function Contact({ sendMessage, active, motion, sceneKey, onRetur
       title="Letter to Simon"
       breadcrumb="comms / outgoing letter"
       onClose={closeLetter}
+      backLabel="← contact"
       position={1}
       total={1}
       headingRef={headingRef}
@@ -98,4 +117,6 @@ export default function Contact({ sendMessage, active, motion, sceneKey, onRetur
       <LetterComposer form={form} formRef={formRef} />
     </InspectPanel>
   </div>;
-}
+});
+
+export default Contact;

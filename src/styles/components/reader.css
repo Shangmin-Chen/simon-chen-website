@@ -28,5 +28,5 @@
   .reader-frame__title { font-size: 16px; }
   .reader-frame__body { padding: 9px 0; }
   .sequence-navigation { min-height: 44px; font-size: 12px; }
-  .sequence-navigation button { min-height: 40px; font-size: 12px; }
+  .sequence-navigation button { min-height: 44px; font-size: 12px; }
 }

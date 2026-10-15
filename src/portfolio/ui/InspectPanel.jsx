@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import ReaderFrame from './reader/ReaderFrame';
 import DecodePhrase from './DecodePhrase';
 
-export default function InspectPanel({ open, title, breadcrumb, onClose, position, total, onPrevious, onNext, previousDisabled, nextDisabled, headingRef, bodyRef, navigationLabel, motion, revealKey, children }) {
+export default function InspectPanel({ open, title, breadcrumb, onClose, backLabel = '← inventory', position, total, currentLabel, onPrevious, onNext, previousDisabled, nextDisabled, previousLabel, nextLabel, headingRef, bodyRef, navigationLabel, motion, revealKey, children }) {
   const panelRef = useRef(null);
   const previousOpen = useRef(open);
 
@@ -33,14 +33,17 @@ export default function InspectPanel({ open, title, breadcrumb, onClose, positio
       title={title}
       titleContent={<DecodePhrase text={title} motion={motion && open} revealKey={revealKey} />}
       breadcrumb={breadcrumb}
-      backLabel="← close inspection"
+      backLabel={backLabel}
       onBack={onClose}
       position={position}
       total={total}
+      currentLabel={currentLabel}
       onPrevious={onPrevious}
       onNext={onNext}
       previousDisabled={previousDisabled}
       nextDisabled={nextDisabled}
+      previousLabel={previousLabel}
+      nextLabel={nextLabel}
       headingRef={headingRef}
       bodyRef={bodyRef}
       mode="text"

@@ -12,6 +12,8 @@ export function filesFor(section) {
       label: `${experience.company.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.log`,
       title: experience.company,
       description: experience.title,
+      accessibleLabel: `${experience.title} at ${experience.company}`,
+      accessibleDescription: [experience.location, experience.period].filter(Boolean).join(' · '),
       meta: [experience.location, experience.period],
       logo: experience.logo,
     })),
@@ -37,7 +39,12 @@ export function filesFor(section) {
 }
 
 export function sequenceFor(section) {
-  return filesFor(section).map(({ id, label, title }) => ({ id, label, title }));
+  return filesFor(section).map(({ id, label, title, accessibleLabel }) => ({
+    id,
+    label,
+    title,
+    navigationLabel: accessibleLabel ?? title,
+  }));
 }
 
 export function adjacentFileId(files, currentId, direction) {

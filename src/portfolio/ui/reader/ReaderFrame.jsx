@@ -7,10 +7,13 @@ export default function ReaderFrame({
   onBack,
   position = 0,
   total = 0,
+  currentLabel,
   onPrevious,
   onNext,
   previousDisabled = false,
   nextDisabled = false,
+  previousLabel,
+  nextLabel,
   headingRef,
   bodyRef,
   mode = 'text',
@@ -38,10 +41,13 @@ export default function ReaderFrame({
     {total > 1 && <SequenceNavigation
       position={position}
       total={total}
+      currentLabel={currentLabel ?? title}
       onPrevious={onPrevious}
       onNext={onNext}
       previousDisabled={previousDisabled}
       nextDisabled={nextDisabled}
+      previousLabel={previousLabel}
+      nextLabel={nextLabel}
       navigationLabel={navigationLabel}
     />}
   </section>;

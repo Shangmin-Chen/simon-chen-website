@@ -7,7 +7,7 @@
 .portrait-caption strong { font-weight: 600; font-size: 14px; }
 .character-role { color: var(--link-color); }
 .character-section { color: var(--accent-color); }
-.portrait-caption button { color: var(--highlight-color); min-height: 40px; padding: 5px 0; font-size: 12px; font-weight: 600; }
+.portrait-caption button { color: var(--highlight-color); min-height: 44px; padding: 5px 0; font-size: 12px; font-weight: 600; }
 .portrait-tracers { position: fixed; z-index: 11; inset: 0; width: 100vw; height: 100vh; overflow: hidden; pointer-events: none; }
 .portrait-tracer { position: absolute; height: 1.5px; transform-origin: 0 50%; border-top: 1.5px dashed color-mix(in hsl, var(--link-color) 82%, transparent); opacity: .68; }
 .portrait-tracer-1 { border-color: color-mix(in hsl, var(--highlight-color) 78%, transparent); opacity: .62; }
