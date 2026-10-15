@@ -67,7 +67,7 @@ function focusHeadingIfSceneOwnsFocus(sceneRef, headingRef) {
   headingRef.current?.focus();
 }
 
-function AlbumScene({ album, resource, selectedIndex, onSelect, active, onBack, motion }) {
+function AlbumScene({ album, resource, selectedIndex, onSelect, active, onBack, motion, onReturnToCharacters }) {
   const deckRef = useRef(null);
   const sceneRef = useRef(null);
   const photos = album.photos ?? [];
@@ -124,6 +124,7 @@ function AlbumScene({ album, resource, selectedIndex, onSelect, active, onBack, 
             ref={deckRef}
             items={items}
             selectedId={selectedId}
+            onReturnToCharacters={onReturnToCharacters}
             onSelect={selectPhoto}
             onActivate={openPhoto}
             label="Photos"
@@ -145,7 +146,7 @@ function AlbumScene({ album, resource, selectedIndex, onSelect, active, onBack, 
   </section>;
 }
 
-export default function Pictures({ resource, active, albumId, motion = true }) {
+export default function Pictures({ resource, active, albumId, motion = true, onReturnToCharacters }) {
   const navigate = useNavigate();
   const result = useResource(resource, active);
   const albums = result.data?.galleries ?? [];
@@ -190,6 +191,7 @@ export default function Pictures({ resource, active, albumId, motion = true }) {
       active={active}
       motion={motion}
       selectedIndex={selectedIndex}
+      onReturnToCharacters={onReturnToCharacters}
       onSelect={index => setSelectionByAlbum(current => ({ ...current, [album.id]: index }))}
       onBack={albums.length > 1 ? () => navigate('/gallery') : undefined}
     />;
@@ -205,6 +207,7 @@ export default function Pictures({ resource, active, albumId, motion = true }) {
         ? <CardDeck
             items={items}
             selectedId={selectedId}
+            onReturnToCharacters={onReturnToCharacters}
             onSelect={setSelectedAlbumId}
             onActivate={id => navigate(`/gallery/${encodeURIComponent(id)}`)}
             label="Photo albums"

@@ -14,7 +14,7 @@ function letterMeta(status, hasDraft) {
   return hasDraft ? 'Draft in progress' : 'Ready to write';
 }
 
-export default function Contact({ sendMessage, active, motion, sceneKey }) {
+export default function Contact({ sendMessage, active, motion, sceneKey, onReturnToCharacters }) {
   const form = useContact(sendMessage);
   const [inspectionScene, setInspectionScene] = useState('');
   const inspecting = active && inspectionScene === sceneKey;
@@ -51,8 +51,11 @@ export default function Contact({ sendMessage, active, motion, sceneKey }) {
 
   const closeLetter = () => {
     setInspectionScene('');
+    const origin = document.activeElement;
     cancelAnimationFrame(returnFrame.current);
-    returnFrame.current = requestAnimationFrame(() => deckRef.current?.focusSelected());
+    returnFrame.current = requestAnimationFrame(() => {
+      if (document.activeElement === origin || document.activeElement === document.body) deckRef.current?.focusSelected();
+    });
   };
 
   const handleKeyDown = event => {
@@ -71,6 +74,7 @@ export default function Contact({ sendMessage, active, motion, sceneKey }) {
         ref={deckRef}
         items={[item]}
         selectedId={letterId}
+        onReturnToCharacters={onReturnToCharacters}
         onSelect={() => {}}
         onActivate={() => setInspectionScene(sceneKey)}
         label="Comms"

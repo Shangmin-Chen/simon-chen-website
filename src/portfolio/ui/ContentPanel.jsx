@@ -8,17 +8,18 @@ import Contact from './sections/Contact';
 import CardDeck from './CardDeck';
 import InspectPanel from './InspectPanel';
 
-export default function ContentPanel({ member, services, albumId, motion, sceneKey, onPortfolioHome, onGalleryHome }) {
+export default function ContentPanel({ member, services, albumId, motion, sceneKey, onReturnToCharacters, onGalleryHome }) {
   const section = member.section;
   const [selections, setSelections] = useState({});
   const selectedId = selections[section] ?? '';
   const isContact = section === 'contact';
   const isPictures = section === 'pictures';
   const handleKeyDown = event => {
-    if (event.key !== 'Escape' || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey
+    if (event.key !== 'Escape' || event.defaultPrevented || event.isComposing || event.keyCode === 229
+      || event.altKey || event.ctrlKey || event.metaKey
       || event.target.closest('input,textarea,select,[contenteditable="true"],[role="dialog"]')) return;
-    if (isContact) { event.preventDefault(); onPortfolioHome(); }
-    else if (isPictures && albumId) { event.preventDefault(); onGalleryHome(); }
+    if (isPictures && albumId) { event.preventDefault(); onGalleryHome(); }
+    else { event.preventDefault(); onReturnToCharacters?.(); }
   };
 
   const sectionName = `${section[0].toUpperCase()}${section.slice(1)}`;
@@ -30,20 +31,21 @@ export default function ContentPanel({ member, services, albumId, motion, sceneK
       services={services}
       selectedId={selectedId}
       onSelect={id => setSelections(current => ({ ...current, [section]: id }))}
+      onReturnToCharacters={onReturnToCharacters}
       motion={motion}
     />}
 
     <div className="contact-scene" hidden={!isContact}>
-      <Contact sendMessage={services.sendMessage} active={isContact} motion={motion} sceneKey={sceneKey} />
+      <Contact sendMessage={services.sendMessage} active={isContact} motion={motion} sceneKey={sceneKey} onReturnToCharacters={onReturnToCharacters} />
     </div>
 
     <div className="pictures-slot" hidden={!isPictures}>
-      <Pictures resource={services.gallery} active={isPictures} albumId={albumId} motion={motion} />
+      <Pictures resource={services.gallery} active={isPictures} albumId={albumId} motion={motion} onReturnToCharacters={onReturnToCharacters} />
     </div>
   </section>;
 }
 
-function TextScene({ member, services, selectedId, onSelect, motion }) {
+function TextScene({ member, services, selectedId, onSelect, onReturnToCharacters, motion }) {
   const section = member.section;
   const files = useMemo(() => filesFor(section), [section]);
   const sequence = useMemo(() => sequenceFor(section), [section]);
@@ -72,8 +74,11 @@ function TextScene({ member, services, selectedId, onSelect, motion }) {
   };
   const closeInspector = () => {
     setInspectionId('');
+    const origin = document.activeElement;
     cancelAnimationFrame(openerFocusFrame.current);
-    openerFocusFrame.current = requestAnimationFrame(() => deckRef.current?.focusSelected());
+    openerFocusFrame.current = requestAnimationFrame(() => {
+      if (document.activeElement === origin || document.activeElement === document.body) deckRef.current?.focusSelected();
+    });
   };
   const moveEntry = direction => {
     const nextId = adjacentFileId(sequence, selectedId, direction);
@@ -97,7 +102,8 @@ function TextScene({ member, services, selectedId, onSelect, motion }) {
   }, [isInspecting, key]);
 
   const handleKeyDown = event => {
-    if (event.key !== 'Escape' || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey
+    if (event.key !== 'Escape' || event.defaultPrevented || event.isComposing || event.keyCode === 229
+      || event.altKey || event.ctrlKey || event.metaKey
       || event.target.closest('input,textarea,select,[contenteditable="true"],[role="dialog"]')) return;
     if (isInspecting) { event.preventDefault(); closeInspector(); }
   };
@@ -112,6 +118,7 @@ function TextScene({ member, services, selectedId, onSelect, motion }) {
         ref={deckRef}
         items={files}
         selectedId={selectedId}
+        onReturnToCharacters={onReturnToCharacters}
         motion={motion && !isInspecting}
         onSelect={onSelect}
         onActivate={openInspector}

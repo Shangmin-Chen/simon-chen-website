@@ -22,8 +22,8 @@ export default function Portfolio({ services, preferences }) {
   const member = crew[selected];
   const albumId = matchPath('/gallery/:albumId', location.pathname)?.params.albumId;
   const rootRef = useRef(null);
+  const selectorRef = useRef(null);
   const previousFocus = useRef(null);
-  const returnFocusSection = useRef('');
   const [introOpen, setIntroOpen] = useState(() => location.pathname === '/' && (!location.hash || location.hash === '#whoami'));
   const [tabVisible, setTabVisible] = useState(() => document.visibilityState !== 'hidden');
   const wasIntroOpen = useRef(introOpen);
@@ -34,10 +34,7 @@ export default function Portfolio({ services, preferences }) {
     const next = crew[wrapIndex(index, crew.length)];
     navigate(next.section === 'pictures' ? '/gallery' : `/#${next.section}`);
   }, [navigate]);
-  const returnToWhoami = useCallback(() => {
-    returnFocusSection.current = 'whoami';
-    navigate('/#whoami');
-  }, [navigate]);
+  const focusCurrentCharacter = useCallback(() => selectorRef.current?.focusSelected(), []);
 
   useEffect(() => {
     document.title = section === 'whoami' ? 'Simon Chen' : `${section[0].toUpperCase()}${section.slice(1)} · Simon Chen`;
@@ -49,18 +46,12 @@ export default function Portfolio({ services, preferences }) {
   }, []);
   useEffect(() => {
     if (wasIntroOpen.current && !introOpen) {
-      const target = previousFocus.current?.isConnected ? previousFocus.current : rootRef.current.querySelector('.crew-option[aria-current="page"]');
-      target?.focus();
+      if (previousFocus.current?.isConnected) previousFocus.current.focus();
+      else selectorRef.current?.focusSelected();
       previousFocus.current = null;
     }
     wasIntroOpen.current = introOpen;
   }, [introOpen]);
-  useEffect(() => {
-    if (returnFocusSection.current !== section) return undefined;
-    returnFocusSection.current = '';
-    const frame = requestAnimationFrame(() => rootRef.current?.querySelector('.crew-option[aria-current="page"]')?.focus());
-    return () => cancelAnimationFrame(frame);
-  }, [section]);
   return <div className="portfolio" ref={rootRef} data-motion={motion} data-ambient={ambient} data-intro-open={introOpen}>
     <div className="portfolio-surface" inert={introOpen}>
       <a className="skip-link" href="#main-content" onClick={event => { event.preventDefault(); rootRef.current.querySelector('#main-content')?.focus(); }}>Skip to main content</a>
@@ -77,6 +68,7 @@ export default function Portfolio({ services, preferences }) {
         <section className="character-profile" aria-label="Edgerunners character navigation">
           <div className="character-art"><AsciiPortrait key={member.id} member={member} motion={motion && !introOpen} /></div>
           <div className="character-navigation"><CharacterSelector
+            ref={selectorRef}
             crew={crew}
             selected={selected}
             onSelect={select}
@@ -85,7 +77,7 @@ export default function Portfolio({ services, preferences }) {
             active={!introOpen && tabVisible}
           /></div>
         </section>
-        <ContentPanel member={member} services={services} albumId={albumId} motion={ambient} sceneKey={location.key} onPortfolioHome={returnToWhoami} onGalleryHome={() => navigate('/gallery')} />
+        <ContentPanel member={member} services={services} albumId={albumId} motion={ambient} sceneKey={location.key} onReturnToCharacters={focusCurrentCharacter} onGalleryHome={() => navigate('/gallery')} />
       </main>
       <div className="ascii-rule" aria-hidden="true">{rule}</div>
       <footer className="terminal-footer"><span>~/simon-chen</span><button type="button" disabled={reduced} aria-pressed={motion} aria-label={reduced ? 'Animation disabled by your reduced motion preference' : 'Toggle animation'} onClick={toggle}>[ motion {motion ? 'on' : 'off'} ]</button></footer>

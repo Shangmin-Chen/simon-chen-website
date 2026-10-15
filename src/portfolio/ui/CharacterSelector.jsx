@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useId, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
 import { accumulateWheelDelta, sectionSelectorPositions, sectionSelectorStageHeight } from '../domain/navigation';
 import NameCycle from './NameCycle';
 
 const sectionLabel = section => `${section[0].toUpperCase()}${section.slice(1)}`;
 
-export default function CharacterSelector({ crew, selected, onSelect, headingWords, motion, active }) {
+const CharacterSelector = forwardRef(function CharacterSelector({ crew, selected, onSelect, headingWords, motion, active }, forwardedRef) {
   const navigationId = useId();
   const headingId = `${navigationId}-heading`;
   const instructionsId = `${navigationId}-instructions`;
@@ -28,6 +28,8 @@ export default function CharacterSelector({ crew, selected, onSelect, headingWor
     focusRequested.current = target !== selected && (focus || activeIsOption);
     onSelect(target);
   }, [crew.length, onSelect, selected]);
+  const focusSelected = useCallback(() => buttons.current[selected]?.focus(), [selected]);
+  useImperativeHandle(forwardedRef, () => ({ focusSelected }), [focusSelected]);
   useLayoutEffect(() => {
     const element = selectorRef.current;
     const update = () => {
@@ -139,4 +141,6 @@ export default function CharacterSelector({ crew, selected, onSelect, headingWor
       <span className="crew-navigation__hint" aria-hidden="true">scroll / drag</span>
     </div>
   );
-}
+});
+
+export default CharacterSelector;
