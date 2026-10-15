@@ -1,35 +1,99 @@
-import { useEffect, useRef } from 'react';
-import { socialLinks } from '../../../data/socialLinks';
-import { contactData } from '../../../data/contactData';
-import { contactLimits } from '../../domain/contact';
+import { useEffect, useRef, useState } from 'react';
 import { useContact } from '../../application/useContact';
+import CardDeck from '../CardDeck';
+import InspectPanel from '../InspectPanel';
+import LetterComposer from './LetterComposer';
 
-export default function Contact({ sendMessage }) {
+const letterId = 'letter-to-simon';
+
+function letterMeta(status, hasDraft) {
+  if (status === 'sending') return 'Sending';
+  if (status === 'sent') return 'Sent';
+  if (status === 'error') return 'Draft retained · send failed';
+  if (status === 'invalid') return 'Draft in progress · check fields';
+  return hasDraft ? 'Draft in progress' : 'Ready to write';
+}
+
+export default function Contact({ sendMessage, active, motion, hubRef, sceneKey }) {
   const form = useContact(sendMessage);
+  const [inspectionScene, setInspectionScene] = useState('');
+  const inspecting = active && inspectionScene === sceneKey;
+  const deckRef = useRef(null);
+  const headingRef = useRef(null);
   const formRef = useRef(null);
+  const focusFrame = useRef(0);
+  const returnFrame = useRef(0);
+
+  const item = {
+    id: letterId,
+    title: 'Letter to Simon',
+    description: 'Write a note, share a project, or say hello.',
+    meta: letterMeta(form.status, Object.values(form.draft).some(Boolean)),
+    sigil: 'letter',
+  };
+
+  useEffect(() => () => {
+    cancelAnimationFrame(focusFrame.current);
+    cancelAnimationFrame(returnFrame.current);
+  }, []);
+
   useEffect(() => {
-    if (form.status === 'invalid') formRef.current.querySelector('[aria-invalid="true"]')?.focus();
-  }, [form.status]);
-  return <>
-    <p>Have a project in mind, or just want to say hello?</p>
-    <nav className="terminal-socials" aria-label="Social profiles">{socialLinks.map(link => <a key={link.label} href={link.href} target="_blank" rel="noopener noreferrer">{link.label} ↗</a>)}</nav>
-    <form ref={formRef} className="terminal-contact" noValidate onSubmit={event => { event.preventDefault(); void form.submit(); }}>
-      {contactData.formFields.map(field => {
-        const props = {
-          id: `contact-${field.name}`, name: field.name, value: form.draft[field.name], required: true,
-          maxLength: contactLimits[field.name], disabled: form.status === 'sending',
-          'aria-invalid': Boolean(form.fields[field.name]),
-          'aria-describedby': form.fields[field.name] ? `error-${field.name}` : undefined,
-          onChange: event => form.change(field.name, event.target.value),
-        };
-        return <div key={field.name} className="contact-field">
-          <label htmlFor={props.id}>{field.name}</label>
-          {field.type === 'textarea' ? <textarea {...props} rows={3} /> : <input {...props} type={field.type} autoComplete={field.name === 'name' || field.name === 'email' ? field.name : undefined} />}
-          {form.fields[field.name] && <p id={`error-${field.name}`} className="terminal-error">{form.fields[field.name]}</p>}
-        </div>;
-      })}
-      <button className="text-button" type="submit" disabled={form.status === 'sending'}>{form.status === 'sending' ? '[ sending… ]' : '[ send message ↵ ]'}</button>
-      <p role="status" className={form.status === 'error' ? 'terminal-error' : 'terminal-note'}>{form.status === 'sent' ? contactData.messages.success : form.status === 'error' ? form.error : form.status === 'sending' ? 'Sending your message…' : ''}</p>
-    </form>
-  </>;
+    if (form.status !== 'invalid') return;
+    formRef.current?.querySelector('[aria-invalid="true"]')?.focus();
+  }, [form.fields, form.status]);
+
+  useEffect(() => {
+    if (!inspecting || !active) return undefined;
+    cancelAnimationFrame(focusFrame.current);
+    focusFrame.current = requestAnimationFrame(() => headingRef.current?.focus());
+    return () => cancelAnimationFrame(focusFrame.current);
+  }, [active, inspecting]);
+
+  const closeLetter = () => {
+    setInspectionScene('');
+    cancelAnimationFrame(returnFrame.current);
+    returnFrame.current = requestAnimationFrame(() => deckRef.current?.focusSelected());
+  };
+
+  const handleKeyDown = event => {
+    if (event.key !== 'Escape' || event.defaultPrevented || event.isComposing || event.keyCode === 229
+      || event.altKey || event.ctrlKey || event.metaKey) return;
+    if (inspecting) {
+      event.preventDefault();
+      closeLetter();
+    }
+  };
+
+  return <div className="contact-workspace" onKeyDown={handleKeyDown}>
+    <div className="contact-workspace__index" inert={inspecting} aria-hidden={inspecting}>
+      <p className="owner-name" aria-hidden="true">Simon Chen</p>
+      <p className="contact-workspace__prompt">Select the letter to start a conversation.</p>
+      {active && <CardDeck
+        ref={deckRef}
+        items={[item]}
+        selectedId={letterId}
+        onSelect={() => {}}
+        onActivate={() => setInspectionScene(sceneKey)}
+        label="Comms inventory"
+        renderVisual={() => <pre className="contact-letter-sigil" aria-hidden="true">{' +---------+\n | \\       / |\n |  \\     /  |\n |   \\___/   |\n |           |\n +-----------+'}</pre>}
+        motion={motion && active && !inspecting}
+        hubRef={hubRef}
+      />}
+    </div>
+    <InspectPanel
+      open={inspecting && active}
+      title="Letter to Simon"
+      breadcrumb="comms / outgoing letter"
+      onClose={closeLetter}
+      position={1}
+      total={1}
+      headingRef={headingRef}
+      bodyRef={null}
+      navigationLabel="Letter"
+      motion={motion && active && inspecting}
+      revealKey={letterId}
+    >
+      <LetterComposer form={form} formRef={formRef} />
+    </InspectPanel>
+  </div>;
 }

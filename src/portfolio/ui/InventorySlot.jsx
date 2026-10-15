@@ -11,7 +11,7 @@ const InventorySlot = forwardRef(function InventorySlot({ item, index, selected,
     <span className="inventory-slot__media" aria-hidden="true">
       {visual || <span className="inventory-slot__sigil">{item.sigil ?? sigils[index % sigils.length]}</span>}
     </span>
-    {!visual && <span className="inventory-slot__label">{item.title}</span>}
+    <span className="inventory-slot__label">{item.title}</span>
   </>;
 
   return <button

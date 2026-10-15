@@ -8,14 +8,7 @@
 .book-link { display: block; }
 .book-link small { display: block; color: var(--text-muted); font-size: 11px; margin-top: 4px; }
 .text-button { color: var(--accent-color); min-height: 44px; padding: 6px 0; }
-.terminal-socials { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 10px 0 18px; }
-.terminal-socials a { padding: 7px 0; }
-.contact-field { margin-bottom: 13px; }
-.contact-field label { display: block; color: var(--link-color); font-size: 11px; }
-.contact-field input, .contact-field textarea { display: block; width: 100%; min-width: 0; background: var(--bg-primary); color: var(--text-primary); border: 0; border-bottom: 1px solid var(--border-color); border-radius: 0; padding: 9px 0; font-size: 13px; }
-.contact-field textarea { min-height: 75px; resize: vertical; }
-.contact-field .terminal-error { margin-top: 5px; }
 .lightbox-caption { position: absolute; bottom: 0; left: 0; right: 0; padding: 18px 24px; background: var(--overlay-bg); font: 400 12px/1.7 var(--font-mono); color: var(--text-primary); }
 .lightbox-cap-text { display: block; }
 .lightbox-cap-loc { display: block; color: var(--text-muted); }
-@media (max-width: 650px) { .contact-field input, .contact-field textarea { font-size: 16px; } .contact-field textarea { min-height: 58px; } .file-body { padding-left: 10px; } }
+@media (max-width: 650px) { .file-body { padding-left: 10px; } }

@@ -46,8 +46,13 @@ or focusing a slot updates the preview and active bracket without moving the
 slots; one click or Enter opens the item directly. The wheel output ref creates
 one measured line into the inventory root, rather than per-slot wires. The
 inventory supports roving keyboard selection, wheel/swipe paging, and
-PageUp/PageDown. Contact opens directly to its mounted
-form, preserving drafts and validation while hidden. Pictures retains its
+PageUp/PageDown. Contact is a one-item comms inventory; opening its ASCII
+letter slot overlays a `LetterComposer` in the same scene. The existing
+`useContact` submission and validation remain in place, the component stays
+mounted while another character is active, and closing the letter returns
+focus to its slot without discarding the draft. The letter form keeps social
+profiles visible and only reports a sent receipt after the service succeeds.
+Pictures retains its
 album/photo selections and uses actual R2 thumbnails; choosing a photo opens
 the existing accessible touch/zoom Lightbox directly. The document never
 scrolls. The crew output pulse and selection frame are local CSS motion under

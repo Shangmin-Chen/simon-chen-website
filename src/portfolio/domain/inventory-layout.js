@@ -7,7 +7,7 @@ export function inventoryLayout(width, height, itemCount = Infinity) {
   const safeHeight = Math.max(0, height);
   const available = Math.max(0, safeHeight - 48);
   const wide = safeWidth >= 560;
-  const columns = wide ? 2 : safeWidth >= 430 ? 3 : 2;
+  const columns = 1;
   const candidatePreviewHeight = wide ? 0 : Math.min(available, clamp(Math.round(available * 0.38), 86, 170), Math.max(0, available - 102));
   const showPreview = wide || candidatePreviewHeight >= 80;
   const previewHeight = showPreview && !wide ? candidatePreviewHeight : 0;

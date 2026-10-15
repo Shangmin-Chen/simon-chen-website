@@ -38,10 +38,13 @@
 - Section views: real whoami/GitHub activity, projects, photo galleries, hobbies/
   Goodreads, and contact. These receive ports and do not call fetch directly.
   ContentPanel retains the selected card ID for each text section. It renders
-  card and inspection bodies for the active section, keeps the Contact form
-  mounted while hidden to preserve drafts/validation, and keeps Pictures
-  mounted to preserve per-album photo selection. Gallery cards use R2 thumbnails and open
-  the selected full image directly in `Lightbox`.
+  card and inspection bodies for the active section, keeps Contact mounted
+  while hidden to preserve letter drafts/validation, and keeps Pictures
+  mounted to preserve per-album photo selection. Contact is a one-item comms
+  inventory: opening its ASCII letter slot shows an in-scene `LetterComposer`
+  with the existing validated send action and social links. Closing the letter
+  keeps the draft and returns focus to the selected slot. Gallery cards use R2
+  thumbnails and open the selected full image directly in `Lightbox`.
 - `Lightbox`: existing gallery viewer, retained for swipe and pinch zoom, with
   a bounded caption reveal that stops when motion is disabled or the viewer closes.
 

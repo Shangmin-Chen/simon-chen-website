@@ -80,9 +80,9 @@ export default function Portfolio({ services, preferences }) {
       <main className="workspace" id="main-content" tabIndex={-1}>
         <section className="character-profile" aria-label="Edgerunners character navigation">
           <div className="character-art"><AsciiPortrait key={member.id} member={member} motion={motion && !introOpen} /></div>
-          <div className="character-navigation"><CrewWheel crew={crew} selected={selected} onSelect={select} hubRef={hubRef} hubActive={section !== 'contact'} /></div>
+          <div className="character-navigation"><CrewWheel crew={crew} selected={selected} onSelect={select} hubRef={hubRef} /></div>
         </section>
-        <ContentPanel member={member} services={services} albumId={albumId} motion={ambient} hubRef={hubRef} onPortfolioHome={() => navigate('/#whoami')} onGalleryHome={() => navigate('/gallery')} />
+        <ContentPanel member={member} services={services} albumId={albumId} motion={ambient} hubRef={hubRef} sceneKey={location.key} onPortfolioHome={() => navigate('/#whoami')} onGalleryHome={() => navigate('/gallery')} />
       </main>
       <div className="ascii-rule" aria-hidden="true">{rule}</div>
       <footer className="terminal-footer"><span>~/simon-chen</span><button type="button" disabled={reduced} aria-pressed={motion} aria-label={reduced ? 'Animation disabled by your reduced motion preference' : 'Toggle animation'} onClick={toggle}>[ motion {motion ? 'on' : 'off'} ]</button></footer>

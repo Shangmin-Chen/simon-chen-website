@@ -15,7 +15,7 @@ function commandFor(section, albumId) {
   return commands[section];
 }
 
-export default function ContentPanel({ member, services, albumId, motion, hubRef, onPortfolioHome, onGalleryHome }) {
+export default function ContentPanel({ member, services, albumId, motion, hubRef, sceneKey, onPortfolioHome, onGalleryHome }) {
   const section = member.section;
   const [selections, setSelections] = useState({});
   const selectedId = selections[section] ?? '';
@@ -43,7 +43,7 @@ export default function ContentPanel({ member, services, albumId, motion, hubRef
     />}
 
     <div className="contact-scene" hidden={!isContact}>
-      <Contact sendMessage={services.sendMessage} />
+      <Contact sendMessage={services.sendMessage} active={isContact} motion={motion} hubRef={hubRef} sceneKey={sceneKey} />
     </div>
 
     <div className="pictures-slot" hidden={!isPictures}>
