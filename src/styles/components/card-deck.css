@@ -17,7 +17,7 @@
 .game-card:focus-visible { outline: 2px solid var(--highlight-color); outline-offset: -5px; }
 .game-card__visual, .game-card__sigil, .game-card__copy, .game-card__open { z-index: 1; }
 .game-card__visual { display: grid; grid-column: 1 / -1; width: 100%; min-width: 0; min-height: 0; max-height: 110px; aspect-ratio: 16 / 7; place-items: center; overflow: hidden; border: 1px solid var(--border-color); background: hsl(var(--color-bg-primary-hsl) / .85); }
-.game-card__visual > * { display: block; width: 100%; height: 100%; object-fit: contain; }
+.game-card__visual > * { position: absolute; inset: 0; display: block; width: 100%; height: 100%; min-width: 0; min-height: 0; max-width: 100%; max-height: 100%; object-fit: contain; }
 .game-card__sigil { display: grid; align-self: start; min-width: 38px; min-height: 30px; place-items: center; border: 1px solid var(--border-color); color: var(--highlight-color); font: 500 11px/1 var(--font-mono); }
 .game-card__copy { display: flex; min-width: 0; min-height: 0; flex-direction: column; gap: 4px; }
 .game-card__title { overflow: hidden; color: var(--accent-color); font: 500 12px/1.4 var(--font-mono); text-overflow: ellipsis; }
@@ -27,7 +27,7 @@
 .game-card__open { grid-column: 1 / -1; justify-self: end; color: var(--text-muted); font: 9px/1 var(--font-mono); }
 .game-card[data-selected='true'] .game-card__open { color: var(--highlight-color); }
 .game-card:has(.game-card__visual) { display: block; padding: 0; }
-.game-card:has(.game-card__visual) .game-card__visual { position: absolute; z-index: 1; inset: 4px 4px calc(50% + 1px); max-height: none; aspect-ratio: auto; border: 0; }
+.game-card:has(.game-card__visual) .game-card__visual { position: absolute; z-index: 1; inset: 4px 4px calc(50% + 1px); width: auto; max-height: none; aspect-ratio: auto; border: 0; }
 .game-card__visual-footer { position: absolute; z-index: 3; right: 4px; bottom: 4px; left: 4px; display: flex; height: 22px; align-items: center; justify-content: space-between; gap: 6px; padding: 0 7px; border-top: 1px solid var(--border-color); background: hsl(var(--color-bg-primary-hsl) / .98); clip-path: polygon(0 0, 100% 0, 100% 100%, 9px 100%, 0 calc(100% - 9px)); }
 .game-card:has(.game-card__visual) .game-card__sigil { position: absolute; z-index: 2; top: 5px; left: 5px; min-width: 26px; min-height: 22px; background: hsl(var(--color-bg-primary-hsl) / .78); }
 .game-card:has(.game-card__visual) .game-card__copy { position: absolute; z-index: 1; top: 50%; right: 0; bottom: 27px; left: 0; max-height: none; gap: 2px; padding: 4px 8px 0; background: hsl(var(--color-bg-primary-hsl) / .94); }
