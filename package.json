@@ -18,6 +18,7 @@
     "start": "vite",
     "build": "vite build",
     "favicon:generate": "node scripts/generate-favicons.mjs",
+    "og-image:generate": "node scripts/generate-og-image.mjs",
     "preview": "vite preview",
     "deploy": "npm run build && wrangler deploy",
     "dev:worker": "npm run build && wrangler dev",
