@@ -47,8 +47,8 @@ const InventorySlot = forwardRef(function InventorySlot({ item, index, selected,
       {visual && <span className="inventory-slot__media" aria-hidden="true">{visual}</span>}
       <span className="inventory-slot__copy">
         {item.logo && <CompanyMark company={item.title} src={item.logo} className="company-mark--slot" />}
-        <span className="inventory-slot__label" id={kind === 'photo' ? descriptionId : undefined}>{item.title}</span>
-        {hasDetails && <span className="inventory-slot__details" id={kind === 'photo' ? undefined : descriptionId}>
+        <span className="inventory-slot__label" id={kind === 'photo' && !hasDetails ? descriptionId : undefined}>{item.title}</span>
+        {hasDetails && <span className="inventory-slot__details" id={descriptionId}>
           {item.label && kind !== 'photo' && <span className="inventory-slot__path">{item.label}</span>}
           {item.description && <span className="inventory-slot__description">{item.description}</span>}
           {meta && <span className="inventory-slot__meta">{meta}</span>}

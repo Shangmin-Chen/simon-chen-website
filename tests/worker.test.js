@@ -19,6 +19,32 @@ test('contact limits still cap the actual request body', async () => {
   assert.equal(response.status, 413);
 });
 
+test('contact body limit cancels an oversized stream with an understated content length', async t => {
+  let pulls = 0;
+  let cancelled = false;
+  const body = new ReadableStream({
+    pull(controller) {
+      pulls++;
+      if (pulls === 1 || pulls === 2) controller.enqueue(new Uint8Array(16 * 1024));
+      else controller.enqueue(new Uint8Array(pulls === 3 ? 1 : 1024));
+    },
+    cancel() { cancelled = true; },
+  }, { highWaterMark: 0 });
+  const request = new Request('https://portfolio.test/api/contact', {
+    method: 'POST',
+    headers: { 'content-length': '1' },
+    body,
+    duplex: 'half',
+  });
+  const fetch = t.mock.method(globalThis, 'fetch', () => { throw new Error('Oversized request must not reach mail transport'); });
+
+  const response = await worker.fetch(request, {}, context);
+  assert.equal(response.status, 413);
+  assert.equal(fetch.mock.callCount(), 0);
+  assert.equal(pulls, 3, 'the body reader must stop as soon as cumulative bytes exceed the limit');
+  assert.equal(cancelled, true, 'the remaining request stream must be cancelled');
+});
+
 test('Worker sends sanitized values with server-only credentials and handles upstream failure', async t => {
   let outgoing;
   const fetch = t.mock.method(globalThis, 'fetch', async (url, init) => { outgoing = { url, body: JSON.parse(init.body) }; return new Response('OK'); });
@@ -44,5 +70,62 @@ test('unknown API paths do not fall through to the SPA, but gallery deep links d
   const gallery = await worker.fetch(new Request('https://portfolio.test/gallery/shanghai-study-abroad'), env, context);
   assert.equal(gallery.status, 200);
   assert.equal(assetCalls, 1);
-  assert(gallery.headers.get('Content-Security-Policy').includes("connect-src 'self'"));
+  const csp = gallery.headers.get('Content-Security-Policy');
+  assert(csp.includes("connect-src 'self'"));
+  assert(csp.includes("script-src 'self'"));
+  assert(!csp.includes("script-src 'self' 'unsafe-inline'"));
+  assert(csp.includes("style-src 'self' 'unsafe-inline'"));
+});
+
+test('GitHub and gallery malformed or incompatible JSON is not cached and valid data keeps its TTL', async t => {
+  const previousCaches = Object.getOwnPropertyDescriptor(globalThis, 'caches');
+  const entries = new Map();
+  const puts = [];
+  const cache = {
+    async match(request) { return entries.get(request.url)?.clone(); },
+    async put(request, response) {
+      puts.push(request.url);
+      entries.set(request.url, response.clone());
+    },
+  };
+  Object.defineProperty(globalThis, 'caches', { configurable: true, value: { default: cache } });
+  t.after(() => {
+    if (previousCaches) Object.defineProperty(globalThis, 'caches', previousCaches);
+    else delete globalThis.caches;
+  });
+
+  const bodies = new Map([
+    ['/api/github-contributions', ['not-json', '{}', JSON.stringify({ contributions: [] })]],
+    ['/api/gallery', ['not-json', 'null', JSON.stringify({ galleries: [] })]],
+  ]);
+  const fetch = t.mock.method(globalThis, 'fetch', async url => {
+    const path = String(url).includes('github-contributions-api') ? '/api/github-contributions' : '/api/gallery';
+    const bodyQueue = bodies.get(path);
+    return new Response(bodyQueue.shift(), { headers: { 'Content-Type': 'application/json' } });
+  });
+  const pendingCacheWrites = [];
+  const cacheContext = { waitUntil(promise) { pendingCacheWrites.push(promise); } };
+
+  for (const [path, ttl] of [['/api/github-contributions', 'max-age=3600'], ['/api/gallery', 'max-age=300']]) {
+    const makeRequest = () => new Request(`https://portfolio.test${path}`);
+    const cachedWritesBefore = puts.length;
+    const malformed = await worker.fetch(makeRequest(), {}, cacheContext);
+    assert.equal(malformed.status, 502);
+    assert.equal(puts.length, cachedWritesBefore, `${path} malformed body must not be cached`);
+
+    const incompatible = await worker.fetch(makeRequest(), {}, cacheContext);
+    assert.equal(incompatible.status, 502);
+    assert.equal(puts.length, cachedWritesBefore, `${path} incompatible JSON shape must not be cached`);
+
+    const valid = await worker.fetch(makeRequest(), {}, cacheContext);
+    assert.equal(valid.status, 200);
+    assert.equal(valid.headers.get('Cache-Control'), `public, ${ttl}`);
+    await Promise.all(pendingCacheWrites.splice(0));
+    assert.equal(puts.length, cachedWritesBefore + 1);
+
+    const cached = await worker.fetch(makeRequest(), {}, cacheContext);
+    assert.equal(cached.status, 200);
+    assert.equal(fetch.mock.callCount(), path === '/api/github-contributions' ? 3 : 6);
+    assert.equal(puts.length, cachedWritesBefore + 1);
+  }
 });

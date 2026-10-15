@@ -6,10 +6,6 @@ import CompanyMark from '../CompanyMark';
 
 export default function Whoami({ resource, active, fileId }) {
   const experience = experiences.find(item => experienceId(item) === fileId);
-  if (fileId === 'about') return <File name="about.md">
-    <p>I build software and chase side quests.</p>
-    <p className="terminal-note">NYC / SF · Boston University</p>
-  </File>;
   if (experience) return <File name={`${experience.company.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.log`}>
     <article className="experience-entry">
       <CompanyMark company={experience.company} src={experience.logo} className="company-mark--reader" />

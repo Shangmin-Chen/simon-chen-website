@@ -1,4 +1,5 @@
 import { validateContact } from './portfolio/domain/contact.js';
+import { isGalleryResponse, isGithubResponse } from './portfolio/adapters/responseSchemas.js';
 
 const GITHUB_USERNAME = 'Shangmin-Chen';
 const GOODREADS_USER_ID = '141302044';
@@ -11,7 +12,7 @@ const UPSTREAM_TIMEOUT_MS = 5000;
 // structured metadata. API calls remain same-origin and secrets stay here.
 const SECURITY_HEADERS = {
   'Content-Security-Policy':
-    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://images.simon-chen.com https://i.gr-assets.com https://books.google.com; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
+    "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://images.simon-chen.com https://i.gr-assets.com https://books.google.com; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
   'X-Content-Type-Options': 'nosniff',
   'X-Frame-Options': 'DENY',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
@@ -79,6 +80,36 @@ function parseGoodreadsRss(xml) {
   return books;
 }
 
+async function readRequestBodyWithinLimit(request, maxBytes) {
+  if (!request.body) return new Uint8Array();
+
+  const reader = request.body.getReader();
+  const chunks = [];
+  let byteLength = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      byteLength += value.byteLength;
+      if (byteLength > maxBytes) {
+        try { await reader.cancel(); } catch { /* The oversized body is already rejected. */ }
+        return null;
+      }
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+
+  const body = new Uint8Array(byteLength);
+  let offset = 0;
+  for (const chunk of chunks) {
+    body.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return body;
+}
+
 async function handleRequest(request, env, ctx) {
   const url = new URL(request.url);
 
@@ -107,7 +138,9 @@ async function handleRequest(request, env, ctx) {
         });
       }
 
-      const response = new Response(await upstream.text(), {
+      const body = await upstream.text();
+      if (!isGithubResponse(JSON.parse(body))) throw new Error('Invalid GitHub response');
+      const response = new Response(body, {
         status: 200,
         headers: {
           'Content-Type': 'application/json',
@@ -204,7 +237,9 @@ async function handleRequest(request, env, ctx) {
         );
       }
 
-      const response = new Response(await upstream.text(), {
+      const body = await upstream.text();
+      if (!isGalleryResponse(JSON.parse(body))) throw new Error('Invalid gallery response');
+      const response = new Response(body, {
         status: 200,
         headers: {
           'Content-Type': 'application/json',
@@ -224,10 +259,9 @@ async function handleRequest(request, env, ctx) {
 
   // Handle contact form submissions
   if (url.pathname === '/api/contact' && request.method === 'POST') {
-    // Reject oversized bodies before parsing. The header check below is only
-    // a cheap fast-path — the authoritative cap is applied to the actual byte
-    // count after buffering, so chunked/telescoped bodies without a truthful
-    // content-length can't bypass it.
+    // Reject oversized bodies before parsing. The header check is a fast path;
+    // the bounded stream read below is authoritative when the header is absent
+    // or does not match the bytes actually sent.
     const MAX_CONTACT_BODY_BYTES = 32 * 1024;
     const lenHeader = request.headers.get('content-length');
     const contentLength = lenHeader !== null ? Number.parseInt(lenHeader, 10) : NaN;
@@ -239,8 +273,8 @@ async function handleRequest(request, env, ctx) {
     }
 
     try {
-      const bodyBytes = await request.arrayBuffer();
-      if (bodyBytes.byteLength > MAX_CONTACT_BODY_BYTES) {
+      const bodyBytes = await readRequestBodyWithinLimit(request, MAX_CONTACT_BODY_BYTES);
+      if (bodyBytes === null) {
         return new Response(JSON.stringify({ error: 'Request body too large' }), {
           status: 413,
           headers: { 'Content-Type': 'application/json' },
