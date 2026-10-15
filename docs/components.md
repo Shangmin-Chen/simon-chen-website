@@ -7,11 +7,10 @@
   glitch plan, frame border.
   Eye gaze follows the pointer horizontally; CSS tracer rays originate at each
   source iris center and are suppressed for frames without eye data.
-- `CrewWheel`: native selection controls and scoped drag/scroll/keyboard gestures.
-- `AmbientScene` / wheel accents: a CSS-routed, asymmetric signal lattice and
-  slow packet/bracket motion behind the portfolio content and around the crew
-  rail. The shell pauses it for the intro, hidden tabs, reduced motion, or the
-  saved motion toggle; it never moves interactive controls.
+- `CrewWheel`: native selection controls and scoped drag/scroll/keyboard
+  gestures, plus a stable output port on the selected rail for the card fan.
+  Its local selection frame and output pulse pause for the intro, hidden tabs,
+  reduced motion, or the saved motion toggle; interactive targets stay fixed.
 - `ContentPanel`: stable character scene, per-section selected card state, and
   mounted Contact/Pictures sections.
 - `InspectPanel`: in-scene text inspection over the card area; the underlying
@@ -22,6 +21,8 @@
   multi-entry text file sequences.
 - `CardDeck` / `GameCard`: responsive scene cards with scoped keyboard paging,
   focusable selection, one-step activation, and brief hover/focus signal bursts.
+  Each deck receives the wheel output ref and draws measured connectors from
+  that real port to its cards, so the collection reads as one fan-shaped menu.
 - `SignalBands` / `DecodePhrase`: decorative horizontal signal tears and a
   short Unicode-safe title/caption decode, both using the shared glitch plan;
   semantic text remains intact and motion respects the shell preference.

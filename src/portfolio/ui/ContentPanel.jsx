@@ -15,7 +15,7 @@ function commandFor(section, albumId) {
   return commands[section];
 }
 
-export default function ContentPanel({ member, services, albumId, motion, onPortfolioHome, onGalleryHome }) {
+export default function ContentPanel({ member, services, albumId, motion, hubRef, onPortfolioHome, onGalleryHome }) {
   const section = member.section;
   const [selections, setSelections] = useState({});
   const selectedId = selections[section] ?? '';
@@ -39,6 +39,7 @@ export default function ContentPanel({ member, services, albumId, motion, onPort
       selectedId={selectedId}
       onSelect={id => setSelections(current => ({ ...current, [section]: id }))}
       motion={motion}
+      hubRef={hubRef}
     />}
 
     <div className="contact-scene" hidden={!isContact}>
@@ -46,12 +47,12 @@ export default function ContentPanel({ member, services, albumId, motion, onPort
     </div>
 
     <div className="pictures-slot" hidden={!isPictures}>
-      <Pictures resource={services.gallery} active={isPictures} albumId={albumId} motion={motion} />
+      <Pictures resource={services.gallery} active={isPictures} albumId={albumId} motion={motion} hubRef={hubRef} />
     </div>
   </section>;
 }
 
-function TextScene({ member, services, selectedId, onSelect, motion }) {
+function TextScene({ member, services, selectedId, onSelect, motion, hubRef }) {
   const section = member.section;
   const files = useMemo(() => filesFor(section), [section]);
   const sequence = useMemo(() => sequenceFor(section), [section]);
@@ -125,6 +126,7 @@ function TextScene({ member, services, selectedId, onSelect, motion }) {
         onSelect={onSelect}
         onActivate={openInspector}
         label={`${member.name} ${section} cards`}
+        hubRef={hubRef}
       />
     </div>
     <InspectPanel

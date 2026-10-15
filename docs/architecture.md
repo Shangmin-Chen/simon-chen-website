@@ -44,7 +44,11 @@ wheel/swipe paging, and PageUp/PageDown. Contact opens directly to its mounted
 form, preserving drafts and validation while hidden. Pictures retains its
 album/photo selections and uses actual R2 thumbnails; choosing a photo opens
 the existing accessible touch/zoom Lightbox directly. The document never
-scrolls.
+scrolls. A shared wheel output ref gives each card deck a measured geometric
+fan from the selected crew rail; connectors follow real card and hub positions
+instead of a detached background grid. The crew output pulse and selection
+frame are local CSS motion under the shell's visibility-aware `data-ambient`
+boundary.
 
 Portrait animation is local to its component. It updates at 65ms, pauses in
 background tabs, cleans up timers/listeners, and never changes page position.
@@ -73,10 +77,11 @@ motion toggle; text decode frames preserve grapheme and whitespace boundaries,
 while the original title and caption stay semantic and readable to assistive
 technology.
 
-The ambient scene and crew-wheel signal paths use static CSS geometry with
-slow compositor transforms and opacity changes. The shell exposes one
-visibility-aware `data-ambient` boundary to pause those layers; no animation
-tick rerenders the shell or changes navigation targets.
+Card fans use measured DOM anchors and static connector geometry; the hub ref
+is passed through the UI composition path to text and gallery decks. The crew
+selection frame and output port use slow compositor transforms/opacity under
+the shell's visibility-aware `data-ambient` boundary. No animation tick
+rerenders the shell or moves navigation targets.
 
 Validation: `npm run lint`, `npm run verify` (Node tests + build + token checks),
 and UI checks using the Cloudflare development Worker on port 8787. Node tests

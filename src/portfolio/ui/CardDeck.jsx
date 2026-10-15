@@ -1,5 +1,6 @@
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { cardIndexFor, cardIndexOnPage, cardPageIndex, moveCardIndex } from '../domain/card-navigation';
+import { cardFanConnections, cardFanLayout } from '../domain/card-fan';
 import { signalSeed } from '../domain/decode';
 import { accumulateWheelDelta } from '../domain/navigation';
 import SignalBands from './SignalBands';
@@ -26,7 +27,7 @@ function CardFace({ item, visual, meta }) {
   </>;
 }
 
-export const GameCard = forwardRef(function GameCard({ item, selected, visual, tabIndex = -1, onFocus, onClick, motion = true }, ref) {
+export const GameCard = forwardRef(function GameCard({ item, selected, visual, tabIndex = -1, onFocus, onClick, onPortRef, pose, motion = true }, ref) {
   const meta = Array.isArray(item.meta) ? item.meta.filter(Boolean).join(' · ') : item.meta;
   const signal = useSignalBurst(motion, 320, 8);
   const signalSeedValue = signalSeed(item.id);
@@ -38,19 +39,32 @@ export const GameCard = forwardRef(function GameCard({ item, selected, visual, t
     tabIndex={tabIndex}
     aria-pressed={selected}
     data-selected={selected ? 'true' : 'false'}
+    data-compact={pose.height < 180 ? 'true' : undefined}
+    style={{ '--fan-x': `${pose.x}px`, '--fan-y': `${pose.y}px`, '--fan-width': `${pose.width}px`, '--fan-height': `${pose.height}px`, '--fan-angle': `${pose.angle}deg`, '--fan-depth': pose.depth }}
     onFocus={event => { signal.start(); onFocus?.(event); }}
     onClick={onClick}
     onMouseEnter={signal.start}
   >
     {face}
+    <span className="game-card__port" ref={onPortRef} aria-hidden="true" />
     <span className="game-card__geometry" aria-hidden="true" />
     {motion && signal.tick >= 0 && <SignalBands seed={signalSeedValue} tick={signal.tick} className="game-card__signals">{face}</SignalBands>}
   </button>;
 });
 
-const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect, onActivate, label = 'Items', renderVisual, motion = true }, forwardedRef) {
+const sameLayout = (first, second) => first.count === second.count
+  && first.anchor === second.anchor
+  && first.cardWidth === second.cardWidth
+  && first.cardHeight === second.cardHeight
+  && first.poses.length === second.poses.length
+  && first.poses.every((pose, index) => pose.x === second.poses[index].x && pose.y === second.poses[index].y && pose.angle === second.poses[index].angle);
+
+const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect, onActivate, label = 'Items', renderVisual, motion = true, hubRef }, forwardedRef) {
   const deckRef = useRef(null);
+  const fanRef = useRef(null);
   const buttons = useRef(new Map());
+  const ports = useRef(new Map());
+  const localHubRef = useRef(null);
   const wheelTotal = useRef(0);
   const lastWheelAt = useRef(0);
   const lastWheelPageAt = useRef(Number.NEGATIVE_INFINITY);
@@ -58,8 +72,9 @@ const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect
   const suppressClick = useRef(false);
   const suppressTimer = useRef(0);
   const focusFrame = useRef(0);
-  const [layout, setLayout] = useState({ columns: 2, rows: 2 });
-  const capacity = layout.columns * layout.rows;
+  const [layout, setLayout] = useState(() => cardFanLayout(0, 0, false, 1));
+  const [connections, setConnections] = useState([]);
+  const capacity = layout.count;
   const activeIndex = cardIndexFor(items, selectedId);
   const pageIndex = activeIndex < 0 ? 0 : cardPageIndex(activeIndex, capacity, items.length);
   const pageCount = Math.max(1, Math.ceil(items.length / capacity));
@@ -75,31 +90,107 @@ const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect
 
   useImperativeHandle(forwardedRef, () => ({ focusSelected }), [focusSelected]);
 
-  const measure = useCallback(node => {
-    if (!node) return;
-    const grid = node.querySelector('.card-deck__grid');
-    const width = grid?.clientWidth ?? node.clientWidth;
-    // Reserve the pager and hint whether or not paging is currently rendered;
-    // this keeps row capacity stable when crossing a page-count boundary.
-    const availableGridHeight = Math.max(0, node.clientHeight - 48);
-    const compact = width < 600;
-    const twoRowMinimum = compact ? (hasVisual ? 365 : 345) : (hasVisual ? 485 : 364);
-    const next = {
-      columns: width >= 600 ? 3 : width >= 280 ? 2 : 1,
-      rows: availableGridHeight >= twoRowMinimum ? 2 : 1,
-    };
-    setLayout(current => current.columns === next.columns && current.rows === next.rows ? current : next);
-  }, [hasVisual]);
+  const measureLayout = useCallback(() => {
+    const deck = deckRef.current;
+    const fan = fanRef.current;
+    if (!deck || !fan) return;
+    const box = fan.getBoundingClientRect();
+    const hub = (hubRef ?? localHubRef).current;
+    const hubBox = hub?.isConnected && !hub.closest('[hidden],[inert]') ? hub.getBoundingClientRect() : null;
+    const anchor = hubBox && hubBox.bottom <= box.top + 10 ? 'above' : 'side';
+    // Keep capacity independent of whether the pager is currently rendered.
+    const next = cardFanLayout(box.width, box.height, hasVisual, items.length, Math.max(0, deck.clientHeight - 48), anchor);
+    setLayout(current => sameLayout(current, next) ? current : next);
+  }, [hasVisual, hubRef, items.length]);
 
-  useEffect(() => {
-    const node = deckRef.current;
-    if (!node) return undefined;
-    measure(node);
-    if (typeof ResizeObserver === 'undefined') return undefined;
-    const observer = new ResizeObserver(() => measure(node));
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [hasVisual, measure]);
+  useLayoutEffect(() => {
+    measureLayout();
+    const deck = deckRef.current;
+    const fan = fanRef.current;
+    if (!deck || !fan) return undefined;
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', measureLayout);
+      return () => window.removeEventListener('resize', measureLayout);
+    }
+    const observer = new ResizeObserver(measureLayout);
+    observer.observe(deck);
+    observer.observe(fan);
+    const hub = (hubRef ?? localHubRef).current;
+    const wheel = hub?.closest('.crew-wheel');
+    if (wheel) observer.observe(wheel);
+    let frame = 0;
+    const onResize = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(measureLayout);
+    };
+    window.addEventListener('resize', onResize);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', onResize);
+      cancelAnimationFrame(frame);
+    };
+  }, [hubRef, measureLayout]);
+
+  useLayoutEffect(() => {
+    const fan = fanRef.current;
+    if (!fan) return undefined;
+    const resolvedHubRef = hubRef ?? localHubRef;
+    const measureConnections = () => {
+      const hub = resolvedHubRef.current;
+      if (!hub?.isConnected || hub.closest('[hidden],[inert]')) {
+        setConnections(current => current.length ? [] : current);
+        return;
+      }
+      const fanBox = fan.getBoundingClientRect();
+      const hubBox = hub.getBoundingClientRect();
+      const portsInFan = visibleItems.flatMap(item => {
+        const element = ports.current.get(item.id);
+        if (!element?.isConnected) return [];
+        const box = element.getBoundingClientRect();
+        return [{ id: item.id, x: box.left + box.width / 2 - fanBox.left, y: box.top + box.height / 2 - fanBox.top }];
+      });
+      const next = cardFanConnections({ x: hubBox.left + hubBox.width / 2 - fanBox.left, y: hubBox.top + hubBox.height / 2 - fanBox.top }, portsInFan);
+      const key = segments => segments.map(link => `${link.x.toFixed(1)},${link.y.toFixed(1)},${link.length.toFixed(1)},${link.angle.toFixed(1)},${link.kind},${link.itemId ?? ''}`).join('|');
+      const nextKey = key(next);
+      setConnections(current => key(current) === nextKey ? current : next);
+    };
+    measureConnections();
+    if (typeof ResizeObserver === 'undefined') {
+      let frame = 0;
+      const onResize = () => {
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(measureConnections);
+      };
+      window.addEventListener('resize', onResize);
+      return () => {
+        window.removeEventListener('resize', onResize);
+        cancelAnimationFrame(frame);
+      };
+    }
+    const observer = new ResizeObserver(measureConnections);
+    observer.observe(fan);
+    const hub = resolvedHubRef.current;
+    if (hub?.isConnected) {
+      observer.observe(hub);
+      const wheel = hub.closest('.crew-wheel');
+      if (wheel) observer.observe(wheel);
+    }
+    visibleItems.forEach(item => {
+      const port = ports.current.get(item.id);
+      if (port) observer.observe(port);
+    });
+    let frame = 0;
+    const onResize = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(measureConnections);
+    };
+    window.addEventListener('resize', onResize);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', onResize);
+      cancelAnimationFrame(frame);
+    };
+  }, [hubRef, layout, pageIndex, selectedId, visibleItems]);
 
   useEffect(() => () => {
     cancelAnimationFrame(focusFrame.current);
@@ -151,8 +242,7 @@ const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect
     if (event.key === 'ArrowRight' || event.key === 'ArrowDown' || event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
       event.preventDefault();
       const direction = event.key === 'ArrowRight' || event.key === 'ArrowDown' ? 1 : -1;
-      const distance = event.key === 'ArrowRight' || event.key === 'ArrowLeft' ? 1 : layout.columns;
-      focusIndex(moveCardIndex(index, direction * distance, items.length));
+      focusIndex(moveCardIndex(index, direction, items.length));
     } else if (event.key === 'Home') {
       event.preventDefault();
       focusIndex(0);
@@ -190,14 +280,23 @@ const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect
     clearTimeout(suppressTimer.current);
   };
 
-  return <section className="card-deck" ref={deckRef} data-visual={hasVisual} data-columns={layout.columns} data-rows={layout.rows} data-motion={motion} style={{ '--card-columns': layout.columns, '--card-rows': layout.rows }} aria-label={label} onKeyDown={handleKeyDown} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchCancel} onClickCapture={event => {
+  return <section className="card-deck" ref={deckRef} data-visual={hasVisual} data-fan-count={layout.count} data-motion={motion} aria-label={label} onKeyDown={handleKeyDown} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchCancel} onClickCapture={event => {
     if (!suppressClick.current) return;
     event.preventDefault();
     event.stopPropagation();
     suppressClick.current = false;
     clearTimeout(suppressTimer.current);
   }}>
-    <div className="card-deck__grid" role="group" aria-label={label}>
+    <div className="card-deck__fan" ref={fanRef} role="group" aria-label={label}>
+      <div className="card-deck__links" aria-hidden="true">
+        {connections.map((link, index) => <span
+          className="card-deck__link"
+          key={`${link.kind}-${link.itemId ?? 'hub'}-${index}`}
+          data-kind={link.kind}
+          data-selected={link.itemId === selectedId ? 'true' : 'false'}
+          style={{ left: `${link.x}px`, top: `${link.y}px`, width: `${link.length}px`, transform: `rotate(${link.angle}deg)`, '--wire-length': `${Math.max(0, link.length - 7)}px`, '--wire-delay': `${index * -0.22}s` }}
+        />)}
+      </div>
       {visibleItems.map((item, localIndex) => {
         const selected = item.id === items[activeIndex]?.id;
         const tabIndex = selected ? 0 : -1;
@@ -207,9 +306,11 @@ const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect
           item={{ ...item, sigilIndex: pageIndex * capacity + localIndex }}
           selected={selected}
           visual={visual}
+          pose={{ ...layout.poses[localIndex], width: layout.cardWidth, height: layout.cardHeight }}
           motion={motion}
           tabIndex={tabIndex}
           ref={node => { if (node) buttons.current.set(item.id, node); else buttons.current.delete(item.id); }}
+          onPortRef={node => { if (node) ports.current.set(item.id, node); else ports.current.delete(item.id); }}
           onFocus={() => { if (item.id !== selectedId) onSelect?.(item.id); }}
           onClick={() => { onSelect?.(item.id); onActivate?.(item.id); }}
         />;

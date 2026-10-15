@@ -4,7 +4,7 @@
 @import './layouts/portfolio.css';
 @import './components/portrait.css';
 @import './components/crew-wheel.css';
-@import './components/ambient-scene.css';
+@import './components/wheel-ambient.css';
 @import './components/terminal-files.css';
 @import './components/card-deck.css';
 @import './components/reader.css';

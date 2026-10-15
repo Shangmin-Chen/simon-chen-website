@@ -5,15 +5,21 @@
 .owner-name { flex: 0 0 auto; margin: 0 0 5px; color: var(--text-primary); font: 500 14px/1.4 var(--font-mono); }
 .about-copy { flex: 0 0 auto; max-width: 480px; margin: 0 0 8px; }
 .about-copy p { margin-bottom: 4px; }
-.card-deck { display: flex; flex: 1 1 0; flex-direction: column; min-width: 0; min-height: 0; }
-.card-deck__grid { position: relative; isolation: isolate; display: grid; flex: 1 1 0; grid-template-columns: repeat(var(--card-columns, 2), minmax(0, 1fr)); grid-template-rows: repeat(var(--card-rows, 1), minmax(175px, 185px)); align-content: start; gap: 14px 18px; min-width: 0; min-height: 0; overflow: hidden; }
-.card-deck__grid::before { position: absolute; z-index: 0; inset: 0; background: linear-gradient(135deg, transparent 49.65%, hsl(var(--color-accent-hsl) / .18) 49.9% 50.1%, transparent 50.35%), linear-gradient(45deg, transparent 49.65%, hsl(var(--color-accent-hsl) / .12) 49.9% 50.1%, transparent 50.35%); content: ''; pointer-events: none; }
-.card-deck__grid::after { position: absolute; z-index: 0; top: 3%; left: 4%; width: 7px; height: 7px; border: 1px solid var(--highlight-color); background: var(--bg-primary); box-shadow: 0 0 8px hsl(var(--color-accent-hsl) / .35); content: ''; opacity: 0; pointer-events: none; transform: rotate(45deg); animation: card-route-packet 9s linear infinite; }
-.game-card { --card-step-x: 0px; --card-step-top: 0px; --card-step-bottom: 0px; position: relative; z-index: 1; isolation: isolate; display: grid; grid-template-columns: 42px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; align-content: stretch; align-items: start; gap: 7px 10px; min-width: 0; min-height: 0; margin-block: var(--card-step-top) var(--card-step-bottom); margin-inline-start: var(--card-step-x); overflow: hidden; padding: 9px 10px; border: 0; background: transparent; color: var(--text-primary); text-align: left; }
+.card-deck { position: relative; display: flex; flex: 1 1 0; flex-direction: column; min-width: 0; min-height: 0; overflow: visible; }
+.card-deck__fan { position: relative; isolation: isolate; flex: 1 1 0; min-width: 0; min-height: 0; overflow: visible; }
+.card-deck__links { position: absolute; z-index: 0; inset: 0; overflow: visible; pointer-events: none; }
+.card-deck__link { position: absolute; display: block; height: 1px; background: hsl(var(--color-accent-hsl) / .25); transform-origin: 0 50%; pointer-events: none; }
+.card-deck__link::after { position: absolute; top: -1px; left: 0; width: 7px; height: 3px; background: var(--highlight-color); box-shadow: 0 0 7px hsl(var(--color-accent-hsl) / .72); content: ''; animation: fan-wire-travel 2.8s linear infinite; animation-delay: var(--wire-delay, 0s); }
+.card-deck__link[data-kind='trunk'], .card-deck__link[data-kind='bus'] { background: hsl(var(--color-accent-hsl) / .36); }
+.card-deck__link[data-selected='true'] { height: 2px; background: hsl(var(--color-accent-hsl) / .88); box-shadow: 0 0 5px hsl(var(--color-accent-hsl) / .55); }
+.card-deck__link[data-selected='true']::after { top: -1px; height: 4px; }
+.game-card { position: absolute; z-index: var(--fan-depth, 1); isolation: isolate; left: var(--fan-x); top: var(--fan-y); display: grid; width: var(--fan-width); height: var(--fan-height); grid-template-columns: 42px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; align-content: stretch; align-items: start; gap: 7px 10px; min-width: 0; min-height: 0; overflow: hidden; padding: 9px 10px; border: 0; background: transparent; color: var(--text-primary); text-align: left; transform: rotate(var(--fan-angle)); transform-origin: center center; }
 .game-card::before, .game-card::after { position: absolute; inset: 0; pointer-events: none; content: ''; clip-path: polygon(0 0, calc(100% - 13px) 0, 100% 13px, 100% 100%, 13px 100%, 0 calc(100% - 13px)); }
 .game-card::before { z-index: -2; background: var(--border-color); }
 .game-card::after { z-index: -1; inset: 1px; background: hsl(var(--color-bg-primary-hsl) / .94); clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px)); }
 .game-card:hover::before, .game-card:focus-visible::before, .game-card[data-selected='true']::before { background: var(--highlight-color); }
+.game-card[data-selected='true'] { z-index: 20; }
+.game-card:hover, .game-card:focus-visible { z-index: 30; }
 .game-card:focus-visible { outline: 2px solid var(--highlight-color); outline-offset: -5px; }
 .game-card__visual, .game-card__sigil, .game-card__copy, .game-card__open { z-index: 1; }
 .game-card__visual { display: grid; grid-column: 1 / -1; width: 100%; min-width: 0; min-height: 0; max-height: 110px; aspect-ratio: 16 / 7; place-items: center; overflow: hidden; border: 1px solid var(--border-color); background: hsl(var(--color-bg-primary-hsl) / .85); }
@@ -35,32 +41,20 @@
 .game-card:has(.game-card__visual) .game-card__description { -webkit-line-clamp: 1; }
 .game-card:has(.game-card__visual) .game-card__meta { display: block; min-width: 0; white-space: nowrap; text-overflow: ellipsis; }
 .game-card:has(.game-card__visual) .game-card__open { flex: 0 0 auto; color: var(--highlight-color); }
-.game-card__geometry { position: absolute; z-index: 2; inset: 0; overflow: hidden; pointer-events: none; background: linear-gradient(90deg, var(--highlight-color) 0 18px, transparent 18px) 0 0 / 18px 1px no-repeat, linear-gradient(180deg, var(--highlight-color) 0 18px, transparent 18px) 0 0 / 1px 18px no-repeat, linear-gradient(-90deg, var(--highlight-color) 0 18px, transparent 18px) 100% 0 / 18px 1px no-repeat, linear-gradient(180deg, var(--highlight-color) 0 18px, transparent 18px) 100% 0 / 1px 18px no-repeat, linear-gradient(-90deg, var(--highlight-color) 0 18px, transparent 18px) 100% 100% / 18px 1px no-repeat, linear-gradient(0deg, var(--highlight-color) 0 18px, transparent 18px) 100% 100% / 1px 18px no-repeat, linear-gradient(90deg, var(--highlight-color) 0 18px, transparent 18px) 0 100% / 18px 1px no-repeat, linear-gradient(0deg, var(--highlight-color) 0 18px, transparent 18px) 0 100% / 1px 18px no-repeat; background-repeat: no-repeat; opacity: .38; animation: card-bracket-reassemble 8.6s ease-in-out infinite; }
-.game-card:nth-child(2n) .game-card__geometry { animation-delay: -2.1s; }
-.game-card:nth-child(3n) .game-card__geometry { animation-delay: -4.2s; }
-.game-card:nth-child(4n) .game-card__geometry { animation-delay: -6.3s; }
+.game-card[data-compact='true'] .game-card__path, .game-card[data-compact='true'] .game-card__description, .game-card[data-compact='true'] .game-card__meta, .game-card[data-compact='true'] .game-card__open { display: none; }
+.game-card[data-compact='true']:has(.game-card__visual) .game-card__visual { inset: 4px 4px 34px; }
+.game-card[data-compact='true']:has(.game-card__visual) .game-card__copy { top: auto; right: 4px; bottom: 4px; left: 4px; height: 26px; padding: 4px; }
+.game-card[data-compact='true']:has(.game-card__visual) .game-card__title { display: block; white-space: nowrap; text-overflow: ellipsis; }
+.game-card[data-compact='true']:has(.game-card__visual) .game-card__visual-footer { display: none; }
+.game-card__port { position: absolute; z-index: 4; top: 50%; left: 0; width: 1px; height: 1px; pointer-events: none; }
+.game-card__geometry { position: absolute; z-index: 2; inset: 0; overflow: hidden; pointer-events: none; background: linear-gradient(90deg, var(--highlight-color) 0 18px, transparent 18px) 0 0 / 18px 1px no-repeat, linear-gradient(180deg, var(--highlight-color) 0 18px, transparent 18px) 0 0 / 1px 18px no-repeat, linear-gradient(-90deg, var(--highlight-color) 0 18px, transparent 18px) 100% 0 / 18px 1px no-repeat, linear-gradient(180deg, var(--highlight-color) 0 18px, transparent 18px) 100% 0 / 1px 18px no-repeat, linear-gradient(-90deg, var(--highlight-color) 0 18px, transparent 18px) 100% 100% / 18px 1px no-repeat, linear-gradient(0deg, var(--highlight-color) 0 18px, transparent 18px) 100% 100% / 1px 18px no-repeat, linear-gradient(90deg, var(--highlight-color) 0 18px, transparent 18px) 0 100% / 18px 1px no-repeat, linear-gradient(0deg, var(--highlight-color) 0 18px, transparent 18px) 0 100% / 1px 18px no-repeat; background-repeat: no-repeat; opacity: .3; }
 .game-card__geometry::before, .game-card__geometry::after { position: absolute; width: 5px; height: 5px; border: 1px solid var(--highlight-color); content: ''; transform: rotate(45deg); }
 .game-card__geometry::before { top: 30%; right: 2px; }
 .game-card__geometry::after { bottom: 30%; left: 2px; }
-.game-card:has(.game-card__visual) .game-card__geometry { opacity: .56; }
-.card-deck[data-columns='3'] .game-card:nth-child(6n + 1) { --card-step-top: 24px; }
-.card-deck[data-columns='3'] .game-card:nth-child(6n + 2) { --card-step-top: 12px; --card-step-bottom: 12px; --card-step-x: 7px; }
-.card-deck[data-columns='3'] .game-card:nth-child(6n + 3) { --card-step-bottom: 24px; }
-.card-deck[data-columns='3'] .game-card:nth-child(6n + 4) { --card-step-top: 24px; }
-.card-deck[data-columns='3'] .game-card:nth-child(6n + 5) { --card-step-top: 12px; --card-step-bottom: 12px; --card-step-x: 7px; }
-.card-deck[data-columns='3'] .game-card:nth-child(6n + 6) { --card-step-bottom: 24px; }
-.card-deck[data-columns='2'] .game-card:nth-child(4n + 1) { --card-step-top: 18px; }
-.card-deck[data-columns='2'] .game-card:nth-child(4n + 2) { --card-step-bottom: 18px; --card-step-x: 6px; }
-.card-deck[data-columns='2'] .game-card:nth-child(4n + 3) { --card-step-bottom: 18px; --card-step-x: 6px; }
-.card-deck[data-columns='2'] .game-card:nth-child(4n + 4) { --card-step-top: 18px; }
-.card-deck[data-columns='1'] .game-card:nth-child(2n + 1) { --card-step-top: 12px; }
-.card-deck[data-columns='1'] .game-card:nth-child(2n) { --card-step-bottom: 12px; }
-@keyframes card-route-packet { 0%, 7% { top: 3%; left: 4%; opacity: 0; } 12% { opacity: .9; } 29% { top: 50%; left: 31%; } 47% { top: 82%; left: 52%; } 66% { top: 41%; left: 74%; } 84% { top: 3%; left: 96%; opacity: .75; } 94%, 100% { top: 3%; left: 4%; opacity: 0; } }
-@keyframes card-bracket-reassemble { 0%, 63%, 100% { background-size: 18px 1px, 1px 18px, 18px 1px, 1px 18px, 18px 1px, 1px 18px, 18px 1px, 1px 18px; opacity: .35; } 78% { background-size: 32px 1px, 1px 32px, 32px 1px, 1px 32px, 32px 1px, 1px 32px, 32px 1px, 1px 32px; opacity: .72; } }
-.card-deck[data-motion='false'] .card-deck__grid::after, .portfolio[data-ambient='false'] .card-deck__grid::after { animation-play-state: paused; }
-.card-deck[data-motion='false'] .game-card__geometry, .portfolio[data-ambient='false'] .game-card__geometry { animation-play-state: paused; }
-.gallery-scene[inert] .card-deck__grid::after { animation-play-state: paused; }
-.gallery-scene[inert] .game-card__geometry { animation-play-state: paused; }
+.game-card:has(.game-card__visual) .game-card__geometry { opacity: .48; }
+.game-card[data-selected='true'] .game-card__geometry { opacity: .8; }
+@keyframes fan-wire-travel { from { transform: translateX(0); opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } to { transform: translateX(var(--wire-length, 130px)); opacity: 0; } }
+.card-deck[data-motion='false'] .card-deck__link::after, .portfolio[data-ambient='false'] .card-deck__link::after, .gallery-scene[inert] .card-deck__link::after, .home-index[inert] .card-deck__link::after { animation-play-state: paused; }
 .signal-bands { position: absolute; z-index: 5; inset: 0; overflow: hidden; pointer-events: none; }
 .signal-bands__slice { position: absolute; inset: 0; overflow: hidden; clip-path: inset(var(--signal-top) 0 var(--signal-bottom) 0); transform: translateX(var(--signal-offset)); }
 .signal-bands__slice::after { position: absolute; z-index: 4; inset: 0; background: var(--signal-cyan-wash); content: ''; mix-blend-mode: screen; }
@@ -93,18 +87,11 @@
 .contact-scene::-webkit-scrollbar { display: none; }
 .contact-scene[hidden] { display: none !important; }
 
-.card-deck[data-visual='true'] .card-deck__grid { grid-template-rows: repeat(var(--card-rows, 1), minmax(185px, 215px)); }
 @media (max-width: 650px) {
-  .card-deck__grid { grid-template-rows: repeat(var(--card-rows, 1), minmax(170px, 175px)); }
-  .card-deck[data-visual='true'] .card-deck__grid { grid-template-rows: repeat(var(--card-rows, 1), minmax(180px, 195px)); }
-}
-@media (max-width: 650px) {
-  .card-deck__grid { gap: 10px 12px; }
   .section-command { margin-bottom: 4px; font-size: 10px; }
   .owner-name { margin-bottom: 2px; font-size: 11px; }
   .about-copy { margin-bottom: 4px; font-size: 10px; line-height: 1.35; }
   .about-copy p { margin-bottom: 2px; }
-  .card-deck__grid { gap: 5px; }
   .game-card { grid-template-columns: 30px minmax(0, 1fr); gap: 5px 7px; padding: 6px; }
   .game-card__sigil { min-width: 28px; min-height: 24px; font-size: 9px; }
   .game-card__title { font-size: 10px; }
@@ -112,22 +99,11 @@
   .game-card__meta { font-size: 8px; }
   .game-card__open, .game-card__path { font-size: 8px; }
   .game-card__signals .signal-bands__slice { grid-template-columns: 30px minmax(0, 1fr); gap: 5px 7px; padding: 6px; }
+  .game-card__port { top: 0; left: 50%; }
   .card-deck__paging { flex-basis: 32px; }
   .card-deck__hint { font-size: 8px; }
   .inspect-panel { padding: 5px 7px 3px; }
   .inspect-panel .reader-frame__header { min-height: 40px; }
-  .card-deck[data-columns='3'] .game-card:nth-child(6n + 1) { --card-step-top: 18px; }
-  .card-deck[data-columns='3'] .game-card:nth-child(6n + 2) { --card-step-top: 9px; --card-step-bottom: 9px; --card-step-x: 4px; }
-  .card-deck[data-columns='3'] .game-card:nth-child(6n + 3) { --card-step-bottom: 18px; }
-  .card-deck[data-columns='3'] .game-card:nth-child(6n + 4) { --card-step-top: 18px; }
-  .card-deck[data-columns='3'] .game-card:nth-child(6n + 5) { --card-step-top: 9px; --card-step-bottom: 9px; --card-step-x: 4px; }
-  .card-deck[data-columns='3'] .game-card:nth-child(6n + 6) { --card-step-bottom: 18px; }
-  .card-deck[data-columns='2'] .game-card:nth-child(4n + 1) { --card-step-top: 12px; }
-  .card-deck[data-columns='2'] .game-card:nth-child(4n + 2) { --card-step-bottom: 12px; --card-step-x: 4px; }
-  .card-deck[data-columns='2'] .game-card:nth-child(4n + 3) { --card-step-bottom: 12px; --card-step-x: 4px; }
-  .card-deck[data-columns='2'] .game-card:nth-child(4n + 4) { --card-step-top: 12px; }
-  .card-deck[data-columns='1'] .game-card:nth-child(2n + 1) { --card-step-top: 8px; }
-  .card-deck[data-columns='1'] .game-card:nth-child(2n) { --card-step-bottom: 8px; }
 }
 @media (max-height: 700px) and (max-width: 650px) {
   .game-card { padding: 4px; }
@@ -136,6 +112,5 @@
   .card-deck__paging { flex-basis: 28px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .card-deck__grid::after { animation: none; opacity: .34; }
-  .game-card__geometry { animation: none; opacity: .4; }
+  .card-deck__link::after { animation: none; opacity: .4; }
 }

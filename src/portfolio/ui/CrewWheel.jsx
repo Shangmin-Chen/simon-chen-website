@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { accumulateWheelDelta, wheelOffset, wheelPosition, wheelRail } from '../domain/navigation';
 
-export default function CrewWheel({ crew, selected, onSelect }) {
+export default function CrewWheel({ crew, selected, onSelect, hubRef, hubActive = true }) {
   const wheelRef = useRef(null);
   const buttons = useRef([]);
   const gesture = useRef(null);
@@ -84,19 +84,19 @@ export default function CrewWheel({ crew, selected, onSelect }) {
         onPointerCancel={() => { gesture.current = null; }}
       >
         <pre className="wheel-rail" aria-hidden="true" style={{ fontSize: `${Math.min(8, size.width / (72 * 0.6))}px` }}>{wheelRail(size.compact, size.short)}</pre>
-        <span className="wheel-ambient" aria-hidden="true">
-          <span className="wheel-ambient__track" />
-          <span className="wheel-ambient__packet wheel-ambient__packet--cyan" />
-          <span className="wheel-ambient__packet wheel-ambient__packet--pink" />
-          <span className="wheel-ambient__frame" style={{ '--wheel-x': `${focusPosition.x}px`, '--wheel-y': `${focusPosition.y}px`, '--wheel-scale': focusPosition.scale }}>
-            <span className="wheel-ambient__corner wheel-ambient__corner--tl" />
-            <span className="wheel-ambient__corner wheel-ambient__corner--tr" />
-            <span className="wheel-ambient__corner wheel-ambient__corner--bl" />
-            <span className="wheel-ambient__corner wheel-ambient__corner--br" />
-          </span>
-          <span className="wheel-ambient__shard wheel-ambient__shard--left" />
-          <span className="wheel-ambient__shard wheel-ambient__shard--right" />
+        <span className="wheel-selection-frame" aria-hidden="true" style={{ '--wheel-x': `${focusPosition.x}px`, '--wheel-y': `${focusPosition.y}px`, '--wheel-scale': focusPosition.scale }}>
+          <span className="wheel-selection-frame__corner wheel-selection-frame__corner--tl" />
+          <span className="wheel-selection-frame__corner wheel-selection-frame__corner--tr" />
+          <span className="wheel-selection-frame__corner wheel-selection-frame__corner--bl" />
+          <span className="wheel-selection-frame__corner wheel-selection-frame__corner--br" />
         </span>
+        <span
+          className="wheel-output-port"
+          ref={hubRef}
+          aria-hidden="true"
+          hidden={!hubActive}
+          style={{ '--wheel-x': `${focusPosition.x}px`, '--wheel-y': `${focusPosition.y}px` }}
+        />
         {crew.map((member, index) => {
           const offset = wheelOffset(index, selected, crew.length);
           const position = wheelPosition(offset, size.width, size.compact, size.short);
