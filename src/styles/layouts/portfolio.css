@@ -41,8 +41,8 @@
   .terminal-name-caption { font-size: 11px; }
   .portfolio-surface { grid-template-rows: 36px 12px minmax(0, 1fr) 12px 36px; }
   .terminal-header button, .terminal-footer button { min-height: 36px; }
-  .workspace { grid-template-columns: minmax(0, 1fr); grid-template-rows: 272px minmax(0, 1fr); gap: 5px; padding: 4px 0; }
-  .character-profile { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); grid-template-rows: minmax(0, 1fr) 90px; align-items: center; gap: 4px 8px; min-height: 0; }
+  .workspace { grid-template-columns: minmax(0, 1fr); grid-template-rows: 292px minmax(0, 1fr); gap: 5px; padding: 4px 0; }
+  .character-profile { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); grid-template-rows: minmax(0, 1fr) var(--selector-stage-height, 110px); align-items: center; gap: 4px 8px; min-height: 0; }
   .character-art { grid-column: 1; grid-row: 1; display: flex; min-height: 0; flex-direction: column; align-items: center; justify-content: center; }
   .character-art .ascii-portrait-text { font-size: clamp(2.9px, var(--portrait-fit-font), 3.7px); line-height: clamp(2.9px, var(--portrait-fit-font), 3.7px); }
   .character-profile .portrait-caption { justify-content: center; flex-wrap: wrap; margin-top: 3px; gap: 2px 5px; font-size: 11px; }
@@ -57,14 +57,14 @@
 /* Compact the shell first; the two short-screen profile arrangements below
    preserve inventory width at 651–800px and selector width above that. */
 @media (max-height: 560px) and (min-width: 651px) {
-  .portfolio { padding: 4px 18px; }
-  .portfolio-surface { grid-template-rows: 28px 8px minmax(0, 1fr) 8px 28px; }
+  .portfolio { padding: 0 18px; }
+  .portfolio-surface { grid-template-rows: 28px 4px minmax(0, 1fr) 4px 28px; }
   .terminal-header button, .terminal-footer button { min-height: 28px; }
-  .workspace { gap: 16px; padding-block: 2px; }
+  .workspace { gap: 16px; padding-block: 0; }
 }
 @media (max-height: 560px) and (min-width: 651px) and (max-width: 800px) {
   .workspace { grid-template-columns: minmax(280px, 36%) minmax(0, 1fr); }
-  .character-profile { gap: 4px; }
+  .character-profile { gap: 3px; }
   .character-art .ascii-portrait-text { font-size: clamp(2.9px, var(--portrait-fit-font), 3px); line-height: clamp(2.9px, var(--portrait-fit-font), 3px); }
   .character-profile .portrait-caption { margin-top: 2px; gap: 2px 4px; font-size: 11px; }
   .character-profile .portrait-caption > div { display: flex; min-width: 0; max-width: 100%; flex-direction: column; align-items: center; text-align: center; }
@@ -82,7 +82,7 @@
 }
 
 @media (min-width: 480px) and (max-width: 650px) {
-  .workspace { grid-template-rows: 280px minmax(0, 1fr); }
+  .workspace { grid-template-rows: 300px minmax(0, 1fr); }
   .character-profile { width: min(460px, 100%); justify-self: center; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); }
 }
 @media (max-width: 360px) {
@@ -92,8 +92,8 @@
   .portfolio { padding: 6px 14px; }
   .portfolio-surface { grid-template-rows: 30px 10px minmax(0, 1fr) 10px 30px; }
   .terminal-header button, .terminal-footer button { min-height: 30px; }
-  .workspace { gap: 2px; padding: 2px 0; grid-template-rows: 250px minmax(0, 1fr); }
+  .workspace { gap: 2px; padding: 2px 0; grid-template-rows: 270px minmax(0, 1fr); }
 }
 @media (max-height: 700px) and (min-width: 340px) and (max-width: 650px) {
-  .workspace { grid-template-rows: 272px minmax(0, 1fr); }
+  .workspace { grid-template-rows: 292px minmax(0, 1fr); }
 }

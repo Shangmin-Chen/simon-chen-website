@@ -23,31 +23,47 @@ export function sectionFromLocation({ pathname, hash }) {
   return 'whoami';
 }
 
-export const sectionSelectorStageHeight = 90;
+export const sectionSelectorStageHeight = 110;
+export const sectionSelectorOptionHeight = 50;
 
-export function sectionSelectorPositions(width, selected, count = sections.length) {
+export function signedCircularOffset(index, phase, count = sections.length) {
+  const itemCount = Number.isFinite(count) ? Math.floor(count) : 0;
+  if (itemCount <= 0 || !Number.isFinite(index) || !Number.isFinite(phase)) return 0;
+  const half = itemCount / 2;
+  return ((index - phase + half) % itemCount + itemCount) % itemCount - half;
+}
+
+export function sectionSelectorPositions(width, phase, count = sections.length) {
   const safeWidth = Number.isFinite(width) ? Math.max(0, width) : 0;
   const itemCount = Number.isFinite(count) ? Math.max(0, Math.floor(count)) : 0;
   if (!itemCount) return [];
 
-  const gap = Math.min(4, safeWidth / Math.max(1, itemCount * 2));
-  const selectedIndex = wrapIndex(selected, itemCount);
-  const scale = 1.06;
-  const itemWidth = Math.max(0, (safeWidth - gap * (itemCount - 1)) / (itemCount + scale - 1));
-  const leadingSpace = selectedIndex === 0 ? itemWidth * (scale - 1) / 2 : 0;
-  const midpoint = (itemCount - 1) / 2;
-  const arcDepth = Math.min(32, Math.max(26, safeWidth * 0.09));
+  const radius = itemCount / 2;
+  const itemWidth = Math.min(82, safeWidth / (itemCount + 0.32));
+  const outerScale = 1 + 0.06 * Math.max(0, 1 - (itemCount - 1) / 2 / radius);
+  const step = itemCount > 1 ? (safeWidth - itemWidth * outerScale) / (itemCount - 1) : 0;
+  const edgeOffset = (itemCount - 1) / 2;
+  const outerY = 4;
+  const arcDepth = 38;
 
   return Array.from({ length: itemCount }, (_, index) => {
-    const distance = midpoint ? (index - midpoint) / midpoint : 0;
-    const isSelected = index === selectedIndex;
+    const offset = signedCircularOffset(index, phase, itemCount);
+    const distance = Math.abs(offset);
+    const proximity = Math.max(0, 1 - distance / radius);
+    const seamProgress = Math.max(0, Math.min(1, distance - edgeOffset));
+    const seamT = seamProgress / (radius - edgeOffset || 1);
+    const seamEase = seamT * seamT * (3 - 2 * seamT);
+    const arcProgress = edgeOffset ? Math.min(distance, edgeOffset) / edgeOffset : 0;
     return {
-      left: leadingSpace + index * (itemWidth + gap),
+      offset,
+      left: safeWidth / 2 + offset * step - itemWidth / 2,
       width: itemWidth,
-      arcY: 8 + distance * distance * arcDepth,
-      lift: isSelected ? -5 : 0,
-      scale: isSelected ? scale : 1,
-      selected: isSelected,
+      arcY: outerY + arcDepth * Math.sqrt(1 - arcProgress ** 2),
+      lift: -4 * proximity,
+      scale: 1 + 0.06 * proximity,
+      opacity: 1 - seamEase,
+      front: Math.max(0, 1 - distance),
+      depth: Math.round((radius - distance) * 100),
     };
   });
 }

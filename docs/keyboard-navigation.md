@@ -1,9 +1,9 @@
 # Keyboard navigation
 
-The section selector keeps its five destinations in a fixed order. Tab moves
-through its native buttons; Left/Right moves from the focused destination, and
-Home/End moves to the first/last destination. Selecting a destination keeps
-focus on its selector button.
+The section selector keeps five unique destinations in a fixed logical order
+around an endless arc. Only the current destination is in the Tab order; Left
+and Right loop from it, while Home and End choose the first and last
+destinations. Selecting a destination keeps focus on its native button.
 
 Each inventory has one roving slot tab stop. While a slot is focused, arrows
 move among slots and Home/End move to the first/last slot. Enter opens the

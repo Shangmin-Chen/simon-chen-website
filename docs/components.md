@@ -7,12 +7,14 @@
   glitch plan, frame border.
   Eye gaze follows the pointer horizontally; CSS tracer rays originate at each
   source iris center and are suppressed for frames without eye data.
-- `CharacterSelector`: five section-first native buttons in fixed destination
-  order, arranged on a shallow arc with a raised selected target. Drag and
-  accumulated wheel input change selection; focused buttons support Left/Right
-  and Home/End. The heading reuses `NameCycle` with a stable accessible name,
-  and its motion follows the intro, visibility, reduced-motion, and saved-toggle
-  state.
+- `CharacterSelector`: five unique section-first native buttons circulate around
+  an elliptical arc. At rest all destinations are visible and the selected one
+  settles at center/front; during a wrap, the outer button fades before it
+  re-enters at the opposite side. Drag can request multiple steps, accumulated
+  wheel input and focused-button Left/Right loop, and Home/End choose bounds.
+  Only the current destination is in the Tab order. The heading reuses
+  `NameCycle` with a stable accessible name; the short local phase animation
+  stops or snaps when motion is inactive, hidden, or reduced.
 - `ContentPanel`: stable character scene, per-section selected card state, and
   mounted Contact/Pictures sections.
 - `InspectPanel`: in-scene text inspection over the card area; the underlying

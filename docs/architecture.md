@@ -40,12 +40,15 @@ official company marks into supporting card and reader identity. One activation
 opens an in-scene InspectPanel over the card area, with a shared ReaderFrame,
 breadcrumb, Close/Escape behavior,
 and previous/next card controls. The character art and section selector keep
-the same geometry while a card is inspected. All five section destinations stay
-visible in a fixed left-to-right order at every size. The selector forms a shallow
-arc and raises/scales the selected button; it has no separate Previous/Next row.
-Pointer clicks, drag, accumulated mouse-wheel input, and focused-button Left/Right
-or Home/End keep every section reachable. Its responsive positions come from the
-pure navigation domain. Text reads in
+the same geometry while a card is inspected. The selector is an endless carousel
+with five unique section buttons arranged around a shallow elliptical arc. At
+rest all five destinations are visible; the selected destination settles at
+center/front. During a wrap, a button fades at the outer seam and re-enters from
+the opposite side without duplicating controls. Pointer clicks, multi-step drag,
+accumulated mouse-wheel input, and focused-button Left/Right loop through every
+section; Home/End choose the first/last. Pure circular offsets and responsive
+geometry live in the navigation domain, while the selector UI owns the short
+phase animation and cancels it when motion is inactive. Text reads in
 a naturally scrollable,
 visually scrollbar-free body, with long prose kept near 68 characters per line;
 the GitHub graph keeps its useful width. CardDeck presents each collection as a
