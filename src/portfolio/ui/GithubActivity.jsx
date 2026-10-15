@@ -3,6 +3,7 @@ import { githubData } from '../../data/githubData';
 import { useResource } from '../application/useResource';
 import { contributionDetail, contributionFocusTarget, contributionGlyphs, contributionWeekdays, contributionWindow } from '../domain/contributions';
 import ResourceState from './ResourceState';
+import CompanyMark from './CompanyMark';
 
 const WINDOW_WEEKS = 26;
 const MOBILE_WEEKS = 13;
@@ -63,6 +64,7 @@ export default function GithubActivity({ resource, active }) {
   };
 
   return <section className="github-activity" aria-label="GitHub contribution activity">
+      <CompanyMark company="GitHub" src={githubData.logo} className="company-mark--activity" />
       <ResourceState resource={result} loadingText="Connecting to GitHub…">
         <p className="activity-total">{visibleTotal.toLocaleString()} contributions</p>
         {pageCount > 1 && <div className="activity-range-controls" aria-label="Contribution date range">

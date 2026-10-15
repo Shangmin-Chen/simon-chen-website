@@ -1,4 +1,5 @@
 import { experiences } from '../../data/experiences.js';
+import { githubData } from '../../data/githubData.js';
 import { projects } from '../../data/projects.js';
 
 const experienceId = experience => `experience:${experience.company.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
@@ -14,7 +15,7 @@ export function filesFor(section) {
       meta: [experience.location, experience.period],
       logo: experience.logo,
     })),
-    { id: 'github-activity', label: 'github-activity.log', title: 'GitHub activity', description: 'Contribution activity', meta: 'Live feed' },
+    { id: 'github-activity', label: 'github-activity.log', title: 'GitHub activity', description: 'Contribution activity', meta: 'Live feed', logo: githubData.logo },
   ];
   if (section === 'projects') return projects.map((project, index) => ({
     id: projectId(project, index),
