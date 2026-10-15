@@ -1,7 +1,12 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { accumulateWheelDelta, wheelMode, wheelOffset, wheelPosition, wheelRail, wheelSize } from '../domain/navigation';
 
+const sectionLabel = section => `${section[0].toUpperCase()}${section.slice(1)}`;
+
 export default function CrewWheel({ crew, selected, onSelect }) {
+  const navigationId = useId();
+  const headingId = `${navigationId}-heading`;
+  const instructionsId = `${navigationId}-instructions`;
   const wheelRef = useRef(null);
   const buttons = useRef([]);
   const gesture = useRef(null);
@@ -17,8 +22,12 @@ export default function CrewWheel({ crew, selected, onSelect }) {
   const choose = useCallback((index, focus = false) => {
     const target = ((index % crew.length) + crew.length) % crew.length;
     const activeIsOption = buttons.current.includes(document.activeElement);
+    if (target === selected) {
+      if (focus) buttons.current[target]?.focus();
+      return;
+    }
     focusRequested.current = target !== selected && (focus || activeIsOption);
-    if (target !== selected) onSelect(target);
+    onSelect(target);
   }, [crew.length, onSelect, selected]);
   useEffect(() => {
     const element = wheelRef.current;
@@ -61,66 +70,84 @@ export default function CrewWheel({ crew, selected, onSelect }) {
   }, [selected, size.compact]);
 
   return (
-    <>
+    <div className="crew-navigation">
+      <h2 className="crew-navigation__heading" id={headingId}>Explore</h2>
+      <p className="sr-only" id={instructionsId}>Use the mouse wheel or drag horizontally to change sections. With a section button focused, use the left and right arrow keys to move, or Home and End to go to the first and last section.</p>
       <nav
-        className="crew-wheel"
-        aria-label="Character switcher wheel"
-        ref={wheelRef}
-        style={{ '--crew-wheel-width': `${dimensions.width}px`, '--crew-wheel-height': `${dimensions.height}px` }}
-        onKeyDown={event => {
-          if (event.isComposing || event.keyCode === 229 || event.altKey || event.metaKey || event.ctrlKey) return;
-          if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-            event.preventDefault();
-            choose(selected + (event.key === 'ArrowRight' ? 1 : -1), true);
-          } else if (/^[1-5]$/.test(event.key)) { event.preventDefault(); choose(Number(event.key) - 1, true); }
-        }}
-        onPointerDown={event => {
-          if (event.button === 0) gesture.current = { id: event.pointerId, x: event.clientX, y: event.clientY };
-        }}
-        onPointerMove={event => {
-          const drag = gesture.current;
-          if (!drag || drag.id !== event.pointerId) return;
-          const dx = event.clientX - drag.x;
-          const dy = event.clientY - drag.y;
-          if (Math.abs(dy) > Math.abs(dx)) { gesture.current = null; return; }
-          if (Math.abs(dx) < 36) return;
-          event.currentTarget.setPointerCapture(event.pointerId);
-          choose(selected + (dx < 0 ? 1 : -1));
-          suppressClick.current = event.timeStamp + 300;
-          gesture.current = null;
-        }}
-        onPointerUp={() => { gesture.current = null; }}
-        onPointerCancel={() => { gesture.current = null; }}
+        className="crew-navigation__nav"
+        aria-labelledby={headingId}
+        aria-describedby={instructionsId}
       >
-        <pre className="wheel-rail" aria-hidden="true" style={{ fontSize: `${Math.min(8, size.width / (72 * 0.6))}px` }}>{wheelRail(size.compact, size.short)}</pre>
-        {!size.compact && <span className="wheel-center" aria-hidden="true"><strong>{crew[selected]?.name}</strong><small>{crew[selected]?.section}</small></span>}
-        <span className="wheel-selection-frame" aria-hidden="true" style={{ '--wheel-x': `${focusPosition.x}px`, '--wheel-y': `${focusPosition.y}px`, '--wheel-scale': focusPosition.scale }}>
-          <span className="wheel-selection-frame__corner wheel-selection-frame__corner--tl" />
-          <span className="wheel-selection-frame__corner wheel-selection-frame__corner--tr" />
-          <span className="wheel-selection-frame__corner wheel-selection-frame__corner--bl" />
-          <span className="wheel-selection-frame__corner wheel-selection-frame__corner--br" />
-        </span>
-        {crew.map((member, index) => {
-          const offset = wheelOffset(index, selected, crew.length);
-          const position = wheelPosition(offset, size.width, size.compact, size.short, size.medium, size.wideShort);
-          return <button
-            key={member.id}
-            ref={node => { buttons.current[index] = node; }}
-            type="button"
-            className="crew-option"
-            aria-label={`${member.name}, ${member.role}, ${member.section}`}
-            aria-pressed={index === selected}
-            hidden={position.hidden}
-            style={{ '--wheel-x': `${position.x}px`, '--wheel-y': `${position.y}px`, '--wheel-scale': position.scale, zIndex: 5 - Math.abs(offset) }}
-            onClick={event => { if (event.timeStamp >= suppressClick.current) choose(index); }}
-          ><strong>{member.name}</strong><small>{member.section}</small></button>;
-        })}
+        <div
+          className="crew-wheel"
+          role="group"
+          aria-label="Section selector"
+          ref={wheelRef}
+          style={{ '--crew-wheel-width': `${dimensions.width}px`, '--crew-wheel-height': `${dimensions.height}px` }}
+          onKeyDown={event => {
+            if (event.isComposing || event.keyCode === 229 || event.altKey || event.metaKey || event.ctrlKey) return;
+            if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+              event.preventDefault();
+              const focusedIndex = buttons.current.indexOf(document.activeElement);
+              const origin = focusedIndex >= 0 ? focusedIndex : selected;
+              choose(origin + (event.key === 'ArrowRight' ? 1 : -1), true);
+            } else if (event.key === 'Home') {
+              event.preventDefault();
+              choose(0, true);
+            } else if (event.key === 'End') {
+              event.preventDefault();
+              choose(crew.length - 1, true);
+            }
+          }}
+          onPointerDown={event => {
+            if (event.button === 0) gesture.current = { id: event.pointerId, x: event.clientX, y: event.clientY };
+          }}
+          onPointerMove={event => {
+            const drag = gesture.current;
+            if (!drag || drag.id !== event.pointerId) return;
+            const dx = event.clientX - drag.x;
+            const dy = event.clientY - drag.y;
+            if (Math.abs(dy) > Math.abs(dx)) { gesture.current = null; return; }
+            if (Math.abs(dx) < 36) return;
+            event.currentTarget.setPointerCapture(event.pointerId);
+            choose(selected + (dx < 0 ? 1 : -1));
+            suppressClick.current = event.timeStamp + 300;
+            gesture.current = null;
+          }}
+          onPointerUp={() => { gesture.current = null; }}
+          onPointerCancel={() => { gesture.current = null; }}
+        >
+          <pre className="wheel-rail" aria-hidden="true" style={{ fontSize: `${Math.min(8, size.width / (72 * 0.6))}px` }}>{wheelRail(size.compact, size.short)}</pre>
+          {!size.compact && <span className="wheel-center" aria-hidden="true"><strong>{crew[selected]?.name}</strong><small>{crew[selected]?.section}</small></span>}
+          <span className="wheel-selection-frame" aria-hidden="true" style={{ '--wheel-x': `${focusPosition.x}px`, '--wheel-y': `${focusPosition.y}px`, '--wheel-scale': focusPosition.scale }}>
+            <span className="wheel-selection-frame__corner wheel-selection-frame__corner--tl" />
+            <span className="wheel-selection-frame__corner wheel-selection-frame__corner--tr" />
+            <span className="wheel-selection-frame__corner wheel-selection-frame__corner--bl" />
+            <span className="wheel-selection-frame__corner wheel-selection-frame__corner--br" />
+          </span>
+          {crew.map((member, index) => {
+            const offset = wheelOffset(index, selected, crew.length);
+            const position = wheelPosition(offset, size.width, size.compact, size.short, size.medium, size.wideShort);
+            const destination = sectionLabel(member.section);
+            return <button
+              key={member.id}
+              ref={node => { buttons.current[index] = node; }}
+              type="button"
+              className="crew-option"
+              aria-label={`${destination} section, ${member.name}, ${member.role}`}
+              aria-current={index === selected ? 'page' : undefined}
+              hidden={position.hidden}
+              style={{ '--wheel-x': `${position.x}px`, '--wheel-y': `${position.y}px`, '--wheel-scale': position.scale, zIndex: 5 - Math.abs(offset) }}
+              onClick={event => { if (event.timeStamp >= suppressClick.current) choose(index); }}
+            ><strong>{destination}</strong><small>{member.name}</small></button>;
+          })}
+        </div>
+        <div className="wheel-controls">
+          <button type="button" aria-label={`Previous section: ${sectionLabel(crew[(selected - 1 + crew.length) % crew.length].section)}`} onClick={() => choose(selected - 1)}>←</button>
+          <span aria-hidden="true">scroll / drag</span>
+          <button type="button" aria-label={`Next section: ${sectionLabel(crew[(selected + 1) % crew.length].section)}`} onClick={() => choose(selected + 1)}>→</button>
+        </div>
       </nav>
-      <div className="wheel-controls">
-        <button type="button" aria-label="Previous character" onClick={() => choose(selected - 1)}>←</button>
-        <span>scroll / drag / 1–5</span>
-        <button type="button" aria-label="Next character" onClick={() => choose(selected + 1)}>→</button>
-      </div>
-    </>
+    </div>
   );
 }

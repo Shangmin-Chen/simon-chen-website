@@ -15,9 +15,8 @@
 [data-motion="false"] .portrait-tracers { display: none; }
 @media (max-width: 850px) and (min-width: 651px) { .ascii-portrait-text { font-size: 6.85px; line-height: 6.85px; } }
 @media (max-width: 650px) {
-  .ascii-portrait-text { font-size: clamp(4.9px, 1.35vw, 6.5px); line-height: clamp(4.9px, 1.35vw, 6.5px); }
   .portrait-caption { max-width: 285px; margin-top: 6px; }
 }
 @media (max-height: 720px) and (min-width: 651px) { .ascii-portrait-text { font-size: 7px; line-height: 7px; } }
 @media (max-height: 650px) and (min-width: 651px) { .ascii-portrait-text { font-size: 5px; line-height: 5px; } }
-@media (max-height: 700px) and (max-width: 650px) { .ascii-portrait-text { font-size: 3px; line-height: 3px; } .portrait-caption { margin-top: 3px; } .portrait-caption button { min-height: 32px; } }
+@media (max-height: 700px) and (max-width: 650px) { .portrait-caption { margin-top: 3px; } }

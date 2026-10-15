@@ -7,6 +7,6 @@
 @keyframes wheel-frame-shear { 0%,100% { transform: translate(calc(-50% + var(--wheel-x)),var(--wheel-y)) scale(var(--wheel-scale)) skewX(0deg); opacity: .62; } 30% { transform: translate(calc(-50% + var(--wheel-x)),var(--wheel-y)) scale(var(--wheel-scale)) skewX(-4deg); opacity: 1; } 56% { transform: translate(calc(-50% + var(--wheel-x)),var(--wheel-y)) scale(var(--wheel-scale)) skewX(2deg); opacity: .76; } }
 .portfolio[data-ambient='false'] .wheel-selection-frame { animation-play-state: paused !important; }
 @media (max-width: 650px) {
-  .wheel-selection-frame { width: 70px; height: 50px; }
+  .wheel-selection-frame { width: 88px; height: 54px; }
 }
 @media (prefers-reduced-motion: reduce) { .wheel-selection-frame { animation: none !important; } }

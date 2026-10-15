@@ -29,12 +29,6 @@
   outline-offset: 2px;
 }
 
-/* Programmatic focus target for the skip link — suppress ring (keyboard users
-   already saw the skip link's own focus indicator). */
-#main-content:focus {
-  outline: none;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .skip-link {
     transition: none;

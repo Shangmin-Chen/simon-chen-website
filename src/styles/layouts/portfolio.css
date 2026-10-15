@@ -19,7 +19,7 @@
 .workspace { position: relative; isolation: isolate; display: grid; grid-template-columns: minmax(0, 35%) minmax(0, 1fr); gap: clamp(18px, 2.4vw, 28px); align-items: stretch; min-height: 0; padding: 10px 0; overflow: visible; }
 .character-profile, .readme { position: relative; z-index: 1; min-width: 0; min-height: 0; }
 .character-profile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; align-self: center; }
-.character-art { width: 100%; min-width: 0; }
+.character-art { width: 100%; min-width: 0; container-type: inline-size; }
 .character-art .ascii-portrait-text { font-size: 6.25px; line-height: 6.25px; }
 .character-art .portrait-caption { max-width: 100%; }
 .terminal-footer { font-size: 12px; color: var(--text-muted); }
@@ -30,7 +30,6 @@
   .portfolio { padding: 15px 25px 10px; }
   .workspace { grid-template-columns: minmax(0, 35%) minmax(0, 1fr); gap: 18px; }
   .character-art .ascii-portrait-text { font-size: 4.6px; line-height: 4.6px; }
-  .character-profile .crew-wheel { width: 200px; height: 200px; }
 }
 @media (max-width: 650px) {
   .portfolio { padding: 10px 18px 8px; }
@@ -38,51 +37,50 @@
   .terminal-name-caption { font-size: 11px; }
   .portfolio-surface { grid-template-rows: 36px 12px minmax(0, 1fr) 12px 36px; }
   .terminal-header button, .terminal-footer button { min-height: 36px; }
-  .workspace { grid-template-columns: minmax(0, 1fr); grid-template-rows: 166px minmax(0, 1fr); gap: 5px; padding: 4px 0; }
+  .workspace { grid-template-columns: minmax(0, 1fr); grid-template-rows: 170px minmax(0, 1fr); gap: 5px; padding: 4px 0; }
   .character-profile { display: grid; grid-template-columns: minmax(0, 1fr) 132px; align-items: center; gap: 6px; min-height: 0; }
   .character-art, .character-navigation { min-width: 0; min-height: 0; }
   .character-art { display: flex; flex-direction: column; align-items: center; justify-content: center; }
-  .character-art .ascii-portrait-text { font-size: clamp(1.8px, 0.63vw, 2.2px); line-height: clamp(1.8px, 0.63vw, 2.2px); }
+  .character-art .ascii-portrait-text { font-size: 3px; line-height: 3px; font-size: clamp(2.9px, var(--portrait-fit-font), 3.7px); line-height: clamp(2.9px, var(--portrait-fit-font), 3.7px); }
   .character-profile .portrait-caption { justify-content: center; flex-wrap: wrap; margin-top: 3px; gap: 2px 5px; font-size: 11px; }
   .character-profile .portrait-caption > div { display: flex; min-width: 0; max-width: 100%; flex-direction: column; align-items: center; text-align: center; }
   .character-profile .portrait-caption strong { font-size: 14px; line-height: 1.2; }
   .character-profile .portrait-caption .character-role { max-width: 100%; font-size: 11px; line-height: 1.25; overflow-wrap: anywhere; }
   .character-profile .portrait-caption .character-section { display: none; }
-  .character-profile .portrait-caption button { min-height: 32px; padding: 3px 0; font-size: 11px; }
+  .character-profile .portrait-caption button { min-height: 44px; padding: 3px 0; font-size: 11px; }
   .character-navigation { display: flex; flex-direction: column; align-items: stretch; }
   .readme { width: 100%; }
+}
+@media (max-height: 560px) and (min-width: 651px) {
+  .portfolio { padding-block: 4px; }
+  .portfolio-surface { grid-template-rows: 28px 8px minmax(0, 1fr) 8px 28px; }
+  .terminal-header button, .terminal-footer button { min-height: 28px; }
+  .workspace { grid-template-columns: minmax(270px, 36%) minmax(0, 1fr); gap: 16px; }
+  .workspace { padding-block: 2px; }
+  .character-profile { display: grid; grid-template-columns: minmax(0, 1fr) 120px; align-content: center; gap: 6px; }
+  .character-art .ascii-portrait-text { font-size: 3px; line-height: 3px; font-size: clamp(2.9px, var(--portrait-fit-font), 6.25px); line-height: clamp(2.9px, var(--portrait-fit-font), 6.25px); }
+  .character-profile .portrait-caption { margin-top: 3px; gap: 2px 5px; font-size: 11px; }
+  .character-profile .portrait-caption > div { display: flex; min-width: 0; max-width: 100%; flex-direction: column; align-items: center; text-align: center; }
+  .character-profile .portrait-caption strong { font-size: 14px; }
+  .character-profile .portrait-caption .character-role { font-size: 11px; }
+}
+
+@media (min-width: 480px) and (max-width: 650px) and (min-height: 701px) {
+  .workspace { grid-template-rows: 220px minmax(0, 1fr); }
+  .character-profile { width: min(420px, 100%); justify-self: center; grid-template-columns: minmax(0, 1fr) 162px; gap: 10px; }
+}
+@media (max-width: 479px) and (min-height: 701px) {
+  .workspace { grid-template-rows: 190px minmax(0, 1fr); }
+}
+@media (max-width: 360px) {
+  .portfolio { padding-inline: 12px; }
 }
 @media (max-height: 700px) and (max-width: 650px) {
   .portfolio { padding: 6px 14px; }
   .portfolio-surface { grid-template-rows: 30px 10px minmax(0, 1fr) 10px 30px; }
   .terminal-header button, .terminal-footer button { min-height: 30px; }
-  .workspace { gap: 2px; padding: 2px 0; grid-template-rows: 142px minmax(0, 1fr); }
-  .character-profile { grid-template-columns: minmax(0, 1fr) 116px; }
-  .character-art .ascii-portrait-text { font-size: clamp(1.7px, 0.58vw, 1.9px); line-height: clamp(1.7px, 0.58vw, 1.9px); }
-  .character-profile .crew-wheel { width: 112px; height: 112px; }
-  .character-profile .wheel-controls { max-width: 112px; }
+  .workspace { gap: 2px; padding: 2px 0; grid-template-rows: 170px minmax(0, 1fr); }
 }
-
-@media (max-height: 560px) and (min-width: 651px) {
-  .portfolio { padding-block: 4px; }
-  .portfolio-surface { grid-template-rows: 28px 8px minmax(0, 1fr) 8px 28px; }
-  .terminal-header button, .terminal-footer button { min-height: 28px; }
-  .workspace { grid-template-columns: minmax(250px, 34%) minmax(0, 1fr); gap: 16px; }
-  .workspace { padding-block: 2px; }
-  .character-profile { display: grid; grid-template-columns: minmax(98px, 1fr) 120px; align-content: center; gap: 6px; }
-  .character-profile .crew-wheel { width: 120px; height: 120px; }
-  .character-art .ascii-portrait-text { font-size: 2.25px; line-height: 2.25px; }
-  .character-profile .portrait-caption { margin-top: 3px; gap: 2px; font-size: 11px; }
-  .character-profile .portrait-caption > div { display: flex; min-width: 0; max-width: 100%; flex-direction: column; align-items: center; text-align: center; }
-  .character-profile .portrait-caption strong { font-size: 14px; }
-  .character-profile .portrait-caption .character-role { font-size: 11px; }
-  .character-profile .portrait-caption button { min-height: 30px; font-size: 11px; }
-}
-
-@media (min-width: 480px) and (max-width: 650px) and (min-height: 701px) {
-  .workspace { grid-template-rows: 200px minmax(0, 1fr); }
-  .character-profile { grid-template-columns: minmax(0, 1fr) 162px; gap: 10px; }
-  .character-art .ascii-portrait-text { font-size: 3.2px; line-height: 3.2px; }
-  .character-profile .crew-wheel { width: 156px; height: 156px; }
-  .character-profile .wheel-controls { max-width: 156px; }
+@media (max-height: 560px) and (max-width: 650px) {
+  .workspace { grid-template-rows: 170px minmax(0, 1fr); }
 }

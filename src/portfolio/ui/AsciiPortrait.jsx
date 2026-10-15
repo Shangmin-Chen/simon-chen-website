@@ -78,7 +78,12 @@ export default function AsciiPortrait({ member, motion }) {
         disabled={!motion}
         onClick={() => { burstStarted.current = performance.now(); burstUntil.current = burstStarted.current + 430; }}
       >
-        <span ref={textRef} className="ascii-portrait-text" aria-hidden="true">
+        <span
+          ref={textRef}
+          className="ascii-portrait-text"
+          style={{ '--portrait-fit-font': `${(88 / ((portrait.width + 2) * 0.6)).toFixed(2)}cqw` }}
+          aria-hidden="true"
+        >
           <span className="portrait-title">{'+--' + label + '-'.repeat(portrait.width - label.length - 2) + '+'}</span>{'\n'}
           {grid.map((row, y) => <span key={y}><span className="portrait-border">|</span>{colorRuns(row).map((run, x) =>
             <span key={x} style={{ color: `var(--portrait-${run.color})` }}>{run.text}</span>

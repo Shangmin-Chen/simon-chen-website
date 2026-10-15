@@ -21,9 +21,9 @@ export default function ContentPanel({ member, services, albumId, motion, sceneK
     else if (isPictures && albumId) { event.preventDefault(); onGalleryHome(); }
   };
 
-  return <section className="readme" data-view={isContact ? 'contact' : isPictures ? 'gallery' : 'index'} aria-label="Simon Chen portfolio scene" onKeyDown={handleKeyDown}>
-    <h1 className="sr-only">Simon Chen</h1>
+  const sectionName = `${section[0].toUpperCase()}${section.slice(1)}`;
 
+  return <section id="main-content" tabIndex={-1} className="readme" data-view={isContact ? 'contact' : isPictures ? 'gallery' : 'index'} aria-label={`${sectionName} content`} onKeyDown={handleKeyDown}>
     {!isContact && !isPictures && <TextScene
       key={section}
       member={member}

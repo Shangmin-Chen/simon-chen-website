@@ -12,6 +12,10 @@ function revealInventoryButton(button) {
   const rackRect = rack.getBoundingClientRect();
   const visibleTop = rackRect.top + rack.clientTop;
   const visibleBottom = visibleTop + rack.clientHeight;
+  if (buttonRect.height >= rack.clientHeight) {
+    rack.scrollTop += buttonRect.top - visibleTop;
+    return;
+  }
   if (buttonRect.top < visibleTop) rack.scrollTop -= visibleTop - buttonRect.top;
   else if (buttonRect.bottom > visibleBottom) rack.scrollTop += buttonRect.bottom - visibleBottom;
 }
