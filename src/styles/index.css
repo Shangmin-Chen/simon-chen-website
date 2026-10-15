@@ -1,38 +1,15 @@
-/* Main CSS Index - Imports all modular styles */
-
-/* Base Styles */
 @import './base/variables.css';
 @import './base/reset.css';
 @import './base/typography.css';
-
-/* Layout Styles */
-@import './layouts/container.css';
-@import './layouts/editorial.css';
-@import './layouts/grid.css';
-
-/* Component Styles */
-@import './components/button.css';
-@import './components/card.css';
-@import './components/tag.css';
-@import './components/form.css';
-@import './components/navbar.css';
-@import './components/theme-toggle.css';
-@import './components/about.css';
-@import './components/hero-avatar.css';
-@import './components/experience.css';
-@import './components/projects.css';
-@import './components/contact.css';
-@import './components/codeforces.css';
-@import './components/now.css';
-@import './components/github.css';
-@import './components/contribution-ship.css';
-@import './components/hover-tip.css';
-@import './components/goodreads.css';
-@import './components/gallery.css';
-@import './components/footer.css';
-@import './components/social-links.css';
-
-/* Utility Styles */
-@import './utils/responsive.css';
-@import './utils/scroll-reveal.css';
+@import './layouts/portfolio.css';
+@import './components/portrait.css';
+@import './components/crew-wheel.css';
+@import './components/wheel-ambient.css';
+@import './components/terminal-files.css';
+@import './components/card-deck.css';
+@import './components/contact-letter.css';
+@import './components/reader.css';
+@import './components/gallery-workspace.css';
+@import './components/github-activity.css';
+@import './components/intro.css';
 @import './utils/a11y.css';

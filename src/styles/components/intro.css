@@ -1,0 +1,8 @@
+.intro { position: absolute; inset: 0; z-index: 20; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--bg-primary); color: var(--text-primary); }
+.intro-emblem { position: relative; margin-top: 10px; }
+.intro-mark { font: 400 9px/9px var(--font-mono); white-space: pre; margin: 0; color: var(--accent-color); }
+.intro-glitch-band { position: absolute; inset: 0; overflow: hidden; color: var(--link-color); pointer-events: none; }
+.intro-title { margin-top: 22px; font: 800 italic 28px/0.9 'Barlow Condensed', sans-serif; letter-spacing: -0.02em; }
+.intro-code { font-size: 11px; margin-top: 9px; color: var(--text-muted); }
+.intro button { color: var(--link-color); padding: 8px 20px; margin-top: 18px; min-height: 44px; }
+@media (max-width: 650px), (max-height: 720px) { .intro-mark { font-size: 5.5px; line-height: 5.5px; } .intro-title { font-size: 24px; } }

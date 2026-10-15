@@ -1,16 +1,18 @@
+import { validateContact } from './portfolio/domain/contact.js';
+import { isGalleryResponse, isGithubResponse } from './portfolio/adapters/responseSchemas.js';
+
 const GITHUB_USERNAME = 'Shangmin-Chen';
 const GOODREADS_USER_ID = '141302044';
 const GOODREADS_SHELF = 'currently-reading';
 const GALLERY_MANIFEST_URL = 'https://images.simon-chen.com/gallery.json';
-const CODEFORCES_HANDLE = 'simonlovestocode';
 const UPSTREAM_TIMEOUT_MS = 5000;
 
 // Security headers applied to every outgoing response (API JSON + assets).
-// NOTE: 'unsafe-inline' in script-src/style-src is required by a companion PR
-// adding an inline theme bootstrap script in index.html — do not remove.
+// Inline styles bind the sampled ASCII portrait palette; index.html includes
+// structured metadata. API calls remain same-origin and secrets stay here.
 const SECURITY_HEADERS = {
   'Content-Security-Policy':
-    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://images.simon-chen.com https://i.gr-assets.com https://books.google.com; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
+    "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://images.simon-chen.com https://i.gr-assets.com https://books.google.com; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
   'X-Content-Type-Options': 'nosniff',
   'X-Frame-Options': 'DENY',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
@@ -78,22 +80,34 @@ function parseGoodreadsRss(xml) {
   return books;
 }
 
-// Fetch one Codeforces API endpoint and return its parsed body, or null on
-// ANY failure mode (non-2xx HTTP, non-OK status field, network/timeout error)
-// so a single-endpoint outage can be tolerated independently.
-async function fetchCodeforcesJson(url) {
+async function readRequestBodyWithinLimit(request, maxBytes) {
+  if (!request.body) return new Uint8Array();
+
+  const reader = request.body.getReader();
+  const chunks = [];
+  let byteLength = 0;
   try {
-    const res = await fetch(url, {
-      headers: { Accept: 'application/json' },
-      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data.status === 'OK' ? data : null;
-  } catch {
-    // Includes AbortError/TimeoutError from the upstream timeout above.
-    return null;
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      byteLength += value.byteLength;
+      if (byteLength > maxBytes) {
+        try { await reader.cancel(); } catch { /* The oversized body is already rejected. */ }
+        return null;
+      }
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
   }
+
+  const body = new Uint8Array(byteLength);
+  let offset = 0;
+  for (const chunk of chunks) {
+    body.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return body;
 }
 
 async function handleRequest(request, env, ctx) {
@@ -124,7 +138,9 @@ async function handleRequest(request, env, ctx) {
         });
       }
 
-      const response = new Response(await upstream.text(), {
+      const body = await upstream.text();
+      if (!isGithubResponse(JSON.parse(body))) throw new Error('Invalid GitHub response');
+      const response = new Response(body, {
         status: 200,
         headers: {
           'Content-Type': 'application/json',
@@ -221,7 +237,9 @@ async function handleRequest(request, env, ctx) {
         );
       }
 
-      const response = new Response(await upstream.text(), {
+      const body = await upstream.text();
+      if (!isGalleryResponse(JSON.parse(body))) throw new Error('Invalid gallery response');
+      const response = new Response(body, {
         status: 200,
         headers: {
           'Content-Type': 'application/json',
@@ -239,65 +257,11 @@ async function handleRequest(request, env, ctx) {
     }
   }
 
-  // Proxy Codeforces profile + rating history server-side: same-origin for
-  // the client (no CORS surprises), edge-cached for 6h since rating data
-  // changes slowly. Fetches user.info and user.rating in parallel.
-  if (url.pathname === '/api/codeforces' && request.method === 'GET') {
-    const cache = caches.default;
-    const cacheKey = new Request(new URL('/api/codeforces', url.origin), request);
-
-    const hit = await cache.match(cacheKey);
-    if (hit) return hit;
-
-    try {
-      const [infoData, ratingData] = await Promise.all([
-        fetchCodeforcesJson(`https://codeforces.com/api/user.info?handles=${CODEFORCES_HANDLE}`),
-        fetchCodeforcesJson(`https://codeforces.com/api/user.rating?handle=${CODEFORCES_HANDLE}`),
-      ]);
-
-      // Tolerate a single-endpoint failure (the old client rendered ratings
-      // even when user.info was down); both failing is a real outage → 502.
-      if (!infoData && !ratingData) {
-        return new Response(JSON.stringify({ error: 'Upstream error' }), {
-          status: 502,
-          headers: { 'Content-Type': 'application/json' },
-        });
-      }
-
-      // Scale the cache TTL by response completeness: a degraded response
-      // (one endpoint down) must not pin the degradation at every PoP for
-      // 6h — retry after a short window instead.
-      const complete = infoData && ratingData;
-      const response = new Response(
-        JSON.stringify({
-          user: infoData?.result?.[0] ?? null,
-          ratings: ratingData?.result ?? [],
-        }),
-        {
-          status: 200,
-          headers: {
-            'Content-Type': 'application/json',
-            'Cache-Control': `public, max-age=${complete ? 21600 : 300}`,
-          },
-        }
-      );
-      ctx.waitUntil(cache.put(cacheKey, response.clone()));
-      return response;
-    } catch {
-      // Includes AbortError/TimeoutError from the upstream timeouts above.
-      return new Response(JSON.stringify({ error: 'Fetch failed' }), {
-        status: 502,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-  }
-
   // Handle contact form submissions
   if (url.pathname === '/api/contact' && request.method === 'POST') {
-    // Reject oversized bodies before parsing. The header check below is only
-    // a cheap fast-path — the authoritative cap is applied to the actual byte
-    // count after buffering, so chunked/telescoped bodies without a truthful
-    // content-length can't bypass it.
+    // Reject oversized bodies before parsing. The header check is a fast path;
+    // the bounded stream read below is authoritative when the header is absent
+    // or does not match the bytes actually sent.
     const MAX_CONTACT_BODY_BYTES = 32 * 1024;
     const lenHeader = request.headers.get('content-length');
     const contentLength = lenHeader !== null ? Number.parseInt(lenHeader, 10) : NaN;
@@ -309,8 +273,8 @@ async function handleRequest(request, env, ctx) {
     }
 
     try {
-      const bodyBytes = await request.arrayBuffer();
-      if (bodyBytes.byteLength > MAX_CONTACT_BODY_BYTES) {
+      const bodyBytes = await readRequestBodyWithinLimit(request, MAX_CONTACT_BODY_BYTES);
+      if (bodyBytes === null) {
         return new Response(JSON.stringify({ error: 'Request body too large' }), {
           status: 413,
           headers: { 'Content-Type': 'application/json' },
@@ -326,25 +290,7 @@ async function handleRequest(request, env, ctx) {
         });
       }
 
-      // Trim up front so length caps and EmailJS receive sanitized values.
-      const name = typeof raw.name === 'string' ? raw.name.trim() : '';
-      const email = typeof raw.email === 'string' ? raw.email.trim() : '';
-      const subject = typeof raw.subject === 'string' ? raw.subject.trim() : '';
-      const message = typeof raw.message === 'string' ? raw.message.trim() : '';
-
-      // Simple pragmatic email check — mirrors the client-side regex.
-      const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-      const fields = {};
-      if (!name) fields.name = 'Name is required.';
-      else if (name.length > 100) fields.name = 'Name must be 100 characters or fewer.';
-      if (!email) fields.email = 'Email is required.';
-      else if (email.length > 254) fields.email = 'Email must be 254 characters or fewer.';
-      else if (!EMAIL_RE.test(email)) fields.email = 'Email address is invalid.';
-      if (!subject) fields.subject = 'Subject is required.';
-      else if (subject.length > 200) fields.subject = 'Subject must be 200 characters or fewer.';
-      if (!message) fields.message = 'Message is required.';
-      else if (message.length > 5000) fields.message = 'Message must be 5000 characters or fewer.';
+      const { values: { name, email, subject, message }, fields } = validateContact(raw);
 
       if (Object.keys(fields).length > 0) {
         return new Response(JSON.stringify({ error: 'Validation failed', fields }), {
@@ -393,6 +339,12 @@ async function handleRequest(request, env, ctx) {
     }
   }
 
+  if (url.pathname.startsWith('/api/')) {
+    return new Response(JSON.stringify({ error: 'Endpoint not found' }), {
+      status: 404,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
   return env.ASSETS.fetch(request);
 }
 
