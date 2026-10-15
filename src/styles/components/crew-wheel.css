@@ -1,4 +1,4 @@
-.crew-wheel { position: relative; height: var(--crew-wheel-height, 220px); width: var(--crew-wheel-width, 220px); max-width: 100%; margin: 6px auto 0; touch-action: pan-y; }
+.crew-wheel { position: relative; height: var(--crew-wheel-height, 220px); width: var(--crew-wheel-width, 220px); max-width: 100%; margin: 6px auto 0; touch-action: pan-y; font-family: var(--font-mono); }
 .crew-wheel::before, .crew-wheel::after { position: absolute; top: 50%; left: 50%; border: 1px solid var(--wheel-ring); border-radius: 50%; content: ''; pointer-events: none; transform: translate(-50%, -50%); }
 .crew-wheel::before { width: 88%; height: 88%; }
 .crew-wheel::after { width: 69%; height: 69%; border-color: var(--wheel-ring-inner); border-style: dashed; }
@@ -15,7 +15,7 @@
 .crew-option[aria-pressed='true'] strong { font-size: 14px; }
 .crew-option[aria-pressed='true'] strong::before { content: '['; color: var(--highlight-color); }
 .crew-option[aria-pressed='true'] strong::after { content: ']'; color: var(--highlight-color); }
-.wheel-controls { display: flex; justify-content: space-between; align-items: center; gap: 8px; max-width: 220px; margin: auto; font-size: 12px; color: var(--text-muted); }
+.wheel-controls { display: flex; justify-content: space-between; align-items: center; gap: 8px; max-width: 220px; margin: auto; color: var(--text-muted); font: 12px/1.2 var(--font-mono); }
 .wheel-controls span { flex: 1 1 0; min-width: 0; line-height: 1.2; text-align: center; text-wrap: balance; }
 .wheel-controls button { min-width: 44px; min-height: 44px; color: var(--link-color); }
 [data-motion='false'] .crew-option { transition: none; }

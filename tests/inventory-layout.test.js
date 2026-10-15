@@ -45,5 +45,5 @@ test('legacy numeric counts remain bounded without creating synthetic item recor
   assert.equal(layout.count, 1_000_000_000);
   assert.equal(layout.columns, 2);
   assert.equal(layout.minimumSlotWidth, 196);
-  assert.equal(layout.minimumSlotHeight, 180);
+  assert.equal(layout.minimumSlotHeight, 196);
 });

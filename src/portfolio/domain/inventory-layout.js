@@ -16,7 +16,7 @@ export function inventoryLayout(width, height, itemsOrCount = []) {
   const minimumSlotWidth = kind === 'photo' ? 152 : kind === 'dossier' ? 240 : 196;
   const minimumSlotHeight = kind === 'photo'
     ? safeHeight < 300 ? 184 : safeHeight < 480 ? 220 : 248
-    : kind === 'dossier' ? 178 : 180;
+    : kind === 'dossier' ? 178 : 196;
   const fitColumns = Math.max(1, Math.floor((safeWidth + GAP) / (minimumSlotWidth + GAP)));
   const preferredColumns = kind === 'dossier' ? 1 : 2;
   const columns = count ? Math.min(count, fitColumns, preferredColumns) : 1;
