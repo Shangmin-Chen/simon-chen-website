@@ -1,69 +1,16 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { cardIndexFor, cardIndexOnPage, cardPageIndex, moveCardIndex } from '../domain/card-navigation';
-import { cardFanConnections, cardFanLayout } from '../domain/card-fan';
-import { signalSeed } from '../domain/decode';
+import { cardIndexFor, cardIndexOnPage, cardPageIndex, moveInventoryIndex } from '../domain/card-navigation';
+import { inventoryLayout } from '../domain/inventory-layout';
 import { accumulateWheelDelta } from '../domain/navigation';
-import SignalBands from './SignalBands';
-import useSignalBurst from './useSignalBurst';
-
-const sigils = ['[::]', '[<>]', '[//]', '[##]', '[{}]', '[..]'];
-
-function CardFace({ item, visual, meta }) {
-  return <>
-    {visual && <span className="game-card__visual">{visual}</span>}
-    <span className="game-card__sigil" aria-hidden="true">{item.sigil ?? sigils[item.sigilIndex % sigils.length] ?? sigils[0]}</span>
-    <span className="game-card__copy">
-      <strong className="game-card__title">{item.title}</strong>
-      {item.label && <span className="game-card__path">{item.label}</span>}
-      {item.description && <span className="game-card__description">{item.description}</span>}
-      {meta && !visual && <span className="game-card__meta">{meta}</span>}
-    </span>
-    {visual
-      ? <span className="game-card__visual-footer" aria-hidden="true">
-          {meta && <span className="game-card__meta">{meta}</span>}
-          <span className="game-card__open">[ open ↗ ]</span>
-        </span>
-      : <span className="game-card__open" aria-hidden="true">[ open ↗ ]</span>}
-  </>;
-}
-
-export const GameCard = forwardRef(function GameCard({ item, selected, visual, tabIndex = -1, onFocus, onClick, onPortRef, pose, motion = true }, ref) {
-  const meta = Array.isArray(item.meta) ? item.meta.filter(Boolean).join(' · ') : item.meta;
-  const signal = useSignalBurst(motion, 320, 8);
-  const signalSeedValue = signalSeed(item.id);
-  const face = <CardFace item={item} visual={visual} meta={meta} />;
-  return <button
-    className="game-card"
-    type="button"
-    ref={ref}
-    tabIndex={tabIndex}
-    aria-pressed={selected}
-    data-selected={selected ? 'true' : 'false'}
-    data-compact={pose.height < 180 ? 'true' : undefined}
-    style={{ '--fan-x': `${pose.x}px`, '--fan-y': `${pose.y}px`, '--fan-width': `${pose.width}px`, '--fan-height': `${pose.height}px`, '--fan-angle': `${pose.angle}deg`, '--fan-depth': pose.depth }}
-    onFocus={event => { signal.start(); onFocus?.(event); }}
-    onClick={onClick}
-    onMouseEnter={signal.start}
-  >
-    {face}
-    <span className="game-card__port" ref={onPortRef} aria-hidden="true" />
-    <span className="game-card__geometry" aria-hidden="true" />
-    {motion && signal.tick >= 0 && <SignalBands seed={signalSeedValue} tick={signal.tick} className="game-card__signals">{face}</SignalBands>}
-  </button>;
-});
-
-const sameLayout = (first, second) => first.count === second.count
-  && first.anchor === second.anchor
-  && first.cardWidth === second.cardWidth
-  && first.cardHeight === second.cardHeight
-  && first.poses.length === second.poses.length
-  && first.poses.every((pose, index) => pose.x === second.poses[index].x && pose.y === second.poses[index].y && pose.angle === second.poses[index].angle);
+import InventoryConnection from './InventoryConnection';
+import InventoryPreview from './InventoryPreview';
+import InventorySlot from './InventorySlot';
 
 const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect, onActivate, label = 'Items', renderVisual, motion = true, hubRef }, forwardedRef) {
   const deckRef = useRef(null);
-  const fanRef = useRef(null);
+  const layoutCacheRef = useRef(null);
+  const inventoryRef = useRef(null);
   const buttons = useRef(new Map());
-  const ports = useRef(new Map());
   const localHubRef = useRef(null);
   const wheelTotal = useRef(0);
   const lastWheelAt = useRef(0);
@@ -72,17 +19,17 @@ const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect
   const suppressClick = useRef(false);
   const suppressTimer = useRef(0);
   const focusFrame = useRef(0);
-  const [layout, setLayout] = useState(() => cardFanLayout(0, 0, false, 1));
-  const [connections, setConnections] = useState([]);
-  const capacity = layout.count;
+  const [layout, setLayout] = useState(() => inventoryLayout(0, 0, 1));
   const activeIndex = cardIndexFor(items, selectedId);
-  const pageIndex = activeIndex < 0 ? 0 : cardPageIndex(activeIndex, capacity, items.length);
-  const pageCount = Math.max(1, Math.ceil(items.length / capacity));
-  const hasVisual = Boolean(renderVisual || items.some(item => item.visual));
-  const visibleItems = useMemo(() => items.slice(pageIndex * capacity, pageIndex * capacity + capacity), [capacity, items, pageIndex]);
+  const pageIndex = activeIndex < 0 ? 0 : cardPageIndex(activeIndex, layout.capacity, items.length);
+  const pageCount = Math.max(1, Math.ceil(items.length / layout.capacity));
+  const visibleItems = useMemo(() => items.slice(pageIndex * layout.capacity, (pageIndex + 1) * layout.capacity), [items, layout.capacity, pageIndex]);
+  const previewItem = items[activeIndex] ?? items[0];
+  const previewVisual = previewItem ? (renderVisual ? renderVisual(previewItem) : previewItem.visual) : null;
 
   const focusSelected = useCallback(() => {
-    if (!deckRef.current?.isConnected || deckRef.current.closest('[hidden],[inert]')) return;
+    const deck = deckRef.current;
+    if (!deck?.isConnected || deck.closest('[hidden],[inert]')) return;
     const index = cardIndexFor(items, selectedId);
     if (index < 0) return;
     buttons.current.get(items[index].id)?.focus();
@@ -92,105 +39,26 @@ const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect
 
   const measureLayout = useCallback(() => {
     const deck = deckRef.current;
-    const fan = fanRef.current;
-    if (!deck || !fan) return;
-    const box = fan.getBoundingClientRect();
-    const hub = (hubRef ?? localHubRef).current;
-    const hubBox = hub?.isConnected && !hub.closest('[hidden],[inert]') ? hub.getBoundingClientRect() : null;
-    const anchor = hubBox && hubBox.bottom <= box.top + 10 ? 'above' : 'side';
-    // Keep capacity independent of whether the pager is currently rendered.
-    const next = cardFanLayout(box.width, box.height, hasVisual, items.length, Math.max(0, deck.clientHeight - 48), anchor);
-    setLayout(current => sameLayout(current, next) ? current : next);
-  }, [hasVisual, hubRef, items.length]);
+    if (!deck) return;
+    const next = inventoryLayout(deck.clientWidth, deck.clientHeight, items.length || 1);
+    const current = layoutCacheRef.current;
+    if (current?.wide === next.wide && current.showPreview === next.showPreview && current.columns === next.columns && current.rows === next.rows && current.capacity === next.capacity && current.previewHeight === next.previewHeight && current.slotHeight === next.slotHeight) return;
+    layoutCacheRef.current = next;
+    setLayout(next);
+  }, [items.length]);
 
   useLayoutEffect(() => {
     measureLayout();
     const deck = deckRef.current;
-    const fan = fanRef.current;
-    if (!deck || !fan) return undefined;
+    if (!deck) return undefined;
     if (typeof ResizeObserver === 'undefined') {
       window.addEventListener('resize', measureLayout);
       return () => window.removeEventListener('resize', measureLayout);
     }
     const observer = new ResizeObserver(measureLayout);
     observer.observe(deck);
-    observer.observe(fan);
-    const hub = (hubRef ?? localHubRef).current;
-    const wheel = hub?.closest('.crew-wheel');
-    if (wheel) observer.observe(wheel);
-    let frame = 0;
-    const onResize = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(measureLayout);
-    };
-    window.addEventListener('resize', onResize);
-    return () => {
-      observer.disconnect();
-      window.removeEventListener('resize', onResize);
-      cancelAnimationFrame(frame);
-    };
-  }, [hubRef, measureLayout]);
-
-  useLayoutEffect(() => {
-    const fan = fanRef.current;
-    if (!fan) return undefined;
-    const resolvedHubRef = hubRef ?? localHubRef;
-    const measureConnections = () => {
-      const hub = resolvedHubRef.current;
-      if (!hub?.isConnected || hub.closest('[hidden],[inert]')) {
-        setConnections(current => current.length ? [] : current);
-        return;
-      }
-      const fanBox = fan.getBoundingClientRect();
-      const hubBox = hub.getBoundingClientRect();
-      const portsInFan = visibleItems.flatMap(item => {
-        const element = ports.current.get(item.id);
-        if (!element?.isConnected) return [];
-        const box = element.getBoundingClientRect();
-        return [{ id: item.id, x: box.left + box.width / 2 - fanBox.left, y: box.top + box.height / 2 - fanBox.top }];
-      });
-      const next = cardFanConnections({ x: hubBox.left + hubBox.width / 2 - fanBox.left, y: hubBox.top + hubBox.height / 2 - fanBox.top }, portsInFan);
-      const key = segments => segments.map(link => `${link.x.toFixed(1)},${link.y.toFixed(1)},${link.length.toFixed(1)},${link.angle.toFixed(1)},${link.kind},${link.itemId ?? ''}`).join('|');
-      const nextKey = key(next);
-      setConnections(current => key(current) === nextKey ? current : next);
-    };
-    measureConnections();
-    if (typeof ResizeObserver === 'undefined') {
-      let frame = 0;
-      const onResize = () => {
-        cancelAnimationFrame(frame);
-        frame = requestAnimationFrame(measureConnections);
-      };
-      window.addEventListener('resize', onResize);
-      return () => {
-        window.removeEventListener('resize', onResize);
-        cancelAnimationFrame(frame);
-      };
-    }
-    const observer = new ResizeObserver(measureConnections);
-    observer.observe(fan);
-    const hub = resolvedHubRef.current;
-    if (hub?.isConnected) {
-      observer.observe(hub);
-      const wheel = hub.closest('.crew-wheel');
-      if (wheel) observer.observe(wheel);
-    }
-    visibleItems.forEach(item => {
-      const port = ports.current.get(item.id);
-      if (port) observer.observe(port);
-    });
-    let frame = 0;
-    const onResize = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(measureConnections);
-    };
-    window.addEventListener('resize', onResize);
-    return () => {
-      observer.disconnect();
-      window.removeEventListener('resize', onResize);
-      cancelAnimationFrame(frame);
-    };
-  }, [hubRef, layout, pageIndex, selectedId, visibleItems]);
+    return () => observer.disconnect();
+  }, [measureLayout]);
 
   useEffect(() => () => {
     cancelAnimationFrame(focusFrame.current);
@@ -213,8 +81,8 @@ const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect
     if (pageCount < 2) return;
     const target = Math.max(0, Math.min(pageCount - 1, pageIndex + direction));
     if (target === pageIndex) return;
-    focusIndex(cardIndexOnPage(target, capacity, items.length));
-  }, [capacity, focusIndex, items.length, pageCount, pageIndex]);
+    focusIndex(cardIndexOnPage(target, layout.capacity, items.length));
+  }, [focusIndex, items.length, layout.capacity, pageCount, pageIndex]);
 
   useEffect(() => {
     const node = deckRef.current;
@@ -239,10 +107,10 @@ const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect
   const handleKeyDown = event => {
     if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.target.closest('input,textarea,select,[contenteditable="true"]')) return;
     const index = cardIndexFor(items, selectedId);
-    if (event.key === 'ArrowRight' || event.key === 'ArrowDown' || event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === 'ArrowUp' || event.key === 'ArrowDown') {
       event.preventDefault();
-      const direction = event.key === 'ArrowRight' || event.key === 'ArrowDown' ? 1 : -1;
-      focusIndex(moveCardIndex(index, direction, items.length));
+      const direction = event.key.slice(5).toLowerCase();
+      focusIndex(moveInventoryIndex(index, direction, layout.columns, items.length));
     } else if (event.key === 'Home') {
       event.preventDefault();
       focusIndex(0);
@@ -279,49 +147,55 @@ const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect
     suppressClick.current = false;
     clearTimeout(suppressTimer.current);
   };
+  const activateSelected = () => {
+    if (!previewItem) return;
+    onSelect?.(previewItem.id);
+    onActivate?.(previewItem.id);
+  };
 
-  return <section className="card-deck" ref={deckRef} data-visual={hasVisual} data-fan-count={layout.count} data-motion={motion} aria-label={label} onKeyDown={handleKeyDown} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchCancel} onClickCapture={event => {
+  const compactPreview = layout.wide ? layout.availableHeight < 130 : layout.previewHeight < 130;
+
+  return <section className="card-deck" ref={deckRef} data-layout={layout.wide ? 'wide' : 'stacked'} data-show-preview={layout.showPreview ? 'true' : 'false'} data-preview-compact={compactPreview ? 'true' : 'false'} data-motion={motion} aria-label={label} onKeyDown={handleKeyDown} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchCancel} onClickCapture={event => {
     if (!suppressClick.current) return;
     event.preventDefault();
     event.stopPropagation();
     suppressClick.current = false;
     clearTimeout(suppressTimer.current);
   }}>
-    <div className="card-deck__fan" ref={fanRef} role="group" aria-label={label}>
-      <div className="card-deck__links" aria-hidden="true">
-        {connections.map((link, index) => <span
-          className="card-deck__link"
-          key={`${link.kind}-${link.itemId ?? 'hub'}-${index}`}
-          data-kind={link.kind}
-          data-selected={link.itemId === selectedId ? 'true' : 'false'}
-          style={{ left: `${link.x}px`, top: `${link.y}px`, width: `${link.length}px`, transform: `rotate(${link.angle}deg)`, '--wire-length': `${Math.max(0, link.length - 7)}px`, '--wire-delay': `${index * -0.22}s` }}
-        />)}
+    <InventoryConnection deckRef={deckRef} layoutRef={inventoryRef} hubRef={hubRef ?? localHubRef} refreshKey={selectedId} />
+    <div className="inventory-layout" ref={inventoryRef} style={{ '--inventory-columns': layout.columns, '--inventory-rows': layout.rows, '--inventory-slot-height': `${layout.slotHeight}px`, '--inventory-preview-height': `${layout.previewHeight}px` }}>
+      {layout.showPreview && <div className="inventory-preview-wrap">
+        <InventoryPreview item={previewItem} index={Math.max(0, activeIndex)} count={items.length} visual={previewVisual} onOpen={activateSelected} />
+      </div>}
+      <div className="inventory-rack" role="group" aria-label={`${label} inventory`}>
+        <div className="inventory-rack__heading" aria-hidden="true"><span>INVENTORY</span><span>{String(items.length).padStart(2, '0')} ITEMS</span></div>
+        <div className="inventory-slots" style={{ gridTemplateColumns: `repeat(${layout.columns}, minmax(0, 1fr))`, gridTemplateRows: `repeat(${Math.max(1, Math.min(layout.rows, Math.ceil(visibleItems.length / layout.columns)))}, var(--inventory-slot-height))` }}>
+          {visibleItems.map((item, localIndex) => {
+            const index = pageIndex * layout.capacity + localIndex;
+            const visual = renderVisual ? renderVisual(item) : item.visual;
+            return <InventorySlot
+              key={item.id}
+              item={item}
+              index={index}
+              selected={item.id === previewItem?.id}
+              visual={visual}
+              tabIndex={item.id === previewItem?.id ? 0 : -1}
+              motion={motion}
+              onFocus={() => { if (item.id !== selectedId) onSelect?.(item.id); }}
+              onClick={() => { onSelect?.(item.id); onActivate?.(item.id); }}
+              onMouseEnter={() => { if (item.id !== selectedId) onSelect?.(item.id); }}
+              ref={node => { if (node) buttons.current.set(item.id, node); else buttons.current.delete(item.id); }}
+            />;
+          })}
+        </div>
       </div>
-      {visibleItems.map((item, localIndex) => {
-        const selected = item.id === items[activeIndex]?.id;
-        const tabIndex = selected ? 0 : -1;
-        const visual = renderVisual ? renderVisual(item) : item.visual;
-        return <GameCard
-          key={item.id}
-          item={{ ...item, sigilIndex: pageIndex * capacity + localIndex }}
-          selected={selected}
-          visual={visual}
-          pose={{ ...layout.poses[localIndex], width: layout.cardWidth, height: layout.cardHeight }}
-          motion={motion}
-          tabIndex={tabIndex}
-          ref={node => { if (node) buttons.current.set(item.id, node); else buttons.current.delete(item.id); }}
-          onPortRef={node => { if (node) ports.current.set(item.id, node); else ports.current.delete(item.id); }}
-          onFocus={() => { if (item.id !== selectedId) onSelect?.(item.id); }}
-          onClick={() => { onSelect?.(item.id); onActivate?.(item.id); }}
-        />;
-      })}
     </div>
     {pageCount > 1 && <nav className="card-deck__paging" aria-label={`${label} pages`}>
       <button type="button" disabled={pageIndex <= 0} onClick={() => setPage(-1)}>← previous set</button>
       <span aria-live="polite">{pageIndex + 1} / {pageCount}</span>
       <button type="button" disabled={pageIndex >= pageCount - 1} onClick={() => setPage(1)}>next set →</button>
     </nav>}
-    <p className="card-deck__hint">Select a card · arrows move · Enter opens · Esc returns</p>
+    <p className="card-deck__hint">Choose a slot · arrows move · Enter opens · Esc returns</p>
   </section>;
 });
 

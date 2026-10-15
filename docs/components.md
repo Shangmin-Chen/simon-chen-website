@@ -8,7 +8,7 @@
   Eye gaze follows the pointer horizontally; CSS tracer rays originate at each
   source iris center and are suppressed for frames without eye data.
 - `CrewWheel`: native selection controls and scoped drag/scroll/keyboard
-  gestures, plus a stable output port on the selected rail for the card fan.
+  gestures, plus a stable output port on the selected rail for the inventory.
   Its local selection frame and output pulse pause for the intro, hidden tabs,
   reduced motion, or the saved motion toggle; interactive targets stay fixed.
 - `ContentPanel`: stable character scene, per-section selected card state, and
@@ -19,10 +19,15 @@
   navigation for focused text inspections.
 - `SequenceNavigation`: native previous/next controls and an item count for
   multi-entry text file sequences.
-- `CardDeck` / `GameCard`: responsive scene cards with scoped keyboard paging,
-  focusable selection, one-step activation, and brief hover/focus signal bursts.
-  Each deck receives the wheel output ref and draws measured connectors from
-  that real port to its cards, so the collection reads as one fan-shaped menu.
+- `CardDeck` / `GameCard`: a game inventory with a compact upright slot rack
+  and prominent selected-item preview. Wide layouts place the rack on the left
+  and preview on the right; narrow layouts place the preview above the rack.
+  Very short stacked layouts omit the preview and keep direct slot opening.
+  Preview text and artwork come from real item data, with a native open action.
+  Hover, focus, and selection update the preview and active bracket without
+  moving slots; click or Enter opens the item directly.
+  Each deck receives the wheel output ref and draws one measured root line
+  into the inventory, not separate connectors to every slot.
 - `SignalBands` / `DecodePhrase`: decorative horizontal signal tears and a
   short Unicode-safe title/caption decode, both using the shared glitch plan;
   semantic text remains intact and motion respects the shell preference.

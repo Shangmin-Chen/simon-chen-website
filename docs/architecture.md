@@ -6,7 +6,7 @@ external dependencies. `src/App.jsx` is the composition root.
 
 ```text
 src/portfolio/
-  domain/       navigation, card paging, wheel geometry, photo selection, Unicode decode frames, ASCII frames and glitch plans, contributions, validation
+  domain/       navigation, inventory layout, wheel geometry, photo selection, Unicode decode frames, ASCII frames and glitch plans, contributions, validation
   application/  resource subscriptions and contact submission use case
   adapters/     same-origin HTTP, TTL resource cache, optional browser storage
   ui/           React shell, card deck and inspection reader, crew wheel, portrait, intro, section views
@@ -38,17 +38,20 @@ the card area, with a shared ReaderFrame, breadcrumb, Close/Escape behavior,
 and previous/next card controls. The character art and crew wheel keep the same
 geometry while a card is inspected. Text reads in a naturally scrollable,
 visually scrollbar-free body, with long prose kept near 68 characters per line;
-the GitHub graph keeps its useful width. CardDeck pages actual cards to fit the
-available area and supports roving keyboard selection, Enter activation,
-wheel/swipe paging, and PageUp/PageDown. Contact opens directly to its mounted
+the GitHub graph keeps its useful width. CardDeck presents each collection as a
+game inventory: an upright slot rack paired with a prominent preview of the
+selected item. Wide layouts place the rack beside the preview; narrow layouts
+stack the preview above a compact, paged horizontal rack. Selecting, hovering,
+or focusing a slot updates the preview and active bracket without moving the
+slots; one click or Enter opens the item directly. The wheel output ref creates
+one measured line into the inventory root, rather than per-slot wires. The
+inventory supports roving keyboard selection, wheel/swipe paging, and
+PageUp/PageDown. Contact opens directly to its mounted
 form, preserving drafts and validation while hidden. Pictures retains its
 album/photo selections and uses actual R2 thumbnails; choosing a photo opens
 the existing accessible touch/zoom Lightbox directly. The document never
-scrolls. A shared wheel output ref gives each card deck a measured geometric
-fan from the selected crew rail; connectors follow real card and hub positions
-instead of a detached background grid. The crew output pulse and selection
-frame are local CSS motion under the shell's visibility-aware `data-ambient`
-boundary.
+scrolls. The crew output pulse and selection frame are local CSS motion under
+the shell's visibility-aware `data-ambient` boundary.
 
 Portrait animation is local to its component. It updates at 65ms, pauses in
 background tabs, cleans up timers/listeners, and never changes page position.
@@ -77,11 +80,12 @@ motion toggle; text decode frames preserve grapheme and whitespace boundaries,
 while the original title and caption stay semantic and readable to assistive
 technology.
 
-Card fans use measured DOM anchors and static connector geometry; the hub ref
-is passed through the UI composition path to text and gallery decks. The crew
-selection frame and output port use slow compositor transforms/opacity under
-the shell's visibility-aware `data-ambient` boundary. No animation tick
-rerenders the shell or moves navigation targets.
+Inventory layouts use bounded item data and the UI receives one stable wheel
+hub ref through the composition path to text and gallery decks. The inventory
+root line follows the measured hub position; the crew selection frame and
+output port use slow compositor transforms/opacity under the shell's
+visibility-aware `data-ambient` boundary. No animation tick rerenders the
+shell or moves navigation targets.
 
 Validation: `npm run lint`, `npm run verify` (Node tests + build + token checks),
 and UI checks using the Cloudflare development Worker on port 8787. Node tests
