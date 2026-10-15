@@ -35,8 +35,10 @@ retains a selected card ID per section. Whoami keeps the short bio visible above
 cards for the two experience roles and live GitHub activity; Projects and
 Hobbies use the same deck. Project purpose, detail, technology tags and metadata
 map from project data to two stacked typographic dossiers; the reader retains
-the full project descriptions. One activation opens an in-scene InspectPanel over
-the card area, with a shared ReaderFrame, breadcrumb, Close/Escape behavior,
+the full project descriptions. Whoami experience records also map their local
+official company marks into supporting card and reader identity. One activation
+opens an in-scene InspectPanel over the card area, with a shared ReaderFrame,
+breadcrumb, Close/Escape behavior,
 and previous/next card controls. The character art and radial crew wheel keep
 the same geometry while a card is inspected. The desktop wheel shows five radial
 options; compact contexts center the selected option while arrows, number keys,

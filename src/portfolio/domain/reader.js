@@ -12,6 +12,7 @@ export function filesFor(section) {
       title: experience.company,
       description: experience.title,
       meta: [experience.location, experience.period],
+      logo: experience.logo,
     })),
     { id: 'github-activity', label: 'github-activity.log', title: 'GitHub activity', description: 'Contribution activity', meta: 'Live feed' },
   ];

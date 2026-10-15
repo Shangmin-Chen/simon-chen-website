@@ -1,5 +1,6 @@
 import { forwardRef, useId } from 'react';
 import useEntryReveal from './useEntryReveal';
+import CompanyMark from './CompanyMark';
 
 const InventorySlot = forwardRef(function InventorySlot({ item, index, selected, visual, tabIndex, onFocus, onClick, motion = true, entryIndex = 0 }, ref) {
   const entry = useEntryReveal(motion, 'inventory-slot-entry');
@@ -45,6 +46,7 @@ const InventorySlot = forwardRef(function InventorySlot({ item, index, selected,
     </> : <>
       {visual && <span className="inventory-slot__media" aria-hidden="true">{visual}</span>}
       <span className="inventory-slot__copy">
+        {item.logo && <CompanyMark company={item.title} src={item.logo} className="company-mark--slot" />}
         <span className="inventory-slot__label" id={kind === 'photo' ? descriptionId : undefined}>{item.title}</span>
         {hasDetails && <span className="inventory-slot__details" id={kind === 'photo' ? undefined : descriptionId}>
           {item.label && kind !== 'photo' && <span className="inventory-slot__path">{item.label}</span>}
