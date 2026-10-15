@@ -14,7 +14,7 @@ function letterMeta(status, hasDraft) {
   return hasDraft ? 'Draft in progress' : 'Ready to write';
 }
 
-export default function Contact({ sendMessage, active, motion, hubRef, sceneKey }) {
+export default function Contact({ sendMessage, active, motion, sceneKey }) {
   const form = useContact(sendMessage);
   const [inspectionScene, setInspectionScene] = useState('');
   const inspecting = active && inspectionScene === sceneKey;
@@ -77,7 +77,6 @@ export default function Contact({ sendMessage, active, motion, hubRef, sceneKey 
         label="Comms inventory"
         renderVisual={() => <pre className="contact-letter-sigil" aria-hidden="true">{' +---------+\n | \\       / |\n |  \\     /  |\n |   \\___/   |\n |           |\n +-----------+'}</pre>}
         motion={motion && active && !inspecting}
-        hubRef={hubRef}
       />}
     </div>
     <InspectPanel

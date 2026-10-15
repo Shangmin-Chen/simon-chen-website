@@ -20,6 +20,7 @@
 .pictures-slot { flex: 1 1 0; min-height: 0; min-width: 0; }
 .pictures-slot > * { height: 100%; min-height: 0; }
 .reader-section { min-height: 0; }
+.inspect-panel__entry-frame { position: absolute; z-index: 2; inset: 0; border-top: 1px solid hsl(var(--color-accent-hsl) / .38); border-left: 1px solid var(--highlight-color); pointer-events: none; }
 
 @media (max-width: 650px) {
   .section-command { margin-bottom: 5px; font-size: 10px; }

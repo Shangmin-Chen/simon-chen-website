@@ -2,16 +2,14 @@ import { forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffec
 import { cardIndexFor, cardIndexOnPage, cardPageIndex, moveInventoryIndex } from '../domain/card-navigation';
 import { inventoryLayout } from '../domain/inventory-layout';
 import { accumulateWheelDelta } from '../domain/navigation';
-import InventoryConnection from './InventoryConnection';
+import InventoryFrame from './InventoryFrame';
 import InventoryPreview from './InventoryPreview';
 import InventorySlot from './InventorySlot';
 
-const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect, onActivate, label = 'Items', renderVisual, motion = true, hubRef }, forwardedRef) {
+const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect, onActivate, label = 'Items', renderVisual, motion = true }, forwardedRef) {
   const deckRef = useRef(null);
   const layoutCacheRef = useRef(null);
-  const inventoryRef = useRef(null);
   const buttons = useRef(new Map());
-  const localHubRef = useRef(null);
   const wheelTotal = useRef(0);
   const lastWheelAt = useRef(0);
   const lastWheelPageAt = useRef(Number.NEGATIVE_INFINITY);
@@ -20,6 +18,7 @@ const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect
   const suppressTimer = useRef(0);
   const focusFrame = useRef(0);
   const [layout, setLayout] = useState(() => inventoryLayout(0, 0, 1));
+  const [pageVisible, setPageVisible] = useState(() => typeof document === 'undefined' || document.visibilityState !== 'hidden');
   const activeIndex = cardIndexFor(items, selectedId);
   const pageIndex = activeIndex < 0 ? 0 : cardPageIndex(activeIndex, layout.capacity, items.length);
   const pageCount = Math.max(1, Math.ceil(items.length / layout.capacity));
@@ -36,6 +35,12 @@ const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect
   }, [items, selectedId]);
 
   useImperativeHandle(forwardedRef, () => ({ focusSelected }), [focusSelected]);
+
+  useEffect(() => {
+    const updateVisibility = () => setPageVisible(document.visibilityState !== 'hidden');
+    document.addEventListener('visibilitychange', updateVisibility);
+    return () => document.removeEventListener('visibilitychange', updateVisibility);
+  }, []);
 
   const measureLayout = useCallback(() => {
     const deck = deckRef.current;
@@ -155,21 +160,21 @@ const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect
 
   const compactPreview = layout.wide ? layout.availableHeight < 130 : layout.previewHeight < 130;
 
-  return <section className="card-deck" ref={deckRef} data-layout={layout.wide ? 'wide' : 'stacked'} data-show-preview={layout.showPreview ? 'true' : 'false'} data-preview-compact={compactPreview ? 'true' : 'false'} data-motion={motion} aria-label={label} onKeyDown={handleKeyDown} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchCancel} onClickCapture={event => {
+  return <section className="card-deck" ref={deckRef} data-layout={layout.wide ? 'wide' : 'stacked'} data-show-preview={layout.showPreview ? 'true' : 'false'} data-preview-compact={compactPreview ? 'true' : 'false'} data-motion={motion} data-page-visible={pageVisible ? 'true' : 'false'} aria-label={label} onKeyDown={handleKeyDown} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchCancel} onClickCapture={event => {
     if (!suppressClick.current) return;
     event.preventDefault();
     event.stopPropagation();
     suppressClick.current = false;
     clearTimeout(suppressTimer.current);
   }}>
-    <InventoryConnection deckRef={deckRef} layoutRef={inventoryRef} hubRef={hubRef ?? localHubRef} refreshKey={selectedId} />
-    <div className="inventory-layout" ref={inventoryRef} style={{ '--inventory-columns': layout.columns, '--inventory-rows': layout.rows, '--inventory-slot-height': `${layout.slotHeight}px`, '--inventory-preview-height': `${layout.previewHeight}px` }}>
-      {layout.showPreview && <div className="inventory-preview-wrap">
-        <InventoryPreview item={previewItem} index={Math.max(0, activeIndex)} count={items.length} visual={previewVisual} onOpen={activateSelected} />
-      </div>}
-      <div className="inventory-rack" role="group" aria-label={`${label} inventory`}>
-        <div className="inventory-rack__heading" aria-hidden="true"><span>INVENTORY</span><span>{String(items.length).padStart(2, '0')} ITEMS</span></div>
-        <div className="inventory-slots" style={{ gridTemplateColumns: `repeat(${layout.columns}, minmax(0, 1fr))`, gridTemplateRows: `repeat(${Math.max(1, Math.min(layout.rows, Math.ceil(visibleItems.length / layout.columns)))}, var(--inventory-slot-height))` }}>
+    <InventoryFrame key={`${label}:${pageIndex}`} motion={motion}>
+      <header className="inventory-frame__header">
+        <h2>{label.toUpperCase()}</h2>
+        <span>{String(items.length).padStart(2, '0')} ITEMS</span>
+      </header>
+      <div className="inventory-layout" data-layout={layout.wide ? 'wide' : 'stacked'} data-show-preview={layout.showPreview ? 'true' : 'false'} data-preview-compact={compactPreview ? 'true' : 'false'} style={{ '--inventory-columns': layout.columns, '--inventory-rows': layout.rows, '--inventory-slot-height': `${layout.slotHeight}px`, '--inventory-preview-height': `${layout.previewHeight}px` }}>
+        <div className="inventory-rack" role="group" aria-label={`${label} inventory`}>
+          <div className="inventory-slots" style={{ gridTemplateColumns: `repeat(${layout.columns}, minmax(0, 1fr))`, gridTemplateRows: `repeat(${Math.max(1, Math.min(layout.rows, Math.ceil(visibleItems.length / layout.columns)))}, var(--inventory-slot-height))` }}>
           {visibleItems.map((item, localIndex) => {
             const index = pageIndex * layout.capacity + localIndex;
             const visual = renderVisual ? renderVisual(item) : item.visual;
@@ -181,21 +186,33 @@ const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect
               visual={visual}
               tabIndex={item.id === previewItem?.id ? 0 : -1}
               motion={motion}
+              entryIndex={localIndex}
               onFocus={() => { if (item.id !== selectedId) onSelect?.(item.id); }}
               onClick={() => { onSelect?.(item.id); onActivate?.(item.id); }}
               onMouseEnter={() => { if (item.id !== selectedId) onSelect?.(item.id); }}
               ref={node => { if (node) buttons.current.set(item.id, node); else buttons.current.delete(item.id); }}
             />;
           })}
+          </div>
         </div>
+        {layout.showPreview && <div className="inventory-preview-wrap">
+          <InventoryPreview item={previewItem} index={Math.max(0, activeIndex)} count={items.length} visual={previewVisual} motion={motion} />
+        </div>}
       </div>
-    </div>
-    {pageCount > 1 && <nav className="card-deck__paging" aria-label={`${label} pages`}>
-      <button type="button" disabled={pageIndex <= 0} onClick={() => setPage(-1)}>← previous set</button>
-      <span aria-live="polite">{pageIndex + 1} / {pageCount}</span>
-      <button type="button" disabled={pageIndex >= pageCount - 1} onClick={() => setPage(1)}>next set →</button>
-    </nav>}
-    <p className="card-deck__hint">Choose a slot · arrows move · Enter opens · Esc returns</p>
+      <footer className="inventory-frame__footer">
+        <div className="inventory-frame__controls">
+          {pageCount > 1 && <nav className="card-deck__paging" aria-label={`${label} pages`}>
+            <button type="button" disabled={pageIndex <= 0} onClick={() => setPage(-1)}>← PREV</button>
+            <span aria-live="polite">{String(pageIndex + 1).padStart(2, '0')} / {String(pageCount).padStart(2, '0')}</span>
+            <button type="button" disabled={pageIndex >= pageCount - 1} onClick={() => setPage(1)}>NEXT →</button>
+          </nav>}
+          {layout.showPreview && previewItem && <button className="inventory-frame__open" type="button" onClick={activateSelected} aria-label={`Open ${previewItem.title}`}>
+            OPEN ITEM <span aria-hidden="true">↗</span>
+          </button>}
+        </div>
+        <p className="card-deck__hint"><span>↑ ↓ SELECT</span><span>ENTER OPEN</span><span>ESC BACK</span></p>
+      </footer>
+    </InventoryFrame>
   </section>;
 });
 

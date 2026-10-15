@@ -20,7 +20,6 @@ export default function Portfolio({ services, preferences }) {
   const member = crew[selected];
   const albumId = matchPath('/gallery/:albumId', location.pathname)?.params.albumId;
   const rootRef = useRef(null);
-  const hubRef = useRef(null);
   const previousFocus = useRef(null);
   const focusCrewForSection = useRef('');
   const [crewFocusVersion, setCrewFocusVersion] = useState(0);
@@ -80,9 +79,9 @@ export default function Portfolio({ services, preferences }) {
       <main className="workspace" id="main-content" tabIndex={-1}>
         <section className="character-profile" aria-label="Edgerunners character navigation">
           <div className="character-art"><AsciiPortrait key={member.id} member={member} motion={motion && !introOpen} /></div>
-          <div className="character-navigation"><CrewWheel crew={crew} selected={selected} onSelect={select} hubRef={hubRef} /></div>
+          <div className="character-navigation"><CrewWheel crew={crew} selected={selected} onSelect={select} /></div>
         </section>
-        <ContentPanel member={member} services={services} albumId={albumId} motion={ambient} hubRef={hubRef} sceneKey={location.key} onPortfolioHome={() => navigate('/#whoami')} onGalleryHome={() => navigate('/gallery')} />
+        <ContentPanel member={member} services={services} albumId={albumId} motion={ambient} sceneKey={location.key} onPortfolioHome={() => navigate('/#whoami')} onGalleryHome={() => navigate('/gallery')} />
       </main>
       <div className="ascii-rule" aria-hidden="true">{rule}</div>
       <footer className="terminal-footer"><span>~/simon-chen</span><button type="button" disabled={reduced} aria-pressed={motion} aria-label={reduced ? 'Animation disabled by your reduced motion preference' : 'Toggle animation'} onClick={toggle}>[ motion {motion ? 'on' : 'off'} ]</button></footer>

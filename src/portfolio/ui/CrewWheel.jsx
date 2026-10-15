@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { accumulateWheelDelta, wheelOffset, wheelPosition, wheelRail } from '../domain/navigation';
 
-export default function CrewWheel({ crew, selected, onSelect, hubRef, hubActive = true }) {
+export default function CrewWheel({ crew, selected, onSelect }) {
   const wheelRef = useRef(null);
   const buttons = useRef([]);
   const gesture = useRef(null);
@@ -90,13 +90,6 @@ export default function CrewWheel({ crew, selected, onSelect, hubRef, hubActive 
           <span className="wheel-selection-frame__corner wheel-selection-frame__corner--bl" />
           <span className="wheel-selection-frame__corner wheel-selection-frame__corner--br" />
         </span>
-        <span
-          className="wheel-output-port"
-          ref={hubRef}
-          aria-hidden="true"
-          hidden={!hubActive}
-          style={{ '--wheel-x': `${focusPosition.x}px`, '--wheel-y': `${focusPosition.y}px` }}
-        />
         {crew.map((member, index) => {
           const offset = wheelOffset(index, selected, crew.length);
           const position = wheelPosition(offset, size.width, size.compact, size.short);

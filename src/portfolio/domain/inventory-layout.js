@@ -5,7 +5,9 @@ const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 export function inventoryLayout(width, height, itemCount = Infinity) {
   const safeWidth = Math.max(0, width);
   const safeHeight = Math.max(0, height);
-  const available = Math.max(0, safeHeight - 48);
+  // Header/footer chrome is inside the frame; keep its budget fixed across
+  // pages so showing the pager cannot alter row capacity.
+  const available = Math.max(0, safeHeight - 70);
   const wide = safeWidth >= 560;
   const columns = 1;
   const candidatePreviewHeight = wide ? 0 : Math.min(available, clamp(Math.round(available * 0.38), 86, 170), Math.max(0, available - 102));

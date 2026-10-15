@@ -8,29 +8,36 @@
   Eye gaze follows the pointer horizontally; CSS tracer rays originate at each
   source iris center and are suppressed for frames without eye data.
 - `CrewWheel`: native selection controls and scoped drag/scroll/keyboard
-  gestures, plus a stable output port on the selected rail for the inventory.
-  Its local selection frame and output pulse pause for the intro, hidden tabs,
+  gestures. Its local selection frame pauses for the intro, hidden tabs,
   reduced motion, or the saved motion toggle; interactive targets stay fixed.
 - `ContentPanel`: stable character scene, per-section selected card state, and
   mounted Contact/Pictures sections.
 - `InspectPanel`: in-scene text inspection over the card area; the underlying
-  scene stays dimmed and inert while the card selection is retained.
+  scene stays dimmed and inert while the card selection is retained. Opening
+  uses a short masked panel/frame reveal on a real open transition when motion
+  is enabled; focus and content are available immediately, and changing motion
+  preferences never replays an already-open panel.
 - `ReaderFrame`: shared breadcrumb, title, Back, scrollable text body, and footer
   navigation for focused text inspections.
 - `SequenceNavigation`: native previous/next controls and an item count for
   multi-entry text file sequences.
-- `CardDeck` / `GameCard`: a game inventory with a compact upright slot rack
-  and prominent selected-item preview. Wide layouts place the rack on the left
-  and preview on the right; narrow layouts place the preview above the rack.
-  Very short stacked layouts omit the preview and keep direct slot opening.
+- `CardDeck` / `InventoryFrame` / `InventorySlot` / `InventoryPreview`: a game
+  inventory in one perimeter frame, with a compact upright item rail and
+  prominent selected-item stage. Wide layouts place the rail beside the stage;
+  measured narrow layouts place the stage above the rail, while very short
+  layouts omit the stage and keep direct slot opening.
   Preview text and artwork come from real item data, with a native open action.
-  Hover, focus, and selection update the preview and active bracket without
-  moving slots; click or Enter opens the item directly.
-  Each deck receives the wheel output ref and draws one measured root line
-  into the inventory, not separate connectors to every slot.
-- `SignalBands` / `DecodePhrase`: decorative horizontal signal tears and a
-  short Unicode-safe title/caption decode, both using the shared glitch plan;
-  semantic text remains intact and motion respects the shell preference.
+  Hover, focus, and selection update the preview and active bracket without moving
+  slots; click or Enter opens the item directly. A restrained perimeter trace
+  and angular frame assembly animate without moving targets. The shared
+  `useEntryReveal` hook keys frame entry to its current page, slots to their
+  item IDs, and the preview to its persistent mount, so changing the selection
+  does not replay its reveal. Motion-off consumes an entry; enabling motion
+  later does not replay it. Traces pause for hidden tabs, inert decks, disabled
+  motion, or reduced motion.
+- `SignalBands` / `DecodePhrase`: a short Unicode-safe title/caption reveal
+  with horizontal signal bands; original text stays semantic and readable to
+  assistive technology, and motion follows the shell preference.
 - `Intro`: approved ASCII emblem with the shared domain glitch plan, automatic
   entry, focus and skip behavior.
 - `File`: terminal-style file content inside the shared text reader.
