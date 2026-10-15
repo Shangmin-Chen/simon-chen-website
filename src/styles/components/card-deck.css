@@ -29,6 +29,20 @@
 .game-card:has(.game-card__visual) .game-card__description { -webkit-line-clamp: 1; }
 .game-card:has(.game-card__visual) .game-card__meta { display: block; min-width: 0; white-space: nowrap; text-overflow: ellipsis; }
 .game-card:has(.game-card__visual) .game-card__open { flex: 0 0 auto; color: var(--highlight-color); }
+.signal-bands { position: absolute; z-index: 5; inset: 0; overflow: hidden; pointer-events: none; }
+.signal-bands__slice { position: absolute; inset: 0; overflow: hidden; clip-path: inset(var(--signal-top) 0 var(--signal-bottom) 0); transform: translateX(var(--signal-offset)); }
+.signal-bands__slice::after { position: absolute; z-index: 4; inset: 0; background: var(--signal-cyan-wash); content: ''; mix-blend-mode: screen; }
+.signal-bands__slice[data-signal='cyan']::after { background: var(--signal-cyan-wash); }
+.signal-bands__slice[data-signal='pink']::after { background: var(--signal-pink-wash); }
+.signal-bands__slice[data-signal='amber']::after { background: var(--signal-amber-wash); }
+.game-card__signals .signal-bands__slice { display: grid; grid-template-columns: 42px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; align-content: stretch; align-items: start; gap: 7px 10px; padding: 9px 10px; }
+.game-card__signals .signal-bands__slice:has(.game-card__visual) { display: block; padding: 0; }
+.decode-phrase { position: relative; display: block; min-width: 0; }
+.decode-phrase__source, .decode-phrase__frame { display: block; white-space: inherit; overflow-wrap: anywhere; }
+.decode-phrase[data-decoding='true'] .decode-phrase__source { opacity: 0; }
+.decode-phrase__overlay { position: absolute; inset: 0; overflow: hidden; color: var(--link-color); pointer-events: none; }
+.decode-phrase__signals { z-index: 2; }
+.decode-phrase__signals .signal-bands__slice::after { opacity: .34; }
 .card-deck__paging { display: flex; flex: 0 0 36px; align-items: center; justify-content: space-between; gap: 10px; color: var(--text-muted); font: 9px/1.2 var(--font-mono); }
 .card-deck__paging button { min-width: 86px; min-height: 32px; padding: 4px; color: var(--link-color); }
 .card-deck__paging button:disabled { opacity: .38; }
@@ -64,6 +78,7 @@
   .game-card__description { font-size: 9px; -webkit-line-clamp: 2; }
   .game-card__meta { font-size: 8px; }
   .game-card__open, .game-card__path { font-size: 8px; }
+  .game-card__signals .signal-bands__slice { grid-template-columns: 30px minmax(0, 1fr); gap: 5px 7px; padding: 6px; }
   .card-deck__paging { flex-basis: 32px; }
   .card-deck__hint { font-size: 8px; }
   .inspect-panel { padding: 5px 7px 3px; }

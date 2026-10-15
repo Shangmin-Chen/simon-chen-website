@@ -6,7 +6,7 @@ external dependencies. `src/App.jsx` is the composition root.
 
 ```text
 src/portfolio/
-  domain/       navigation, card paging, wheel geometry, photo selection, ASCII frames and glitch plans, contributions, validation
+  domain/       navigation, card paging, wheel geometry, photo selection, Unicode decode frames, ASCII frames and glitch plans, contributions, validation
   application/  resource subscriptions and contact submission use case
   adapters/     same-origin HTTP, TTL resource cache, optional browser storage
   ui/           React shell, card deck and inspection reader, crew wheel, portrait, intro, section views
@@ -66,6 +66,12 @@ the Worker. Unknown API paths return JSON 404 instead of the SPA.
 CSS preserves the three-layer HSL token architecture. Portrait palette values
 are sampled channels in asset data, exposed as CSS variables at one boundary.
 No hardcoded HEX/RGB colors belong in component CSS.
+
+Card and inspection signals use the shared pure glitch planner. Their UI bursts
+are local, bounded, visibility-aware, and disabled by reduced motion or the
+motion toggle; text decode frames preserve grapheme and whitespace boundaries,
+while the original title and caption stay semantic and readable to assistive
+technology.
 
 Validation: `npm run lint`, `npm run verify` (Node tests + build + token checks),
 and UI checks using the Cloudflare development Worker on port 8787. Node tests

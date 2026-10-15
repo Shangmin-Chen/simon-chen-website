@@ -38,6 +38,7 @@ export default function ContentPanel({ member, services, albumId, motion, onPort
       services={services}
       selectedId={selectedId}
       onSelect={id => setSelections(current => ({ ...current, [section]: id }))}
+      motion={motion}
     />}
 
     <div className="contact-scene" hidden={!isContact}>
@@ -50,7 +51,7 @@ export default function ContentPanel({ member, services, albumId, motion, onPort
   </section>;
 }
 
-function TextScene({ member, services, selectedId, onSelect }) {
+function TextScene({ member, services, selectedId, onSelect, motion }) {
   const section = member.section;
   const files = useMemo(() => filesFor(section), [section]);
   const sequence = useMemo(() => sequenceFor(section), [section]);
@@ -120,6 +121,7 @@ function TextScene({ member, services, selectedId, onSelect }) {
         ref={deckRef}
         items={files}
         selectedId={selectedId}
+        motion={motion && !isInspecting}
         onSelect={onSelect}
         onActivate={openInspector}
         label={`${member.name} ${section} cards`}
@@ -139,6 +141,8 @@ function TextScene({ member, services, selectedId, onSelect }) {
       headingRef={heading}
       bodyRef={body}
       navigationLabel={`${section} cards`}
+      motion={motion && isInspecting}
+      revealKey={selectedId}
     >
       <div className="reader-section">
         {section === 'whoami' && <Whoami resource={services.github} active={selectedId === 'github-activity' && isInspecting} fileId={selectedId} />}

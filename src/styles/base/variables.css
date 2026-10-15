@@ -9,6 +9,7 @@
   --color-accent-hsl: 68 100% 63%;
   --color-cyan-hsl: 175 86% 65%;
   --color-pink-hsl: 329 100% 68%;
+  --color-amber-hsl: 38 100% 62%;
   --color-error-hsl: 340 100% 76%;
 
   /* Layer 2: semantic surfaces and colors. */
@@ -21,6 +22,9 @@
   --accent-color: hsl(var(--color-accent-hsl));
   --link-color: hsl(var(--color-cyan-hsl));
   --highlight-color: hsl(var(--color-pink-hsl));
+  --signal-cyan-wash: hsl(var(--color-cyan-hsl) / .2);
+  --signal-pink-wash: hsl(var(--color-pink-hsl) / .22);
+  --signal-amber-wash: hsl(var(--color-amber-hsl) / .24);
   --error-color: hsl(var(--color-error-hsl));
   --texture-color: hsl(var(--color-text-primary-hsl) / 0.07);
   --overlay-bg: hsl(var(--color-bg-primary-hsl) / 0.9);

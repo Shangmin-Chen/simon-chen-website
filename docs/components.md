@@ -17,7 +17,10 @@
 - `SequenceNavigation`: native previous/next controls and an item count for
   multi-entry text file sequences.
 - `CardDeck` / `GameCard`: responsive scene cards with scoped keyboard paging,
-  focusable selection, and one-step activation.
+  focusable selection, one-step activation, and brief hover/focus signal bursts.
+- `SignalBands` / `DecodePhrase`: decorative horizontal signal tears and a
+  short Unicode-safe title/caption decode, both using the shared glitch plan;
+  semantic text remains intact and motion respects the shell preference.
 - `Intro`: approved ASCII emblem with the shared domain glitch plan, automatic
   entry, focus and skip behavior.
 - `File`: terminal-style file content inside the shared text reader.
@@ -29,7 +32,8 @@
   mounted while hidden to preserve drafts/validation, and keeps Pictures
   mounted to preserve per-album photo selection. Gallery cards use R2 thumbnails and open
   the selected full image directly in `Lightbox`.
-- `Lightbox`: existing gallery viewer, retained for swipe and pinch zoom.
+- `Lightbox`: existing gallery viewer, retained for swipe and pinch zoom, with
+  a bounded caption reveal that stops when motion is disabled or the viewer closes.
 
 New views should consume structured `src/data` content or a supplied resource
 port. Keep network calls in adapters and algorithms in domain modules. Keep

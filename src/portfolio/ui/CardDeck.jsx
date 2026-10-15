@@ -1,21 +1,14 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { cardIndexFor, cardIndexOnPage, cardPageIndex, moveCardIndex } from '../domain/card-navigation';
+import { signalSeed } from '../domain/decode';
 import { accumulateWheelDelta } from '../domain/navigation';
+import SignalBands from './SignalBands';
+import useSignalBurst from './useSignalBurst';
 
 const sigils = ['[::]', '[<>]', '[//]', '[##]', '[{}]', '[..]'];
 
-export const GameCard = forwardRef(function GameCard({ item, selected, visual, tabIndex = -1, onFocus, onClick }, ref) {
-  const meta = Array.isArray(item.meta) ? item.meta.filter(Boolean).join(' · ') : item.meta;
-  return <button
-    className="game-card"
-    type="button"
-    ref={ref}
-    tabIndex={tabIndex}
-    aria-pressed={selected}
-    data-selected={selected ? 'true' : 'false'}
-    onFocus={onFocus}
-    onClick={onClick}
-  >
+function CardFace({ item, visual, meta }) {
+  return <>
     {visual && <span className="game-card__visual">{visual}</span>}
     <span className="game-card__sigil" aria-hidden="true">{item.sigil ?? sigils[item.sigilIndex % sigils.length] ?? sigils[0]}</span>
     <span className="game-card__copy">
@@ -30,10 +23,31 @@ export const GameCard = forwardRef(function GameCard({ item, selected, visual, t
           <span className="game-card__open">[ open ↗ ]</span>
         </span>
       : <span className="game-card__open" aria-hidden="true">[ open ↗ ]</span>}
+  </>;
+}
+
+export const GameCard = forwardRef(function GameCard({ item, selected, visual, tabIndex = -1, onFocus, onClick, motion = true }, ref) {
+  const meta = Array.isArray(item.meta) ? item.meta.filter(Boolean).join(' · ') : item.meta;
+  const signal = useSignalBurst(motion, 320, 8);
+  const signalSeedValue = signalSeed(item.id);
+  const face = <CardFace item={item} visual={visual} meta={meta} />;
+  return <button
+    className="game-card"
+    type="button"
+    ref={ref}
+    tabIndex={tabIndex}
+    aria-pressed={selected}
+    data-selected={selected ? 'true' : 'false'}
+    onFocus={event => { signal.start(); onFocus?.(event); }}
+    onClick={onClick}
+    onMouseEnter={signal.start}
+  >
+    {face}
+    {motion && signal.tick >= 0 && <SignalBands seed={signalSeedValue} tick={signal.tick} className="game-card__signals">{face}</SignalBands>}
   </button>;
 });
 
-const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect, onActivate, label = 'Items', renderVisual }, forwardedRef) {
+const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect, onActivate, label = 'Items', renderVisual, motion = true }, forwardedRef) {
   const deckRef = useRef(null);
   const buttons = useRef(new Map());
   const wheelTotal = useRef(0);
@@ -184,6 +198,7 @@ const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect
           item={{ ...item, sigilIndex: pageIndex * capacity + localIndex }}
           selected={selected}
           visual={visual}
+          motion={motion}
           tabIndex={tabIndex}
           ref={node => { if (node) buttons.current.set(item.id, node); else buttons.current.delete(item.id); }}
           onFocus={() => { if (item.id !== selectedId) onSelect?.(item.id); }}

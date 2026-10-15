@@ -59,7 +59,7 @@ function SceneHeader({ breadcrumb, title, headingRef, onBack, backLabel = '← a
   </header>;
 }
 
-function AlbumScene({ album, resource, selectedIndex, onSelect, active, onBack }) {
+function AlbumScene({ album, resource, selectedIndex, onSelect, active, onBack, motion }) {
   const deckRef = useRef(null);
   const photos = album.photos ?? [];
   const selected = restorePhotoIndex({ [album.id]: selectedIndex }, album.id, photos.length);
@@ -116,6 +116,7 @@ function AlbumScene({ album, resource, selectedIndex, onSelect, active, onBack }
             onSelect={selectPhoto}
             onActivate={openPhoto}
             label={`${album.title} photos`}
+            motion={motion && lightboxIndex === null}
             renderVisual={item => <Thumbnail key={item.photo.thumb ?? ''} source={item.photo.thumb} />}
           />
         : <p className="gallery-scene__empty" role="status">No photos are available in this album.</p>}
@@ -128,11 +129,12 @@ function AlbumScene({ album, resource, selectedIndex, onSelect, active, onBack }
         onSelect(index);
       }}
       onClose={() => setLightboxIndex(null)}
+      motion={motion}
     />}
   </section>;
 }
 
-export default function Pictures({ resource, active, albumId }) {
+export default function Pictures({ resource, active, albumId, motion = true }) {
   const navigate = useNavigate();
   const result = useResource(resource, active);
   const albums = result.data?.galleries ?? [];
@@ -174,6 +176,7 @@ export default function Pictures({ resource, active, albumId }) {
       album={album}
       resource={result}
       active={active}
+      motion={motion}
       selectedIndex={selectedIndex}
       onSelect={index => setSelectionByAlbum(current => ({ ...current, [album.id]: index }))}
       onBack={albums.length > 1 ? () => navigate('/gallery') : undefined}
@@ -193,6 +196,7 @@ export default function Pictures({ resource, active, albumId }) {
             onSelect={setSelectedAlbumId}
             onActivate={id => navigate(`/gallery/${encodeURIComponent(id)}`)}
             label="Photo albums"
+            motion={motion}
             renderVisual={item => <Thumbnail key={item.album.photos?.[0]?.thumb ?? ''} source={item.album.photos?.[0]?.thumb} />}
           />
         : <p className="gallery-scene__empty" role="status">No photos are available yet.</p>}

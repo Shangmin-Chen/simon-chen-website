@@ -4,9 +4,10 @@ import Zoom from 'yet-another-react-lightbox/plugins/zoom';
 import 'yet-another-react-lightbox/styles.css';
 import { imageUrl } from '../data/galleryData';
 import { photoAlt } from '../portfolio/domain/photos';
+import DecodePhrase from '../portfolio/ui/DecodePhrase';
 
 // Enhanced photo viewer supporting touch swipe & multi-touch pinch zoom.
-const Lightbox = ({ photos = [], index, onIndex, onClose }) => {
+const Lightbox = ({ photos = [], index, onIndex, onClose, motion = true }) => {
   const isOpen = index !== null && index !== undefined && index >= 0 && index < photos.length;
 
   const slides = photos.map((photo) => ({
@@ -17,6 +18,7 @@ const Lightbox = ({ photos = [], index, onIndex, onClose }) => {
   }));
 
   if (!isOpen) return null;
+  const activeSource = slides[index]?.src;
 
   return (
     <LightboxComponent
@@ -35,7 +37,7 @@ const Lightbox = ({ photos = [], index, onIndex, onClose }) => {
       render={{
         slideFooter: ({ slide }) => (
           <figcaption className="lightbox-caption">
-            {slide.caption && <span className="lightbox-cap-text">{slide.caption}</span>}
+            {slide.caption && <span className="lightbox-cap-text"><DecodePhrase key={slide.src} text={slide.caption} motion={motion && slide.src === activeSource} revealKey={slide.src} /></span>}
             {slide.location && <span className="lightbox-cap-loc">{slide.location}</span>}
           </figcaption>
         ),
