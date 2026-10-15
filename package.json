@@ -17,6 +17,7 @@
     "dev": "vite",
     "start": "vite",
     "build": "vite build",
+    "favicon:generate": "node scripts/generate-favicons.mjs",
     "preview": "vite preview",
     "deploy": "npm run build && wrangler deploy",
     "dev:worker": "npm run build && wrangler dev",
