@@ -242,7 +242,7 @@ const CharacterSelector = forwardRef(function CharacterSelector({ crew, selected
                 if (event.detail === 0 && index === selected) onEnterSection?.();
                 else chooseTo(index);
               }}
-            ><strong>{destination}</strong><small>{member.name}</small></button>;
+            ><strong>{member.name}</strong><small>{destination}</small></button>;
           })}
         </div>
       </nav>

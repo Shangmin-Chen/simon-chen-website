@@ -30,16 +30,6 @@
   container-type: inline-size;
   touch-action: pan-y;
 }
-.character-selector::before {
-  position: absolute;
-  inset: 29px 2% auto;
-  height: 38px;
-  border-bottom: 1px solid color-mix(in hsl, var(--link-color) 36%, var(--border-color));
-  border-radius: 0 0 50% 50% / 0 0 100% 100%;
-  content: '';
-  opacity: .72;
-  pointer-events: none;
-}
 .crew-option {
   position: absolute;
   z-index: var(--selector-depth, 0);

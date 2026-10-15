@@ -158,7 +158,6 @@
   .character-profile .crew-navigation__hint { grid-column: 1; grid-row: 1; align-self: center; justify-self: end; max-width: 38%; font-size: 10px; text-align: right; white-space: nowrap; }
   .character-profile .crew-navigation__nav { grid-column: 1; grid-row: 2; align-self: stretch; }
   .character-profile .character-selector { height: 76px; }
-  .character-selector::before { inset: 17px 2% auto; height: 18px; }
   .character-selector .crew-option { top: calc(2px + var(--selector-arc-y, 0px) * .25); min-height: 50px; }
   .workspace:has(.inspect-panel[data-open='true']) { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
   .workspace:has(.inspect-panel[data-open='true']) .character-profile { display: none; }
