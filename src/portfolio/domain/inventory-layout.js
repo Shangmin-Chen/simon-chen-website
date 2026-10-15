@@ -1,22 +1,28 @@
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
-
-// The deck reserves space for paging and its keyboard hint even on a single
-// page, so capacity cannot oscillate when the pager appears or disappears.
-export function inventoryLayout(width, height, itemCount = Infinity) {
+export function inventoryLayout(width, height) {
   const safeWidth = Math.max(0, width);
   const safeHeight = Math.max(0, height);
-  // Header/footer chrome is inside the frame; keep its budget fixed across
-  // pages so showing the pager cannot alter row capacity.
-  const available = Math.max(0, safeHeight - 70);
   const wide = safeWidth >= 560;
   const columns = 1;
-  const candidatePreviewHeight = wide ? 0 : Math.min(available, clamp(Math.round(available * 0.38), 86, 170), Math.max(0, available - 102));
+  // Keep a fixed budget for the frame header, controls, hint, and layout inset.
+  const availableHeight = Math.max(0, safeHeight - (wide ? 89 : 85));
+  const candidatePreviewHeight = wide
+    ? 0
+    : Math.min(availableHeight, clamp(Math.round(availableHeight * 0.38), 86, 170), Math.max(0, availableHeight - 64 - 7));
   const showPreview = wide || candidatePreviewHeight >= 80;
   const previewHeight = showPreview && !wide ? candidatePreviewHeight : 0;
-  const rackHeight = wide ? available : Math.max(0, available - (showPreview ? previewHeight + 12 : 0));
-  const rowHeight = wide ? clamp(rackHeight - 34, 1, 86) : clamp(rackHeight - 34, 1, 64);
-  const rackRowsHeight = Math.max(0, rackHeight - 34);
-  const rows = clamp(Math.floor((rackRowsHeight + 4) / (rowHeight + 4)), 1, wide ? 5 : 3);
-  const capacity = Math.max(1, Math.min(columns * rows, Number.isFinite(itemCount) ? Math.max(1, itemCount) : columns * rows));
-  return { wide, showPreview, columns, rows, capacity, previewHeight, slotHeight: rowHeight, rackHeight, availableHeight: available };
+  const rackHeight = wide ? availableHeight : Math.max(0, availableHeight - (showPreview ? previewHeight + 7 : 0));
+  const minimumSlotHeight = Math.min(wide ? 58 : 52, Math.max(1, rackHeight));
+
+  return {
+    wide,
+    showPreview,
+    columns,
+    previewHeight,
+    rackHeight,
+    minimumSlotHeight,
+    availableHeight,
+    width: safeWidth,
+    height: safeHeight,
+  };
 }

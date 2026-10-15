@@ -39,15 +39,17 @@ and previous/next card controls. The character art and crew wheel keep the same
 geometry while a card is inspected. Text reads in a naturally scrollable,
 visually scrollbar-free body, with long prose kept near 68 characters per line;
 the GitHub graph keeps its useful width. CardDeck presents each collection as a
-game inventory: a compact upright item rail and prominent selected-item stage
-inside one perimeter frame. Wide layouts place the rail beside the stage;
-narrow layouts measured against the deck's available bounds place the stage
-above a compact, paged rail; very short layouts omit the stage. Selecting or
-focusing a slot updates the preview and active bracket without moving the
-slots; one click or Enter opens the item directly. A restrained perimeter
-trace follows the inventory frame. The inventory supports roving keyboard
-selection, wheel/swipe paging, and
-PageUp/PageDown. Contact is a one-item comms inventory; opening its ASCII
+game inventory: a measured one-column item rack and prominent selected-item
+stage inside one perimeter frame. Rows fill the available rack height while
+all items fit; longer collections keep the frame fixed and scroll inside the
+rack. Wide layouts place the rack beside the stage; narrow layouts place the
+stage above the rack, and very short layouts omit the stage. Hover, focus, or
+selection updates the preview and active bracket without moving slots; one
+click or Enter opens the item directly. Arrow keys, Home, and End traverse the
+full list while keeping the focused slot in view. Wheel and touch use native
+scrolling. Returning focus or mounting a section scrolls the selected slot into
+view without moving focus. A restrained perimeter trace follows the inventory
+frame. Contact is a one-item comms inventory; opening its ASCII
 letter slot overlays a `LetterComposer` in the same scene. The existing
 `useContact` submission and validation remain in place, the component stays
 mounted while another character is active, and closing the letter returns
@@ -89,8 +91,8 @@ the original title and caption stay semantic and readable to assistive
 technology.
 
 Inventory layouts use bounded item data inside one frame. `useEntryReveal`
-keys frame entry to the current page, slot entry to item IDs, and preview entry
-to its persistent mount, so selection changes do not replay the preview. Its
+keys frame entry to its mount, slot entry to item IDs, and preview entry to its
+persistent mount, so selection changes do not replay the preview. Its
 mount-scoped state consumes an entry when motion is disabled, so turning motion
 on later does not replay it. Perimeter traces and angular frame assembly are
 CSS-animated and pause for reduced motion, disabled motion, inert or hidden
