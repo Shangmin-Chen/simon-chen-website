@@ -7,9 +7,12 @@
   glitch plan, frame border.
   Eye gaze follows the pointer horizontally; CSS tracer rays originate at each
   source iris center and are suppressed for frames without eye data.
-- `CrewWheel`: native selection controls and scoped drag/scroll/keyboard
-  gestures. Its local selection frame pauses for the intro, hidden tabs,
-  reduced motion, or the saved motion toggle; interactive targets stay fixed.
+- `CharacterSelector`: five section-first native buttons in fixed destination
+  order, arranged on a shallow arc with a raised selected target. Drag and
+  accumulated wheel input change selection; focused buttons support Left/Right
+  and Home/End. The heading reuses `NameCycle` with a stable accessible name,
+  and its motion follows the intro, visibility, reduced-motion, and saved-toggle
+  state.
 - `ContentPanel`: stable character scene, per-section selected card state, and
   mounted Contact/Pictures sections.
 - `InspectPanel`: in-scene text inspection over the card area; the underlying

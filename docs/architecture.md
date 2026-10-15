@@ -6,10 +6,10 @@ external dependencies. `src/App.jsx` is the composition root.
 
 ```text
 src/portfolio/
-  domain/       navigation, inventory layout, wheel geometry, photo selection, Unicode decode frames, ASCII frames and glitch plans, contributions, validation
+  domain/       navigation and section-selector geometry, inventory layout, photo selection, Unicode decode frames, ASCII frames and glitch plans, contributions, validation
   application/  resource subscriptions and contact submission use case
   adapters/     same-origin HTTP, TTL resource cache, optional browser storage
-  ui/           React shell, card deck and inspection reader, crew wheel, portrait, intro, section views
+  ui/           React shell, card deck and inspection reader, character selector, portrait, intro, section views
   assets/       character grids, palettes, eye masks, approved intro glyph
 src/data/       actual projects, experience, links, integration configuration
 src/worker.js   Cloudflare API proxy and contact transport
@@ -39,12 +39,13 @@ the full project descriptions. Whoami experience records also map their local
 official company marks into supporting card and reader identity. One activation
 opens an in-scene InspectPanel over the card area, with a shared ReaderFrame,
 breadcrumb, Close/Escape behavior,
-and previous/next card controls. The character art and radial crew wheel keep
-the same geometry while a card is inspected. The desktop wheel shows five radial
-options; compact contexts center the selected option while arrows, number keys,
-Previous/Next, drag and wheel input keep every section reachable. The wheel uses
-responsive square geometry from the shared sizing policy, with static token-based
-concentric outlines behind the existing ASCII rail. Text reads in
+and previous/next card controls. The character art and section selector keep
+the same geometry while a card is inspected. All five section destinations stay
+visible in a fixed left-to-right order at every size. The selector forms a shallow
+arc and raises/scales the selected button; it has no separate Previous/Next row.
+Pointer clicks, drag, accumulated mouse-wheel input, and focused-button Left/Right
+or Home/End keep every section reachable. Its responsive positions come from the
+pure navigation domain. Text reads in
 a naturally scrollable,
 visually scrollbar-free body, with long prose kept near 68 characters per line;
 the GitHub graph keeps its useful width. CardDeck presents each collection as a
@@ -69,7 +70,7 @@ focus to its slot without discarding the draft. The letter form keeps social
 profiles visible and only reports a sent receipt after the service succeeds.
 Pictures retains its album/photo selections and uses actual R2 thumbnails; choosing a photo opens
 the existing accessible touch/zoom Lightbox directly. The document never
-scrolls. The crew selection frame is local CSS motion under the shell's
+scrolls. The selected section button's lift and scale are local CSS motion under the shell's
 visibility-aware `data-ambient` boundary. Inspector and letter panels use a
 brief masked reveal only on an actual open transition when effective motion is
 enabled; focus, controls, and content are available without waiting for it, and
@@ -84,9 +85,9 @@ sampled source timestamp during its cadence before jumping ahead or behind.
 It also supplies deterministic signal colors and shared wash/speckle masks;
 the UI maps those signals to portrait palette slots or semantic CSS tokens.
 Intro and portrait consume the same cadence. Intro and
-wheel transitions honor system reduced motion and
+selector transitions honor system reduced motion and
 the saved motion toggle. The intro makes the shell inert, traps focus on the
-skip button, then restores focus. Keyboard wheel controls use native buttons.
+skip button, then restores focus. Keyboard section selection uses native buttons.
 
 API routes: GitHub and Goodreads cache for 3600s, gallery for 300s, and contact
 POST is uncached. All client requests stay under `/api/*`; secrets remain in

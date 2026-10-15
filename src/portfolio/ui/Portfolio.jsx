@@ -1,16 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { matchPath, useLocation, useNavigate } from 'react-router';
 import crew from '../assets/crew.json';
-import { sectionFromLocation, wrapIndex } from '../domain/navigation';
+import { sections, sectionFromLocation, wrapIndex } from '../domain/navigation';
 import { nameVariants, staticName } from '../../data/nameVariants';
 import AsciiPortrait from './AsciiPortrait';
-import CrewWheel from './CrewWheel';
+import CharacterSelector from './CharacterSelector';
 import ContentPanel from './ContentPanel';
 import Intro from './Intro';
 import NameCycle from './NameCycle';
 import { useMotion } from './useMotion';
 
 const rule = '-'.repeat(160);
+const selectorHeadingWords = ['character', ...sections].map(text => ({ lang: 'en', text }));
 
 export default function Portfolio({ services, preferences }) {
   const location = useLocation();
@@ -75,7 +76,14 @@ export default function Portfolio({ services, preferences }) {
         <h1 className="sr-only">Simon Chen</h1>
         <section className="character-profile" aria-label="Edgerunners character navigation">
           <div className="character-art"><AsciiPortrait key={member.id} member={member} motion={motion && !introOpen} /></div>
-          <div className="character-navigation"><CrewWheel crew={crew} selected={selected} onSelect={select} /></div>
+          <div className="character-navigation"><CharacterSelector
+            crew={crew}
+            selected={selected}
+            onSelect={select}
+            headingWords={selectorHeadingWords}
+            motion={motion}
+            active={!introOpen && tabVisible}
+          /></div>
         </section>
         <ContentPanel member={member} services={services} albumId={albumId} motion={ambient} sceneKey={location.key} onPortfolioHome={returnToWhoami} onGalleryHome={() => navigate('/gallery')} />
       </main>

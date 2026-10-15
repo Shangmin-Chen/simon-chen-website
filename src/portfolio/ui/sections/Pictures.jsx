@@ -60,8 +60,16 @@ function SceneHeader({ breadcrumb, title, headingRef, onBack, backLabel = '← a
   </header>;
 }
 
+function focusHeadingIfSceneOwnsFocus(sceneRef, headingRef) {
+  const scene = sceneRef.current;
+  const focused = document.activeElement;
+  if (!scene || (focused !== document.body && focused?.isConnected && !scene.contains(focused))) return;
+  headingRef.current?.focus();
+}
+
 function AlbumScene({ album, resource, selectedIndex, onSelect, active, onBack, motion }) {
   const deckRef = useRef(null);
+  const sceneRef = useRef(null);
   const photos = album.photos ?? [];
   const items = useMemo(() => photoItems(album), [album]);
   const selected = restorePhotoIndex({ [album.id]: selectedIndex }, album.id, photos.length);
@@ -73,7 +81,7 @@ function AlbumScene({ album, resource, selectedIndex, onSelect, active, onBack, 
 
   useEffect(() => {
     if (!active) return undefined;
-    const frame = window.requestAnimationFrame(() => headingRef.current?.focus());
+    const frame = window.requestAnimationFrame(() => focusHeadingIfSceneOwnsFocus(sceneRef, headingRef));
     return () => window.cancelAnimationFrame(frame);
   }, [active, album.id]);
 
@@ -102,6 +110,7 @@ function AlbumScene({ album, resource, selectedIndex, onSelect, active, onBack, 
   };
 
   return <section
+    ref={sceneRef}
     className="gallery-scene"
     aria-label={`${album.title} photo gallery`}
     aria-hidden={lightboxIndex !== null ? 'true' : undefined}
@@ -143,13 +152,14 @@ export default function Pictures({ resource, active, albumId, motion = true }) {
   const [selectionByAlbum, setSelectionByAlbum] = useState({});
   const [selectedAlbumId, setSelectedAlbumId] = useState(null);
   const indexHeadingRef = useRef(null);
+  const indexSceneRef = useRef(null);
   const previousAlbumRoute = useRef(Boolean(albumId));
 
   useEffect(() => {
     const returnedToIndex = active && previousAlbumRoute.current && !albumId;
     previousAlbumRoute.current = Boolean(albumId);
     if (!returnedToIndex) return undefined;
-    const frame = window.requestAnimationFrame(() => indexHeadingRef.current?.focus());
+    const frame = window.requestAnimationFrame(() => focusHeadingIfSceneOwnsFocus(indexSceneRef, indexHeadingRef));
     return () => window.cancelAnimationFrame(frame);
   }, [active, albumId]);
 
@@ -188,7 +198,7 @@ export default function Pictures({ resource, active, albumId, motion = true }) {
   const items = albumItems(albums);
   const selectedId = items.some(item => item.id === selectedAlbumId) ? selectedAlbumId : items[0]?.id ?? null;
   return <ResourceState resource={result} loadingText="Connecting to the photo archive…">
-    <section className="gallery-scene" aria-label="Photo albums">
+    <section ref={indexSceneRef} className="gallery-scene" aria-label="Photo albums">
       <SceneHeader breadcrumb="pictures/" title="Pictures" headingRef={indexHeadingRef} />
       <p className="gallery-scene__note">A few frames from away from the keyboard.</p>
       {items.length
