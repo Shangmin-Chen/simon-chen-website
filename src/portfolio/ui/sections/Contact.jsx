@@ -66,7 +66,6 @@ export default function Contact({ sendMessage, active, motion, sceneKey }) {
 
   return <div className="contact-workspace" onKeyDown={handleKeyDown}>
     <div className="contact-workspace__index" inert={inspecting} aria-hidden={inspecting}>
-      <p className="owner-name" aria-hidden="true">Simon Chen</p>
       <p className="contact-workspace__prompt">Select the letter to start a conversation.</p>
       {active && <CardDeck
         ref={deckRef}
@@ -74,7 +73,7 @@ export default function Contact({ sendMessage, active, motion, sceneKey }) {
         selectedId={letterId}
         onSelect={() => {}}
         onActivate={() => setInspectionScene(sceneKey)}
-        label="Comms inventory"
+        label="Comms"
         renderVisual={() => <pre className="contact-letter-sigil" aria-hidden="true">{' +---------+\n | \\       / |\n |  \\     /  |\n |   \\___/   |\n |           |\n +-----------+'}</pre>}
         motion={motion && active && !inspecting}
       />}

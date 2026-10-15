@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { accumulateWheelDelta, sections, wrapIndex, wheelOffset, wheelPosition, sectionFromLocation } from '../src/portfolio/domain/navigation.js';
+import { accumulateWheelDelta, sections, wrapIndex, wheelMode, wheelOffset, wheelPosition, wheelSize, sectionFromLocation } from '../src/portfolio/domain/navigation.js';
 import { validateContact } from '../src/portfolio/domain/contact.js';
 import { contributionWindow } from '../src/portfolio/domain/contributions.js';
 import { portraitFrame, introFrame, colorRuns } from '../src/portfolio/domain/portrait.js';
@@ -10,15 +10,29 @@ import { photoAlt } from '../src/portfolio/domain/photos.js';
 const crew = JSON.parse(readFileSync(new URL('../src/portfolio/assets/crew.json', import.meta.url)));
 const intro = JSON.parse(readFileSync(new URL('../src/portfolio/assets/intro.json', import.meta.url)));
 
-test('crew mapping, wraparound, and compact wheel keep every section reachable', () => {
+test('compact crew wheel centers one option while desktop geometry keeps five radial routes', () => {
+  assert.deepEqual(wheelSize(true, false, true), { width: 156, height: 156 });
+  assert.deepEqual(wheelSize(true, true), { width: 112, height: 112 });
+  assert.deepEqual(wheelSize(true, true, false, true), { width: 120, height: 120 });
+  assert.deepEqual(wheelSize(false, true), { width: 188, height: 188 });
+  const compactViewport = wheelMode(390, 844);
+  const desktopViewport = wheelMode(1280, 900);
+  assert.equal(compactViewport.compact, true);
+  assert.equal(desktopViewport.compact, false);
+  assert.deepEqual(wheelMode(800, 600), { compact: true, medium: false, short: true, wideShort: true });
+  assert.deepEqual(wheelMode(844, 390), { compact: true, medium: false, short: true, wideShort: true });
   assert.deepEqual(crew.map(member => member.section), sections);
   assert.equal(wrapIndex(-1), 4);
   assert.equal(wrapIndex(5), 0);
   assert.equal(wrapIndex(-16), 4);
   for (let selected = 0; selected < 5; selected++) {
     const visible = crew.map((_, index) => wheelPosition(wheelOffset(index, selected), 284, true)).filter(position => !position.hidden);
-    assert.equal(visible.length, 3);
+    assert.equal(visible.length, 1);
     assert(visible.every(position => Number.isFinite(position.x) && Number.isFinite(position.y)));
+    assert.equal(visible[0].x, 0);
+    const radial = crew.map((_, index) => wheelPosition(wheelOffset(index, selected), 220, false));
+    assert(radial.every(position => !position.hidden && Number.isFinite(position.x) && Number.isFinite(position.y)));
+    assert.equal(new Set(radial.map(position => `${Math.round(position.x)}:${Math.round(position.y)}`)).size, 5);
   }
 });
 

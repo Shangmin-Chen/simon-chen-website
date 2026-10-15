@@ -8,13 +8,6 @@ import Contact from './sections/Contact';
 import CardDeck from './CardDeck';
 import InspectPanel from './InspectPanel';
 
-const commands = { whoami: 'whoami', projects: 'ls projects/', pictures: 'ls pictures/', hobbies: 'ls hobbies/', contact: 'open comms' };
-
-function commandFor(section, albumId) {
-  if (section === 'pictures' && albumId) return `open pictures/${albumId}`;
-  return commands[section];
-}
-
 export default function ContentPanel({ member, services, albumId, motion, sceneKey, onPortfolioHome, onGalleryHome }) {
   const section = member.section;
   const [selections, setSelections] = useState({});
@@ -30,7 +23,6 @@ export default function ContentPanel({ member, services, albumId, motion, sceneK
 
   return <section className="readme" data-view={isContact ? 'contact' : isPictures ? 'gallery' : 'index'} aria-label="Simon Chen portfolio scene" onKeyDown={handleKeyDown}>
     <h1 className="sr-only">Simon Chen</h1>
-    <div className="section-command"><b aria-hidden="true">└─$</b> {commandFor(section, albumId)}</div>
 
     {!isContact && !isPictures && <TextScene
       key={section}
@@ -115,7 +107,6 @@ function TextScene({ member, services, selectedId, onSelect, motion }) {
 
   return <div className="text-scene" onKeyDown={handleKeyDown}>
     <div className="home-index" inert={isInspecting} aria-hidden={isInspecting}>
-      <p className="owner-name" aria-hidden="true">Simon Chen</p>
       {section === 'whoami' && <div className="about-copy"><p>I build software and chase side quests.</p><p className="terminal-note">NYC / SF · Boston University</p></div>}
       <CardDeck
         ref={deckRef}
@@ -124,7 +115,7 @@ function TextScene({ member, services, selectedId, onSelect, motion }) {
         motion={motion && !isInspecting}
         onSelect={onSelect}
         onActivate={openInspector}
-        label={`${member.name} ${section} cards`}
+        label={member.name === 'David' ? 'Whoami' : section[0].toUpperCase() + section.slice(1)}
       />
     </div>
     <InspectPanel

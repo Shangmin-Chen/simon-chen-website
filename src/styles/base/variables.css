@@ -34,8 +34,11 @@
   --portrait-frame: var(--text-muted);
   --portrait-title: var(--link-color);
   --wheel-rail: var(--border-color);
+  --wheel-ring: hsl(var(--color-accent-hsl) / .18);
+  --wheel-ring-inner: hsl(var(--color-cyan-hsl) / .12);
   --activity-empty: var(--text-muted);
   --activity-low: var(--link-color);
   --activity-high: var(--accent-color);
   --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Consolas, monospace;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }

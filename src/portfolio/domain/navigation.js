@@ -28,33 +28,54 @@ export function wheelOffset(index, selected, length = sections.length) {
   return offset > length / 2 ? offset - length : offset;
 }
 
-function wheelGeometry(compact, short) {
-  return compact
-    ? { step: 55, radius: short ? 12 : 33, top: short ? 0 : 12, spread: 0.45, railOffset: 51, rows: short ? 10 : 14 }
-    : { step: 40, radius: 90, top: 18, spread: 0.38, railOffset: 42, rows: 20 };
+export function wheelMode(viewportWidth, viewportHeight) {
+  const width = Number.isFinite(viewportWidth) ? Math.max(0, viewportWidth) : 0;
+  const height = Number.isFinite(viewportHeight) ? Math.max(0, viewportHeight) : 0;
+  const short = height <= 560 || (width <= 850 && height <= 700);
+  return {
+    compact: width <= 650 || short,
+    medium: width > 480 && width <= 650 && height > 700,
+    short,
+    wideShort: width > 650 && short,
+  };
 }
 
-export function wheelPosition(offset, width, compact, short = false) {
-  const geometry = wheelGeometry(compact, short);
-  const angle = offset * geometry.step * Math.PI / 180;
+export function wheelSize(compact, short = false, medium = false, wideShort = false) {
+  const dimension = compact ? (wideShort ? 120 : short ? 112 : medium ? 156 : 128) : (short ? 188 : 220);
+  return { width: dimension, height: dimension };
+}
+
+export function wheelPosition(offset, width, compact, short = false, medium = false, wideShort = false) {
+  const safeWidth = Number.isFinite(width) ? Math.max(0, width) : 0;
+  const radius = compact ? Math.min(34, safeWidth * 0.25) : Math.min(72, safeWidth * 0.33);
+  const { height } = wheelSize(compact, short, medium, wideShort);
+  const buttonHalfHeight = compact ? 20 : 25;
+  const angle = offset * 72 * Math.PI / 180;
   return {
-    x: Math.sin(angle) * width * geometry.spread,
-    y: geometry.top + Math.cos(angle) * geometry.radius,
+    x: compact ? 0 : Math.sin(angle) * radius,
+    y: compact ? height / 2 - buttonHalfHeight : height / 2 - Math.cos(angle) * radius - buttonHalfHeight,
     scale: offset === 0 ? 1 : Math.abs(offset) === 1 ? 0.96 : 0.94,
-    hidden: compact && Math.abs(offset) > 1,
+    hidden: compact && offset !== 0,
   };
 }
 
 export function wheelRail(compact, short = false) {
-  const geometry = wheelGeometry(compact, short);
   const columns = 72;
-  const rows = Array.from({ length: geometry.rows }, () => Array(columns).fill(' '));
-  const limit = compact ? 55 : 80;
-  for (let i = 0; i <= 120; i++) {
-    const angle = (-limit + i * limit * 2 / 120) * Math.PI / 180;
-    const x = Math.round((0.5 + Math.sin(angle) * geometry.spread) * (columns - 1));
-    const y = Math.round((geometry.top + Math.cos(angle) * geometry.radius + geometry.railOffset) / 8);
-    if (rows[y]) rows[y][x] = Math.abs(angle) < 0.3 ? '-' : angle < 0 ? '\\' : '/';
+  const rowCount = compact ? (short ? 12 : 14) : (short ? 18 : 20);
+  const rows = Array.from({ length: rowCount }, () => Array(columns).fill(' '));
+  const radiusX = 29;
+  const radiusY = compact ? 5 : 8;
+  const centerX = (columns - 1) / 2;
+  const centerY = (rowCount - 1) / 2;
+  for (let y = 0; y < rowCount; y++) {
+    for (let x = 0; x < columns; x++) {
+      const dx = (x - centerX) / radiusX;
+      const dy = (y - centerY) / radiusY;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      if (Math.abs(distance - 1) < (compact ? 0.15 : 0.13)) {
+        rows[y][x] = dx > 0.7 ? '/' : dx < -0.7 ? '\\' : '-';
+      }
+    }
   }
   return rows.map(row => row.join('')).join('\n');
 }

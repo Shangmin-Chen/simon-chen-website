@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { imageUrl } from '../../../data/galleryData';
 import Lightbox from '../../../components/Lightbox';
@@ -25,14 +25,14 @@ function Thumbnail({ source, className = '' }) {
 function photoItems(album) {
   const photos = album.photos ?? [];
   return photos.map((photo, index) => {
-    const title = photoAlt(photo);
     const location = photo.location?.trim() ?? '';
-    const description = location && location !== title ? location : '';
+    const caption = photoAlt(photo);
+    const title = location.split(',')[0].trim() || caption;
     return {
       id: `${album.id}/${index}/${photo.full}`,
+      kind: 'photo',
       title,
-      description,
-      meta: `${String(index + 1).padStart(2, '0')} / ${String(photos.length).padStart(2, '0')}`,
+      accessibleLabel: caption,
       photo,
       index,
     };
@@ -42,6 +42,7 @@ function photoItems(album) {
 function albumItems(albums) {
   return albums.map(album => ({
     id: album.id,
+    kind: 'photo',
     title: album.title,
     description: album.description?.trim() ?? '',
     meta: `${album.photos?.length ?? 0} photos`,
@@ -62,8 +63,9 @@ function SceneHeader({ breadcrumb, title, headingRef, onBack, backLabel = '← a
 function AlbumScene({ album, resource, selectedIndex, onSelect, active, onBack, motion }) {
   const deckRef = useRef(null);
   const photos = album.photos ?? [];
+  const items = useMemo(() => photoItems(album), [album]);
   const selected = restorePhotoIndex({ [album.id]: selectedIndex }, album.id, photos.length);
-  const selectedItem = selected === null ? null : photoItems(album)[selected];
+  const selectedItem = selected === null ? null : items[selected];
   const selectedId = selectedItem?.id ?? null;
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const wasOpen = useRef(false);
@@ -89,11 +91,11 @@ function AlbumScene({ album, resource, selectedIndex, onSelect, active, onBack, 
   }, [active, lightboxIndex]);
 
   const selectPhoto = id => {
-    const item = photoItems(album).find(candidate => candidate.id === id);
+    const item = items.find(candidate => candidate.id === id);
     if (item) onSelect(item.index);
   };
   const openPhoto = id => {
-    const item = photoItems(album).find(candidate => candidate.id === id);
+    const item = items.find(candidate => candidate.id === id);
     if (!item) return;
     onSelect(item.index);
     setLightboxIndex(item.index);
@@ -111,11 +113,11 @@ function AlbumScene({ album, resource, selectedIndex, onSelect, active, onBack, 
       {photos.length
         ? <CardDeck
             ref={deckRef}
-            items={photoItems(album)}
+            items={items}
             selectedId={selectedId}
             onSelect={selectPhoto}
             onActivate={openPhoto}
-            label={`${album.title} photos`}
+            label="Photos"
             motion={motion && lightboxIndex === null}
             renderVisual={item => <Thumbnail key={item.photo.thumb ?? ''} source={item.photo.thumb} />}
           />

@@ -17,9 +17,12 @@ export function filesFor(section) {
   ];
   if (section === 'projects') return projects.map((project, index) => ({
     id: projectId(project, index),
+    kind: 'dossier',
     label: `${project.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.md`,
     title: project.title,
-    description: project.description,
+    purpose: project.summary,
+    detail: project.cardDetail,
+    tags: project.tags,
     meta: [project.meta.year, project.meta.role, project.meta.status],
   }));
   if (section === 'hobbies') return [

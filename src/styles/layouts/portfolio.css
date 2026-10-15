@@ -16,15 +16,20 @@
 @keyframes name-cycle-caret { to { visibility: hidden; } }
 .terminal-header button, .terminal-footer button { min-height: 40px; font-size: 11px; padding: 8px 0; }
 .ascii-rule { white-space: nowrap; overflow: hidden; color: var(--border-color); letter-spacing: 1px; font-size: 11px; align-self: center; }
-.workspace { position: relative; isolation: isolate; display: grid; grid-template-columns: 350px minmax(0, 1fr); gap: 48px; align-items: stretch; min-height: 0; padding: 12px 0; overflow: visible; }
+.workspace { position: relative; isolation: isolate; display: grid; grid-template-columns: minmax(0, 35%) minmax(0, 1fr); gap: clamp(18px, 2.4vw, 28px); align-items: stretch; min-height: 0; padding: 10px 0; overflow: visible; }
 .character-profile, .readme { position: relative; z-index: 1; min-width: 0; min-height: 0; }
-.character-profile { align-self: center; }
+.character-profile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; align-self: center; }
+.character-art { width: 100%; min-width: 0; }
+.character-art .ascii-portrait-text { font-size: 6.25px; line-height: 6.25px; }
+.character-art .portrait-caption { max-width: 100%; }
 .terminal-footer { font-size: 11px; color: var(--text-muted); }
 
 @media (prefers-reduced-motion: reduce) { .name-cycle-visual::after { animation: none !important; } }
 @media (max-width: 850px) and (min-width: 651px) {
   .portfolio { padding: 15px 25px 10px; }
-  .workspace { grid-template-columns: 310px minmax(0, 1fr); gap: 25px; }
+  .workspace { grid-template-columns: minmax(0, 35%) minmax(0, 1fr); gap: 18px; }
+  .character-art .ascii-portrait-text { font-size: 4.6px; line-height: 4.6px; }
+  .character-profile .crew-wheel { width: 200px; height: 200px; }
 }
 @media (max-width: 650px) {
   .portfolio { padding: 10px 18px 8px; }
@@ -32,35 +37,51 @@
   .terminal-name-caption { font-size: 7px; }
   .portfolio-surface { grid-template-rows: 36px 12px minmax(0, 1fr) 12px 36px; }
   .terminal-header button, .terminal-footer button { min-height: 36px; }
-  .workspace { grid-template-columns: minmax(0, 1fr); grid-template-rows: 128px minmax(0, 1fr); gap: 5px; padding: 4px 0; }
-  .character-profile { display: grid; grid-template-columns: minmax(0, 1fr) minmax(150px, 1fr); align-items: center; gap: 6px; min-height: 0; }
+  .workspace { grid-template-columns: minmax(0, 1fr); grid-template-rows: 166px minmax(0, 1fr); gap: 5px; padding: 4px 0; }
+  .character-profile { display: grid; grid-template-columns: minmax(0, 1fr) 132px; align-items: center; gap: 6px; min-height: 0; }
   .character-art, .character-navigation { min-width: 0; min-height: 0; }
-  .character-art { display: flex; flex-direction: column; align-items: center; }
+  .character-art { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .character-art .ascii-portrait-text { font-size: clamp(1.8px, 0.63vw, 2.2px); line-height: clamp(1.8px, 0.63vw, 2.2px); }
+  .character-profile .portrait-caption { justify-content: center; flex-wrap: wrap; margin-top: 3px; gap: 2px 5px; font-size: 11px; }
+  .character-profile .portrait-caption > div { display: flex; min-width: 0; max-width: 100%; flex-direction: column; align-items: center; text-align: center; }
+  .character-profile .portrait-caption strong { font-size: 14px; line-height: 1.2; }
+  .character-profile .portrait-caption .character-role { max-width: 100%; font-size: 11px; line-height: 1.25; overflow-wrap: anywhere; }
+  .character-profile .portrait-caption .character-section { display: none; }
+  .character-profile .portrait-caption button { min-height: 24px; padding: 2px 0; font-size: 9px; }
   .character-navigation { display: flex; flex-direction: column; align-items: stretch; }
-  .character-profile .ascii-portrait-text { font-size: clamp(1.6px, 0.24vh, 2.1px); line-height: clamp(1.6px, 0.24vh, 2.1px); }
-  .character-profile .portrait-caption { margin-top: 2px; gap: 3px; font-size: 7px; }
-  .character-profile .portrait-caption strong { font-size: 8px; }
-  .character-profile .portrait-caption button { min-height: 25px; }
-  .character-profile .portrait-caption .character-role, .character-profile .portrait-caption .character-section { display: none; }
-  .character-profile .crew-wheel { height: 96px; max-width: none; margin: 0; }
-  .character-profile .wheel-rail { height: 94px; }
-  .character-profile .crew-option { width: 48px; min-height: 40px; }
-  .character-profile .crew-option strong { font-size: 9px; }
-  .character-profile .crew-option small { font-size: 8px; }
-  .character-profile .wheel-controls { max-width: 100%; gap: 4px; font-size: 8px; }
-  .character-profile .wheel-controls button { min-width: 32px; min-height: 28px; }
   .readme { width: 100%; }
 }
 @media (max-height: 700px) and (max-width: 650px) {
   .portfolio { padding: 6px 14px; }
   .portfolio-surface { grid-template-rows: 30px 10px minmax(0, 1fr) 10px 30px; }
   .terminal-header button, .terminal-footer button { min-height: 30px; }
-  .workspace { gap: 2px; padding: 2px 0; grid-template-rows: 112px minmax(0, 1fr); }
-  .character-profile { grid-template-columns: minmax(0, 0.85fr) minmax(135px, 1.15fr); }
-  .character-profile .ascii-portrait-text { font-size: 1.55px; line-height: 1.55px; }
-  .character-profile .portrait-caption { margin-top: 1px; }
-  .character-profile .portrait-caption button { min-height: 22px; }
-  .character-profile .crew-wheel { height: 84px; }
-  .character-profile .wheel-rail { height: 82px; }
-  .character-profile .wheel-controls button { min-width: 32px; min-height: 22px; }
+  .workspace { gap: 2px; padding: 2px 0; grid-template-rows: 142px minmax(0, 1fr); }
+  .character-profile { grid-template-columns: minmax(0, 1fr) 116px; }
+  .character-art .ascii-portrait-text { font-size: clamp(1.7px, 0.58vw, 1.9px); line-height: clamp(1.7px, 0.58vw, 1.9px); }
+  .character-profile .crew-wheel { width: 112px; height: 112px; }
+  .character-profile .wheel-controls { max-width: 112px; }
+}
+
+@media (max-height: 560px) and (min-width: 651px) {
+  .portfolio { padding-block: 4px; }
+  .portfolio-surface { grid-template-rows: 28px 8px minmax(0, 1fr) 8px 28px; }
+  .terminal-header button, .terminal-footer button { min-height: 28px; }
+  .workspace { grid-template-columns: minmax(250px, 34%) minmax(0, 1fr); gap: 16px; }
+  .workspace { padding-block: 2px; }
+  .character-profile { display: grid; grid-template-columns: minmax(98px, 1fr) 120px; align-content: center; gap: 6px; }
+  .character-profile .crew-wheel { width: 120px; height: 120px; }
+  .character-art .ascii-portrait-text { font-size: 2.25px; line-height: 2.25px; }
+  .character-profile .portrait-caption { margin-top: 3px; gap: 2px; font-size: 11px; }
+  .character-profile .portrait-caption > div { display: flex; min-width: 0; max-width: 100%; flex-direction: column; align-items: center; text-align: center; }
+  .character-profile .portrait-caption strong { font-size: 14px; }
+  .character-profile .portrait-caption .character-role { font-size: 11px; }
+  .character-profile .portrait-caption button { min-height: 24px; font-size: 8px; }
+}
+
+@media (min-width: 480px) and (max-width: 650px) and (min-height: 701px) {
+  .workspace { grid-template-rows: 200px minmax(0, 1fr); }
+  .character-profile { grid-template-columns: minmax(0, 1fr) 162px; gap: 10px; }
+  .character-art .ascii-portrait-text { font-size: 3.2px; line-height: 3.2px; }
+  .character-profile .crew-wheel { width: 156px; height: 156px; }
+  .character-profile .wheel-controls { max-width: 156px; }
 }

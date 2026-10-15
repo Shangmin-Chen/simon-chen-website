@@ -11,6 +11,10 @@ test('home indexes compactly describe real content and map to reader entries', (
   assert.equal(filesFor('projects').length, projects.length);
   assert.deepEqual(filesFor('hobbies').map(file => file.id), ['reading', 'chess', 'gaming', 'running']);
   assert.equal(filesFor('projects')[0].title, projects[0].title);
+  assert.deepEqual(filesFor('projects').map(file => file.kind), ['dossier', 'dossier']);
+  assert.equal(filesFor('projects')[0].purpose, projects[0].summary);
+  assert.equal(filesFor('projects')[0].detail, projects[0].cardDetail);
+  assert.deepEqual(filesFor('projects')[0].tags, projects[0].tags);
   assert.equal(filesFor('hobbies')[0].title, 'Reading');
 });
 

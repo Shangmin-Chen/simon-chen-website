@@ -33,21 +33,32 @@ The router is a UI adapter: `/#whoami`, `/#projects`, `/#hobbies`, `/#contact`,
 `#now` to hobbies. Browser Back restores the selected character. ContentPanel
 retains a selected card ID per section. Whoami keeps the short bio visible above
 cards for the two experience roles and live GitHub activity; Projects and
-Hobbies use the same deck. One activation opens an in-scene InspectPanel over
+Hobbies use the same deck. Project purpose, detail, technology tags and metadata
+map from project data to two stacked typographic dossiers; the reader retains
+the full project descriptions. One activation opens an in-scene InspectPanel over
 the card area, with a shared ReaderFrame, breadcrumb, Close/Escape behavior,
-and previous/next card controls. The character art and crew wheel keep the same
-geometry while a card is inspected. Text reads in a naturally scrollable,
+and previous/next card controls. The character art and radial crew wheel keep
+the same geometry while a card is inspected. The desktop wheel shows five radial
+options; compact contexts center the selected option while arrows, number keys,
+Previous/Next, drag and wheel input keep every section reachable. The wheel uses
+responsive square geometry from the shared sizing policy, with static token-based
+concentric outlines behind the existing ASCII rail. Text reads in
+a naturally scrollable,
 visually scrollbar-free body, with long prose kept near 68 characters per line;
 the GitHub graph keeps its useful width. CardDeck presents each collection as a
-game inventory: a full-area, responsive multi-column grid inside one perimeter
-frame. The rack measures its usable width and height to choose grid tracks that
-match spatial keyboard navigation; larger image-first slots fill the area, and
-longer collections scroll inside the fixed frame. Selecting a slot marks it,
-while one click or Enter opens its item directly. Arrow keys navigate by grid
-position, Home and End reach the list bounds, and the selected slot scrolls into
-view. Wheel and touch use native scrolling. Returning focus or mounting a
-section reveals the selected slot without moving focus. A restrained perimeter
-trace follows the inventory frame. Contact is a one-item comms inventory;
+game inventory inside one perimeter frame. The pure inventory presentation
+policy receives the rack's usable width and height, item kinds and count, then
+supplies columns and visible rows to both the rendered CSS grid and spatial
+keyboard navigation. Projects stay in one column; photo slots use up to two
+columns when their width remains comfortable. Real photo cards show contained
+R2 thumbnails, a brief location/caption and the actual caption as their
+accessible name. Longer collections scroll inside the fixed frame. Hover never
+changes retained selection; one click or Enter opens an item directly. Arrow
+keys navigate by rendered grid position, Home and End reach the list bounds,
+and the selected slot scrolls into view. Wheel and touch use native scrolling.
+Returning focus or mounting a section reveals the selected slot without moving
+focus. A restrained perimeter trace follows the inventory frame. Contact is a
+one-item comms inventory;
 opening its ASCII
 letter slot overlays a `LetterComposer` in the same scene. The existing
 `useContact` submission and validation remain in place, the component stays

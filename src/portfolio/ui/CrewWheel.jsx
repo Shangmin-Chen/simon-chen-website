@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { accumulateWheelDelta, wheelOffset, wheelPosition, wheelRail } from '../domain/navigation';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { accumulateWheelDelta, wheelMode, wheelOffset, wheelPosition, wheelRail, wheelSize } from '../domain/navigation';
 
 export default function CrewWheel({ crew, selected, onSelect }) {
   const wheelRef = useRef(null);
@@ -10,13 +10,25 @@ export default function CrewWheel({ crew, selected, onSelect }) {
   const wheelDelta = useRef(0);
   const lastWheelAt = useRef(0);
   const focusRequested = useRef(false);
-  const [size, setSize] = useState({ width: 350, compact: false, short: false });
-  const focusPosition = wheelPosition(0, size.width, size.compact, size.short);
+  const [size, setSize] = useState({ width: 220, compact: false, short: false, medium: false });
+  const sizeRef = useRef(size);
+  const dimensions = wheelSize(size.compact, size.short, size.medium, size.wideShort);
+  const focusPosition = wheelPosition(0, size.width, size.compact, size.short, size.medium, size.wideShort);
+  const choose = useCallback((index, focus = false) => {
+    const target = ((index % crew.length) + crew.length) % crew.length;
+    const activeIsOption = buttons.current.includes(document.activeElement);
+    focusRequested.current = target !== selected && (focus || activeIsOption);
+    if (target !== selected) onSelect(target);
+  }, [crew.length, onSelect, selected]);
   useEffect(() => {
     const element = wheelRef.current;
     const update = () => {
       const width = element.getBoundingClientRect().width;
-      setSize({ width, compact: window.innerWidth <= 650 || width < 260, short: window.innerHeight <= 700 });
+      const next = { width, ...wheelMode(window.innerWidth, window.innerHeight) };
+      const previous = sizeRef.current;
+      if (previous.compact !== next.compact && buttons.current.includes(document.activeElement)) focusRequested.current = true;
+      sizeRef.current = next;
+      setSize(current => current.width === next.width && current.compact === next.compact && current.short === next.short && current.medium === next.medium && current.wideShort === next.wideShort ? current : next);
     };
     const observer = new ResizeObserver(update);
     observer.observe(element);
@@ -37,27 +49,24 @@ export default function CrewWheel({ crew, selected, onSelect }) {
       if (!accumulated.ready || now - lastWheel.current < 240) return;
       lastWheel.current = now;
       wheelDelta.current = 0;
-      onSelect(selected + accumulated.direction);
+      choose(selected + accumulated.direction);
     };
     element.addEventListener('wheel', scroll, { passive: false });
     return () => element.removeEventListener('wheel', scroll);
-  }, [onSelect, selected]);
+  }, [choose, selected]);
   useEffect(() => {
     const focused = document.activeElement;
     if (focusRequested.current || (wheelRef.current.contains(focused) && focused.hidden)) buttons.current[selected]?.focus();
     focusRequested.current = false;
-  }, [selected]);
+  }, [selected, size.compact]);
 
-  const choose = (index, focus = false) => {
-    focusRequested.current = focus;
-    onSelect(index);
-  };
   return (
     <>
       <nav
         className="crew-wheel"
         aria-label="Character switcher wheel"
         ref={wheelRef}
+        style={{ '--crew-wheel-width': `${dimensions.width}px`, '--crew-wheel-height': `${dimensions.height}px` }}
         onKeyDown={event => {
           if (event.isComposing || event.keyCode === 229 || event.altKey || event.metaKey || event.ctrlKey) return;
           if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
@@ -84,6 +93,7 @@ export default function CrewWheel({ crew, selected, onSelect }) {
         onPointerCancel={() => { gesture.current = null; }}
       >
         <pre className="wheel-rail" aria-hidden="true" style={{ fontSize: `${Math.min(8, size.width / (72 * 0.6))}px` }}>{wheelRail(size.compact, size.short)}</pre>
+        {!size.compact && <span className="wheel-center" aria-hidden="true"><strong>{crew[selected]?.name}</strong><small>{crew[selected]?.section}</small></span>}
         <span className="wheel-selection-frame" aria-hidden="true" style={{ '--wheel-x': `${focusPosition.x}px`, '--wheel-y': `${focusPosition.y}px`, '--wheel-scale': focusPosition.scale }}>
           <span className="wheel-selection-frame__corner wheel-selection-frame__corner--tl" />
           <span className="wheel-selection-frame__corner wheel-selection-frame__corner--tr" />
@@ -92,7 +102,7 @@ export default function CrewWheel({ crew, selected, onSelect }) {
         </span>
         {crew.map((member, index) => {
           const offset = wheelOffset(index, selected, crew.length);
-          const position = wheelPosition(offset, size.width, size.compact, size.short);
+          const position = wheelPosition(offset, size.width, size.compact, size.short, size.medium, size.wideShort);
           return <button
             key={member.id}
             ref={node => { buttons.current[index] = node; }}

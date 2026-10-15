@@ -31,7 +31,7 @@ const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect
   const lastBoundsRef = useRef(null);
   const initialRevealRef = useRef(false);
   const pendingResizeRevealRef = useRef(false);
-  const [layout, setLayout] = useState(() => inventoryLayout(0, 0, items.length));
+  const [layout, setLayout] = useState(() => inventoryLayout(0, 0, items));
   const [documentVisible, setDocumentVisible] = useState(() => typeof document === 'undefined' || document.visibilityState !== 'hidden');
   const activeIndex = cardIndexFor(items, selectedId);
 
@@ -64,12 +64,12 @@ const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect
       pendingResizeRevealRef.current = true;
     }
     lastBoundsRef.current = bounds;
-    const next = inventoryLayout(bounds.width, bounds.height, items.length);
+    const next = inventoryLayout(bounds.width, bounds.height, items);
     const current = layoutCacheRef.current;
-    if (current?.width === next.width && current.height === next.height && current.columns === next.columns && current.minimumSlotWidth === next.minimumSlotWidth && current.minimumSlotHeight === next.minimumSlotHeight) return;
+    if (current?.width === next.width && current.height === next.height && current.columns === next.columns && current.rows === next.rows && current.kind === next.kind && current.minimumSlotHeight === next.minimumSlotHeight) return;
     layoutCacheRef.current = next;
     setLayout(next);
-  }, [items.length]);
+  }, [items]);
 
   useLayoutEffect(() => {
     measureLayout();
@@ -138,14 +138,14 @@ const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect
     }
   };
 
-  return <section className="card-deck" ref={deckRef} data-columns={layout.columns} data-motion={motion} data-document-visible={documentVisible ? 'true' : 'false'} aria-label={label} onKeyDown={handleKeyDown}>
+  return <section className="card-deck" ref={deckRef} data-columns={layout.columns} data-kind={layout.kind} data-motion={motion} data-document-visible={documentVisible ? 'true' : 'false'} aria-label={label} onKeyDown={handleKeyDown}>
     <InventoryFrame motion={motion}>
       <header className="inventory-frame__header">
         <h2>{label.toUpperCase()}</h2>
         <span>{String(items.length).padStart(2, '0')} ITEMS</span>
       </header>
       <div className="inventory-rack" ref={rackRef} role="group" aria-label={`${label} inventory`}>
-        <div className="inventory-slots" style={{ '--inventory-slot-min-width': `${layout.minimumSlotWidth}px`, '--inventory-slot-min-height': `${layout.minimumSlotHeight}px` }}>
+        <div className="inventory-slots" style={{ '--inventory-columns': layout.columns, '--inventory-rows': layout.rows, '--inventory-slot-min-height': `${layout.minimumSlotHeight}px` }}>
           {items.map((item, index) => {
             const visual = renderVisual ? renderVisual(item) : item.visual;
             return <InventorySlot
@@ -159,7 +159,6 @@ const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect
               entryIndex={Math.min(index, 6)}
               onFocus={() => { if (item.id !== selectedId) onSelect?.(item.id); }}
               onClick={() => { onSelect?.(item.id); onActivate?.(item.id); }}
-              onMouseEnter={() => { if (item.id !== selectedId) onSelect?.(item.id); }}
               ref={node => { if (node) buttons.current.set(item.id, node); else buttons.current.delete(item.id); }}
             />;
           })}

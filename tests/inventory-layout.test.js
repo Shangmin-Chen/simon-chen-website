@@ -2,26 +2,48 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { inventoryLayout } from '../src/portfolio/domain/inventory-layout.js';
 
-test('inventory columns use actual rack width and adapt across phone and native sizes', () => {
-  assert.equal(inventoryLayout(265, 360, 18).columns, 1);
-  assert.equal(inventoryLayout(327, 500, 18).columns, 2);
-  assert.equal(inventoryLayout(562, 440, 18).columns, 3);
-  assert.equal(inventoryLayout(562, 440, 2).columns, 2);
+test('dossier inventories stay stacked and receive rows that fill the bounded rack', () => {
+  const items = [{ kind: 'dossier' }, { kind: 'dossier' }];
+  const layout = inventoryLayout(620, 520, items);
+  assert.equal(layout.kind, 'dossier');
+  assert.equal(layout.columns, 1);
+  assert.equal(layout.rows, 2);
+  assert.equal(layout.minimumSlotHeight, 178);
 });
 
-test('column capacity grows monotonically as rack width grows', () => {
-  const widths = [240, 265, 327, 490, 562, 850];
-  const columns = widths.map(width => inventoryLayout(width, 440, 18).columns);
-  assert.deepEqual(columns, [...columns].sort((left, right) => left - right));
+test('photo columns match the usable width and stop at two columns', () => {
+  const items = Array.from({ length: 18 }, () => ({ kind: 'photo' }));
+  assert.equal(inventoryLayout(311, 440, items).columns, 1);
+  assert.equal(inventoryLayout(312, 440, items).columns, 2);
+  assert.equal(inventoryLayout(700, 600, items).columns, 2);
+  assert.equal(inventoryLayout(700, 600, items).rows, 2);
+  assert.equal(inventoryLayout(700, 440, items).rows, 1);
+  assert.equal(inventoryLayout(700, 600, items).minimumSlotHeight, 248);
 });
 
-test('tile minimum height stays comfortable so short racks scroll rather than compressing artwork', () => {
-  for (const [width, height] of [[265, 360], [327, 500], [562, 440], [562, 120], [0, 0]]) {
-    const layout = inventoryLayout(width, height, 18);
-    assert.ok(Number.isFinite(layout.columns) && layout.columns >= 1);
-    assert.ok(Number.isFinite(layout.minimumSlotWidth) && layout.minimumSlotWidth >= 0);
-    assert.ok(Number.isFinite(layout.minimumSlotHeight) && layout.minimumSlotHeight >= 0);
-    assert.ok(layout.minimumSlotWidth <= Math.max(1, width));
-    assert.equal(layout.minimumSlotHeight, 184);
-  }
+test('short text collections fit visible rows and grow columns only when items fit', () => {
+  const items = Array.from({ length: 4 }, () => ({ kind: 'text' }));
+  const narrow = inventoryLayout(390, 150, items);
+  const roomy = inventoryLayout(520, 440, items);
+  assert.equal(narrow.columns, 1);
+  assert.equal(narrow.rows, 1);
+  assert.equal(roomy.columns, 2);
+  assert.equal(roomy.rows, 2);
+});
+
+test('empty and sparse collections get only the rows their real content needs', () => {
+  const empty = inventoryLayout(500, 600, []);
+  const one = inventoryLayout(500, 600, [{ kind: 'text' }]);
+  const pair = inventoryLayout(500, 600, [{ kind: 'text' }, { kind: 'text' }]);
+  assert.deepEqual([empty.count, empty.rows, empty.columns], [0, 1, 1]);
+  assert.deepEqual([one.count, one.rows, one.columns], [1, 1, 1]);
+  assert.deepEqual([pair.count, pair.rows, pair.columns], [2, 1, 2]);
+});
+
+test('legacy numeric counts remain bounded without creating synthetic item records', () => {
+  const layout = inventoryLayout(562, 440, 1_000_000_000);
+  assert.equal(layout.count, 1_000_000_000);
+  assert.equal(layout.columns, 2);
+  assert.equal(layout.minimumSlotWidth, 196);
+  assert.equal(layout.minimumSlotHeight, 148);
 });
