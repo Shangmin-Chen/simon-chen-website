@@ -1,28 +1,14 @@
-const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
-export function inventoryLayout(width, height) {
-  const safeWidth = Math.max(0, width);
-  const safeHeight = Math.max(0, height);
-  const wide = safeWidth >= 560;
-  const columns = 1;
-  // Keep a fixed budget for the frame header, controls, hint, and layout inset.
-  const availableHeight = Math.max(0, safeHeight - (wide ? 89 : 85));
-  const candidatePreviewHeight = wide
-    ? 0
-    : Math.min(availableHeight, clamp(Math.round(availableHeight * 0.38), 86, 170), Math.max(0, availableHeight - 64 - 7));
-  const showPreview = wide || candidatePreviewHeight >= 80;
-  const previewHeight = showPreview && !wide ? candidatePreviewHeight : 0;
-  const rackHeight = wide ? availableHeight : Math.max(0, availableHeight - (showPreview ? previewHeight + 7 : 0));
-  const minimumSlotHeight = Math.min(wide ? 58 : 52, Math.max(1, rackHeight));
+const GAP = 8;
+const MINIMUM_SLOT_WIDTH = 156;
 
-  return {
-    wide,
-    showPreview,
-    columns,
-    previewHeight,
-    rackHeight,
-    minimumSlotHeight,
-    availableHeight,
-    width: safeWidth,
-    height: safeHeight,
-  };
+export function inventoryLayout(width, height, itemCount = 0) {
+  const safeWidth = Number.isFinite(width) ? Math.max(0, width) : 0;
+  const safeHeight = Number.isFinite(height) ? Math.max(0, height) : 0;
+  const count = Number.isFinite(itemCount) ? Math.max(0, Math.floor(itemCount)) : 0;
+  const minimumSlotWidth = Math.min(safeWidth, MINIMUM_SLOT_WIDTH);
+  const minimumSlotHeight = 184;
+  const fitColumns = Math.max(1, Math.floor((safeWidth + GAP) / (MINIMUM_SLOT_WIDTH + GAP)));
+  const columns = Math.min(Math.max(1, count), fitColumns);
+
+  return { columns, minimumSlotWidth, minimumSlotHeight, width: safeWidth, height: safeHeight };
 }

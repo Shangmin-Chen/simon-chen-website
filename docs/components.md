@@ -21,24 +21,19 @@
   navigation for focused text inspections.
 - `SequenceNavigation`: native previous/next controls and an item count for
   multi-entry text file sequences.
-- `CardDeck` / `InventoryFrame` / `InventorySlot` / `InventoryPreview`: a game
-  inventory in one perimeter frame, with a measured one-column item rack and
-  prominent selected-item stage. Rows fill available rack height while all
-  items fit; longer lists use an internally scrollable rack. Wide layouts place
-  the rack beside the stage; measured narrow layouts place the stage above the
-  rack, while very short layouts omit the stage and keep direct slot opening.
-  Preview text and artwork come from real item data, with a native open action.
-  Hover, focus, and selection update the preview and active bracket without moving
-  slots; click or Enter opens the item directly. Arrows, Home, and End traverse
-  the full list and keep the focused item in view; native wheel and touch
-  scrolling remain available. Returning focus or mounting a section scrolls
-  the selected item into view without taking focus. A restrained perimeter
-  trace and angular frame assembly animate without moving targets. The shared
-  `useEntryReveal` hook keys the frame to its mount, slots to item IDs, and the
-  preview to its persistent mount, so changing selection does not replay the
-  preview reveal. Motion-off consumes an entry; enabling motion later does not
-  replay it. Traces pause for hidden tabs, inert decks, disabled motion, or
-  reduced motion.
+- `CardDeck` / `InventoryFrame` / `InventorySlot`: a full-area, responsive
+  multi-column inventory grid inside one perimeter frame. The rack measures its
+  usable bounds to choose matching grid and keyboard-navigation columns; larger
+  image-first slots fill the area, and longer lists scroll inside the fixed
+  frame. Selection marks a slot, while click or Enter opens its item directly.
+  Arrow keys navigate by spatial grid position, Home and End reach the list
+  bounds, and the selected slot scrolls into view. Native wheel and touch
+  scrolling remain available. Returning focus or mounting a section reveals the
+  selected slot without taking focus. A restrained perimeter trace and angular
+  frame assembly animate without moving targets. The shared `useEntryReveal`
+  hook keys the frame to its mount and slots to item IDs. Motion-off consumes
+  an entry; enabling motion later does not replay it. Traces pause for hidden
+  tabs, inert decks, disabled motion, or reduced motion.
 - `SignalBands` / `DecodePhrase`: a short Unicode-safe title/caption reveal
   with horizontal signal bands; original text stays semantic and readable to
   assistive technology, and motion follows the shell preference.

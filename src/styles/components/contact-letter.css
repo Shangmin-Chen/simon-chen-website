@@ -6,8 +6,7 @@
 .contact-workspace__prompt { margin: 0 0 8px; color: var(--text-muted); font-size: 10px; }
 .contact-workspace .card-deck { flex: 1 1 0; }
 .contact-letter-sigil { max-width: 100%; margin: 0; overflow: hidden; color: var(--highlight-color); font: 500 5px/1.2 var(--font-mono); white-space: pre; }
-.inventory-slot__media .contact-letter-sigil { font-size: 5px; }
-.inventory-preview__visual .contact-letter-sigil { font-size: clamp(11px, 2.1vw, 18px); line-height: 1.25; }
+.inventory-slot__media .contact-letter-sigil { font-size: clamp(8px, 1.4vw, 14px); line-height: 1.25; }
 .contact-workspace .inspect-panel { inset: 0; }
 .contact-letter { display: flex; min-height: 100%; flex-direction: column; gap: 13px; padding: 2px 1px 12px; }
 .contact-letter__address { display: flex; flex-direction: column; gap: 2px; padding: 0 0 9px; border-bottom: 1px dashed var(--border-color); color: var(--text-muted); font: 10px/1.5 var(--font-mono); }
