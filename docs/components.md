@@ -7,25 +7,37 @@
   glitch plan, frame border.
   Eye gaze follows the pointer horizontally; CSS tracer rays originate at each
   source iris center and are suppressed for frames without eye data.
-- `CrewWheel`: native selection controls and scoped drag/scroll/keyboard
-  gestures. Its local selection frame pauses for the intro, hidden tabs,
-  reduced motion, or the saved motion toggle; interactive targets stay fixed.
+- `CharacterSelector`: five unique section-first native buttons circulate around
+  an elliptical arc. At rest all destinations are visible and the selected one
+  settles at center/front; during a wrap, the outer button fades before it
+  re-enters at the opposite side. Drag can request multiple steps, accumulated
+  wheel input and focused-button Left/Right loop, and Home/End choose bounds.
+  Only the current destination is in the Tab order. The heading reuses
+  `NameCycle` with a stable accessible name; the short local phase animation
+  stops or snaps when motion is inactive, hidden, or reduced.
 - `ContentPanel`: stable character scene, per-section selected card state, and
-  mounted Contact/Pictures sections.
+  mounted Contact/Pictures sections. Its `focusContent()` imperative handle
+  focuses the active selected slot, the active reader heading, or the visible
+  section fallback, while skipping hidden, inert, and accessibility-hidden
+  content.
 - `InspectPanel`: in-scene text inspection over the card area; the underlying
   scene stays dimmed and inert while the card selection is retained. Opening
   uses a short masked panel/frame reveal on a real open transition when motion
   is enabled; focus and content are available immediately, and changing motion
   preferences never replays an already-open panel.
-- `ReaderFrame`: shared breadcrumb, title, Back, scrollable text body, and footer
-  navigation for focused text inspections.
-- `SequenceNavigation`: native previous/next controls and an item count for
-  multi-entry text file sequences.
+- `ReaderFrame`: shared breadcrumb, title, contextual Back, scrollable text
+  body, and footer navigation for focused text inspections.
+- `SequenceNavigation`: native previous/next controls whose accessible names
+  include the adjacent item title, plus an item count for multi-entry text file
+  sequences. Interior navigation retains command focus; moving to an edge
+  focuses the reader heading before the command becomes disabled.
 - `CardDeck` / `InventoryFrame` / `InventorySlot`: a full-area, responsive
   multi-column inventory grid inside one perimeter frame. The rack measures its
   usable bounds to choose matching grid and keyboard-navigation columns; larger
   image-first slots fill the area, and longer lists scroll inside the fixed
-  frame. Selection marks a slot, while click or Enter opens its item directly.
+  frame. Selection marks a slot, while click, tap, Enter, or Space opens its
+  item directly. Its footer shows a compact pointer hint by default and swaps
+  to a keyboard hint while the inventory contains focus.
   Arrow keys navigate by spatial grid position, Home and End reach the list
   bounds, and the selected slot scrolls into view. Native wheel and touch
   scrolling remain available. Returning focus or mounting a section reveals the
@@ -40,6 +52,8 @@
 - `Intro`: approved ASCII emblem with the shared domain glitch plan, automatic
   entry, focus and skip behavior.
 - `File`: terminal-style file content inside the shared text reader.
+- `SocialLinks`: the shared social profile navigation shown on the Contact
+  landing scene and in the letter composer.
 - `ResourceState`: loading, failure/retry, and empty-state presentation.
 - Section views: real whoami/GitHub activity, projects, photo galleries, hobbies/
   Goodreads, and contact. These receive ports and do not call fetch directly.
@@ -48,9 +62,12 @@
   while hidden to preserve letter drafts/validation, and keeps Pictures
   mounted to preserve per-album photo selection. Contact is a one-item comms
   inventory: opening its ASCII letter slot shows an in-scene `LetterComposer`
-  with the existing validated send action and social links. Closing the letter
+  with the existing validated send action and social links. Existing social
+  links are also available directly from the Contact landing scene. Closing the letter
   keeps the draft and returns focus to the selected slot. Gallery cards use R2
-  thumbnails and open the selected full image directly in `Lightbox`.
+  thumbnails and open the selected full image directly in `Lightbox`; the album
+  title and count share the inventory frame heading, with album-list Back kept
+  available for multi-album routes.
 - `Lightbox`: existing gallery viewer, retained for swipe and pinch zoom, with
   a bounded caption reveal that stops when motion is disabled or the viewer closes.
 

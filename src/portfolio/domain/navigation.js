@@ -23,59 +23,47 @@ export function sectionFromLocation({ pathname, hash }) {
   return 'whoami';
 }
 
-export function wheelOffset(index, selected, length = sections.length) {
-  const offset = wrapIndex(index - selected, length);
-  return offset > length / 2 ? offset - length : offset;
+export const sectionSelectorStageHeight = 110;
+export const sectionSelectorOptionHeight = 50;
+
+export function signedCircularOffset(index, phase, count = sections.length) {
+  const itemCount = Number.isFinite(count) ? Math.floor(count) : 0;
+  if (itemCount <= 0 || !Number.isFinite(index) || !Number.isFinite(phase)) return 0;
+  const half = itemCount / 2;
+  return ((index - phase + half) % itemCount + itemCount) % itemCount - half;
 }
 
-export function wheelMode(viewportWidth, viewportHeight) {
-  const width = Number.isFinite(viewportWidth) ? Math.max(0, viewportWidth) : 0;
-  const height = Number.isFinite(viewportHeight) ? Math.max(0, viewportHeight) : 0;
-  const short = height <= 560 || (width <= 850 && height <= 700);
-  return {
-    compact: width <= 650 || short,
-    medium: width > 480 && width <= 650 && height > 700,
-    short,
-    wideShort: width > 650 && short,
-  };
-}
-
-export function wheelSize(compact, short = false, medium = false, wideShort = false) {
-  const dimension = compact ? (wideShort ? 120 : short ? 112 : medium ? 156 : 128) : (short ? 188 : 220);
-  return { width: dimension, height: dimension };
-}
-
-export function wheelPosition(offset, width, compact, short = false, medium = false, wideShort = false) {
+export function sectionSelectorPositions(width, phase, count = sections.length) {
   const safeWidth = Number.isFinite(width) ? Math.max(0, width) : 0;
-  const radius = compact ? Math.min(34, safeWidth * 0.25) : Math.min(72, safeWidth * 0.33);
-  const { height } = wheelSize(compact, short, medium, wideShort);
-  const buttonHalfHeight = compact ? 20 : 25;
-  const angle = offset * 72 * Math.PI / 180;
-  return {
-    x: compact ? 0 : Math.sin(angle) * radius,
-    y: compact ? height / 2 - buttonHalfHeight : height / 2 - Math.cos(angle) * radius - buttonHalfHeight,
-    scale: offset === 0 ? 1 : Math.abs(offset) === 1 ? 0.96 : 0.94,
-    hidden: compact && offset !== 0,
-  };
-}
+  const itemCount = Number.isFinite(count) ? Math.max(0, Math.floor(count)) : 0;
+  if (!itemCount) return [];
 
-export function wheelRail(compact, short = false) {
-  const columns = 72;
-  const rowCount = compact ? (short ? 12 : 14) : (short ? 18 : 20);
-  const rows = Array.from({ length: rowCount }, () => Array(columns).fill(' '));
-  const radiusX = 29;
-  const radiusY = compact ? 5 : 8;
-  const centerX = (columns - 1) / 2;
-  const centerY = (rowCount - 1) / 2;
-  for (let y = 0; y < rowCount; y++) {
-    for (let x = 0; x < columns; x++) {
-      const dx = (x - centerX) / radiusX;
-      const dy = (y - centerY) / radiusY;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-      if (Math.abs(distance - 1) < (compact ? 0.15 : 0.13)) {
-        rows[y][x] = dx > 0.7 ? '/' : dx < -0.7 ? '\\' : '-';
-      }
-    }
-  }
-  return rows.map(row => row.join('')).join('\n');
+  const radius = itemCount / 2;
+  const itemWidth = Math.min(82, safeWidth / (itemCount + 0.32));
+  const outerScale = 1 + 0.06 * Math.max(0, 1 - (itemCount - 1) / 2 / radius);
+  const step = itemCount > 1 ? (safeWidth - itemWidth * outerScale) / (itemCount - 1) : 0;
+  const edgeOffset = (itemCount - 1) / 2;
+  const outerY = 4;
+  const arcDepth = 38;
+
+  return Array.from({ length: itemCount }, (_, index) => {
+    const offset = signedCircularOffset(index, phase, itemCount);
+    const distance = Math.abs(offset);
+    const proximity = Math.max(0, 1 - distance / radius);
+    const seamProgress = Math.max(0, Math.min(1, distance - edgeOffset));
+    const seamT = seamProgress / (radius - edgeOffset || 1);
+    const seamEase = seamT * seamT * (3 - 2 * seamT);
+    const arcProgress = edgeOffset ? Math.min(distance, edgeOffset) / edgeOffset : 0;
+    return {
+      offset,
+      left: safeWidth / 2 + offset * step - itemWidth / 2,
+      width: itemWidth,
+      arcY: outerY + arcDepth * Math.sqrt(1 - arcProgress ** 2),
+      lift: -4 * proximity,
+      scale: 1 + 0.06 * proximity,
+      opacity: 1 - seamEase,
+      front: Math.max(0, 1 - distance),
+      depth: Math.round((radius - distance) * 100),
+    };
+  });
 }

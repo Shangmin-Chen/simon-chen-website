@@ -1,12 +1,12 @@
 import { portraitEyeCenters } from './portrait.js';
 
-// Convert the 72x33 source grid into viewport points. The title occupies one
-// line; the frame adds one character column on the left of each eye.
-export function portraitEyePoints(portrait, { textRect, rootRect, charWidth, lineHeight, gazeX = 0 }) {
-  if (!portrait.eyes?.length || !textRect || !rootRect || !charWidth || !lineHeight) return [];
+// Convert the source grid directly into viewport points. The title occupies
+// one line; the frame adds one character column on the left of each eye.
+export function portraitEyePoints(portrait, { textRect, charWidth, lineHeight, gazeX = 0 }) {
+  if (!portrait.eyes?.length || !textRect || !charWidth || !lineHeight) return [];
   return portraitEyeCenters(portrait, gazeX).map(({ x, y }) => ({
-    x: textRect.left - rootRect.left + (x + 1.5) * charWidth,
-    y: textRect.top - rootRect.top + (y + 1.5) * lineHeight,
+    x: textRect.left + (x + 1.5) * charWidth,
+    y: textRect.top + (y + 1.5) * lineHeight,
   }));
 }
 

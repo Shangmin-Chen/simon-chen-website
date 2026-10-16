@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { imageUrl } from '../../../data/galleryData';
 import Lightbox from '../../../components/Lightbox';
@@ -52,16 +52,17 @@ function albumItems(albums) {
 
 function SceneHeader({ breadcrumb, title, headingRef, onBack, backLabel = '← albums' }) {
   return <header className="gallery-scene__header">
-    <div className="gallery-scene__heading">
-      <span className="gallery-scene__breadcrumb">{breadcrumb}</span>
-      <h2 ref={headingRef} tabIndex={-1}>{title}</h2>
-    </div>
+    {(breadcrumb || title) && <div className="gallery-scene__heading">
+      {breadcrumb && <span className="gallery-scene__breadcrumb">{breadcrumb}</span>}
+      {title && <h2 ref={headingRef} tabIndex={-1}>{title}</h2>}
+    </div>}
     {onBack && <button className="gallery-scene__back" type="button" onClick={onBack}>{backLabel}</button>}
   </header>;
 }
 
-function AlbumScene({ album, resource, selectedIndex, onSelect, active, onBack, motion }) {
+const AlbumScene = forwardRef(function AlbumScene({ album, selectedIndex, onSelect, active, onBack, motion, onReturnToCharacters }, forwardedRef) {
   const deckRef = useRef(null);
+  const sceneRef = useRef(null);
   const photos = album.photos ?? [];
   const items = useMemo(() => photoItems(album), [album]);
   const selected = restorePhotoIndex({ [album.id]: selectedIndex }, album.id, photos.length);
@@ -69,11 +70,25 @@ function AlbumScene({ album, resource, selectedIndex, onSelect, active, onBack, 
   const selectedId = selectedItem?.id ?? null;
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const wasOpen = useRef(false);
-  const headingRef = useRef(null);
+
+  useImperativeHandle(forwardedRef, () => ({
+    focusContent() {
+      if (!active) return false;
+      if (deckRef.current?.focusContent?.()) return true;
+      const scene = sceneRef.current;
+      if (!scene?.isConnected || scene.closest('[hidden],[inert],[aria-hidden="true"]')) return false;
+      scene.focus({ preventScroll: true });
+      return document.activeElement === scene;
+    },
+  }), [active]);
 
   useEffect(() => {
     if (!active) return undefined;
-    const frame = window.requestAnimationFrame(() => headingRef.current?.focus());
+    const frame = window.requestAnimationFrame(() => {
+      const scene = sceneRef.current;
+      const focused = document.activeElement;
+      if (scene && (focused === document.body || !focused?.isConnected || scene.contains(focused))) deckRef.current?.focusContent?.();
+    });
     return () => window.cancelAnimationFrame(frame);
   }, [active, album.id]);
 
@@ -101,28 +116,39 @@ function AlbumScene({ album, resource, selectedIndex, onSelect, active, onBack, 
     setLightboxIndex(item.index);
   };
 
+  const handleKeyDown = event => {
+    if (event.key !== 'Escape' || event.defaultPrevented || event.isComposing || event.keyCode === 229
+      || event.altKey || event.ctrlKey || event.metaKey || lightboxIndex !== null
+      || event.target.closest('input,textarea,select,[contenteditable="true"],[role="dialog"]')) return;
+    event.preventDefault();
+    if (onBack) onBack();
+    else onReturnToCharacters?.();
+  };
+
   return <section
+    ref={sceneRef}
+    tabIndex={-1}
     className="gallery-scene"
+    onKeyDown={handleKeyDown}
     aria-label={`${album.title} photo gallery`}
     aria-hidden={lightboxIndex !== null ? 'true' : undefined}
     inert={lightboxIndex !== null}
   >
-    <SceneHeader breadcrumb="pictures/" title={album.title} headingRef={headingRef} onBack={onBack} />
+    {onBack && <SceneHeader onBack={onBack} />}
     {album.description && <p className="gallery-scene__note">{album.description}</p>}
-    <ResourceState resource={resource} loadingText="Connecting to the photo archive…" empty={false}>
-      {photos.length
-        ? <CardDeck
+    <CardDeck
             ref={deckRef}
             items={items}
             selectedId={selectedId}
+            onReturnToCharacters={onReturnToCharacters}
             onSelect={selectPhoto}
             onActivate={openPhoto}
             label="Photos"
+            heading={album.title}
+            emptyContent={<span>No photos are available in this album.</span>}
             motion={motion && lightboxIndex === null}
             renderVisual={item => <Thumbnail key={item.photo.thumb ?? ''} source={item.photo.thumb} />}
-          />
-        : <p className="gallery-scene__empty" role="status">No photos are available in this album.</p>}
-    </ResourceState>
+    />
     {active && lightboxIndex !== null && <Lightbox
       photos={photos}
       index={lightboxIndex}
@@ -134,24 +160,44 @@ function AlbumScene({ album, resource, selectedIndex, onSelect, active, onBack, 
       motion={motion}
     />}
   </section>;
-}
+});
 
-export default function Pictures({ resource, active, albumId, motion = true }) {
+const Pictures = forwardRef(function Pictures({ resource, active, albumId, motion = true, onReturnToCharacters }, forwardedRef) {
   const navigate = useNavigate();
   const result = useResource(resource, active);
   const albums = result.data?.galleries ?? [];
   const [selectionByAlbum, setSelectionByAlbum] = useState({});
   const [selectedAlbumId, setSelectedAlbumId] = useState(null);
   const indexHeadingRef = useRef(null);
+  const indexSceneRef = useRef(null);
+  const indexDeckRef = useRef(null);
+  const albumSceneRef = useRef(null);
   const previousAlbumRoute = useRef(Boolean(albumId));
+  const hasAlbumScene = albumId ? albums.some(item => item.id === albumId) : albums.length === 1;
 
   useEffect(() => {
     const returnedToIndex = active && previousAlbumRoute.current && !albumId;
     previousAlbumRoute.current = Boolean(albumId);
     if (!returnedToIndex) return undefined;
-    const frame = window.requestAnimationFrame(() => indexHeadingRef.current?.focus());
+    const frame = window.requestAnimationFrame(() => {
+      const scene = indexSceneRef.current;
+      const focused = document.activeElement;
+      if (scene && (focused === document.body || !focused?.isConnected || scene.contains(focused))) indexDeckRef.current?.focusContent?.();
+    });
     return () => window.cancelAnimationFrame(frame);
   }, [active, albumId]);
+
+  useImperativeHandle(forwardedRef, () => ({
+    focusContent() {
+      if (!active) return false;
+      if (hasAlbumScene && albumSceneRef.current?.focusContent?.()) return true;
+      if (!hasAlbumScene && !albumId && indexDeckRef.current?.focusContent?.()) return true;
+      const fallback = indexHeadingRef.current ?? indexSceneRef.current;
+      if (!fallback?.isConnected || fallback.closest('[hidden],[inert],[aria-hidden="true"]')) return false;
+      fallback.focus({ preventScroll: true });
+      return document.activeElement === fallback;
+    },
+  }), [active, albumId, hasAlbumScene]);
 
   if (!active) return null;
 
@@ -160,11 +206,18 @@ export default function Pictures({ resource, active, albumId, motion = true }) {
     const title = result.status === 'ready'
       ? 'Album not found'
       : result.status === 'error' ? 'Photo archive unavailable' : 'Opening album…';
-    return <section className="gallery-scene gallery-scene--status" aria-label={title}>
-      <SceneHeader breadcrumb="pictures/" title={title} onBack={() => navigate('/gallery')} />
+    return <section ref={indexSceneRef} tabIndex={-1} className="gallery-scene gallery-scene--status" aria-label={title}>
+      <SceneHeader breadcrumb="pictures/" title={title} headingRef={indexHeadingRef} onBack={() => navigate('/gallery')} />
       <ResourceState resource={result} loadingText="Connecting to the photo archive…" empty={false}>
         <p className="gallery-scene__empty" role="status">This album is not in the photo archive.</p>
       </ResourceState>
+    </section>;
+  }
+
+  if (result.status === 'idle' || result.status === 'loading' || result.status === 'error') {
+    return <section ref={indexSceneRef} tabIndex={-1} className="gallery-scene gallery-scene--status" aria-label="Photo archive">
+      <SceneHeader breadcrumb="pictures/" title="Pictures" headingRef={indexHeadingRef} onBack={onReturnToCharacters} backLabel="← characters" />
+      <ResourceState resource={result} loadingText="Connecting to the photo archive…" empty={false} />
     </section>;
   }
 
@@ -174,12 +227,13 @@ export default function Pictures({ resource, active, albumId, motion = true }) {
   if (album) {
     const selectedIndex = restorePhotoIndex(selectionByAlbum, album.id, album.photos?.length ?? 0);
     return <AlbumScene
+      ref={albumSceneRef}
       key={album.id}
       album={album}
-      resource={result}
       active={active}
       motion={motion}
       selectedIndex={selectedIndex}
+      onReturnToCharacters={onReturnToCharacters}
       onSelect={index => setSelectionByAlbum(current => ({ ...current, [album.id]: index }))}
       onBack={albums.length > 1 ? () => navigate('/gallery') : undefined}
     />;
@@ -187,21 +241,22 @@ export default function Pictures({ resource, active, albumId, motion = true }) {
 
   const items = albumItems(albums);
   const selectedId = items.some(item => item.id === selectedAlbumId) ? selectedAlbumId : items[0]?.id ?? null;
-  return <ResourceState resource={result} loadingText="Connecting to the photo archive…">
-    <section className="gallery-scene" aria-label="Photo albums">
-      <SceneHeader breadcrumb="pictures/" title="Pictures" headingRef={indexHeadingRef} />
-      <p className="gallery-scene__note">A few frames from away from the keyboard.</p>
-      {items.length
-        ? <CardDeck
-            items={items}
-            selectedId={selectedId}
-            onSelect={setSelectedAlbumId}
-            onActivate={id => navigate(`/gallery/${encodeURIComponent(id)}`)}
-            label="Photo albums"
-            motion={motion}
-            renderVisual={item => <Thumbnail key={item.album.photos?.[0]?.thumb ?? ''} source={item.album.photos?.[0]?.thumb} />}
-          />
-        : <p className="gallery-scene__empty" role="status">No photos are available yet.</p>}
-    </section>
-  </ResourceState>;
-}
+  return <section ref={indexSceneRef} tabIndex={-1} className="gallery-scene" aria-label="Photo albums">
+    <p className="gallery-scene__note">A few frames from away from the keyboard.</p>
+    <CardDeck
+      ref={indexDeckRef}
+      items={items}
+      selectedId={selectedId}
+      onReturnToCharacters={onReturnToCharacters}
+      onSelect={setSelectedAlbumId}
+      onActivate={id => navigate(`/gallery/${encodeURIComponent(id)}`)}
+      label="Photo albums"
+      heading="Pictures"
+      emptyContent={<span>No photos are available yet.</span>}
+      motion={motion}
+      renderVisual={item => <Thumbnail key={item.album.photos?.[0]?.thumb ?? ''} source={item.album.photos?.[0]?.thumb} />}
+    />
+  </section>;
+});
+
+export default Pictures;

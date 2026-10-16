@@ -1,5 +1,5 @@
-body { font: 400 12px/1.7 var(--font-mono); }
+body { font: 400 16px/1.6 var(--font-sans); }
 h1, h2, h3 { font-family: var(--font-mono); font-weight: 500; }
-h3 { font-size: 13px; margin: 0 0 8px; }
-.terminal-note { color: var(--text-muted); font-size: 11px; }
-.terminal-error { color: var(--error-color); font-size: 11px; }
+h3 { font-size: 18px; margin: 0 0 8px; }
+.terminal-note { color: var(--text-muted); font: 13px/1.5 var(--font-mono); }
+.terminal-error { color: var(--error-color); font: 13px/1.5 var(--font-mono); }

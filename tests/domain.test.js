@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { accumulateWheelDelta, sections, wrapIndex, wheelMode, wheelOffset, wheelPosition, wheelSize, sectionFromLocation } from '../src/portfolio/domain/navigation.js';
+import { accumulateWheelDelta, sections, wrapIndex, signedCircularOffset, sectionSelectorPositions, sectionSelectorStageHeight, sectionSelectorOptionHeight, sectionFromLocation } from '../src/portfolio/domain/navigation.js';
 import { validateContact } from '../src/portfolio/domain/contact.js';
 import { contributionWindow } from '../src/portfolio/domain/contributions.js';
 import { portraitFrame, introFrame, colorRuns } from '../src/portfolio/domain/portrait.js';
@@ -10,29 +10,69 @@ import { photoAlt } from '../src/portfolio/domain/photos.js';
 const crew = JSON.parse(readFileSync(new URL('../src/portfolio/assets/crew.json', import.meta.url)));
 const intro = JSON.parse(readFileSync(new URL('../src/portfolio/assets/intro.json', import.meta.url)));
 
-test('compact crew wheel centers one option while desktop geometry keeps five radial routes', () => {
-  assert.deepEqual(wheelSize(true, false, true), { width: 156, height: 156 });
-  assert.deepEqual(wheelSize(true, true), { width: 112, height: 112 });
-  assert.deepEqual(wheelSize(true, true, false, true), { width: 120, height: 120 });
-  assert.deepEqual(wheelSize(false, true), { width: 188, height: 188 });
-  const compactViewport = wheelMode(390, 844);
-  const desktopViewport = wheelMode(1280, 900);
-  assert.equal(compactViewport.compact, true);
-  assert.equal(desktopViewport.compact, false);
-  assert.deepEqual(wheelMode(800, 600), { compact: true, medium: false, short: true, wideShort: true });
-  assert.deepEqual(wheelMode(844, 390), { compact: true, medium: false, short: true, wideShort: true });
+test('looping section selector keeps five centered, non-overlapping targets within compact widths', () => {
   assert.deepEqual(crew.map(member => member.section), sections);
   assert.equal(wrapIndex(-1), 4);
   assert.equal(wrapIndex(5), 0);
   assert.equal(wrapIndex(-16), 4);
-  for (let selected = 0; selected < 5; selected++) {
-    const visible = crew.map((_, index) => wheelPosition(wheelOffset(index, selected), 284, true)).filter(position => !position.hidden);
-    assert.equal(visible.length, 1);
-    assert(visible.every(position => Number.isFinite(position.x) && Number.isFinite(position.y)));
-    assert.equal(visible[0].x, 0);
-    const radial = crew.map((_, index) => wheelPosition(wheelOffset(index, selected), 220, false));
-    assert(radial.every(position => !position.hidden && Number.isFinite(position.x) && Number.isFinite(position.y)));
-    assert.equal(new Set(radial.map(position => `${Math.round(position.x)}:${Math.round(position.y)}`)).size, 5);
+  for (const width of [280, 292, 320, 358]) {
+    for (let selected = 0; selected < sections.length; selected++) {
+      const positions = sectionSelectorPositions(width, selected);
+      assert.equal(positions.length, 5);
+      assert(positions.every(position => position.width >= 52 && Number.isFinite(position.arcY) && Number.isFinite(position.opacity)));
+      const bounds = positions.map(position => {
+        const scaledWidth = position.width * position.scale;
+        return [position.left + (position.width - scaledWidth) / 2, position.left + (position.width + scaledWidth) / 2];
+      });
+      const verticalBounds = positions.map(position => {
+        const scaledHeight = sectionSelectorOptionHeight * position.scale;
+        const top = position.arcY + position.lift - (scaledHeight - sectionSelectorOptionHeight) / 2;
+        return [top, top + scaledHeight];
+      });
+      assert(Math.min(...bounds.map(([left]) => left)) >= -1e-6);
+      assert(Math.max(...bounds.map(([, right]) => right)) <= width + 1e-6);
+      const orderedBounds = [...positions].sort((a, b) => a.offset - b.offset).map(position => {
+        const scaledWidth = position.width * position.scale;
+        return [position.left + (position.width - scaledWidth) / 2, position.left + (position.width + scaledWidth) / 2];
+      });
+      for (let index = 1; index < orderedBounds.length; index++) assert(orderedBounds[index - 1][1] < orderedBounds[index][0]);
+      assert(verticalBounds.every(([top, bottom]) => top >= 0 && bottom <= sectionSelectorStageHeight));
+      assert.equal(positions[selected].offset, 0);
+      assert.equal(positions[selected].scale, 1.06);
+      assert.equal(positions[selected].lift, -4);
+      assert.equal(positions[selected].arcY, 42);
+      assert.equal(positions[selected].front, 1);
+      assert.equal(positions[selected].opacity, 1);
+      assert.equal(positions[selected].depth, 250);
+      assert.equal(Math.min(...positions.map(position => position.arcY)), 4);
+    }
+  }
+});
+
+test('selector offsets wrap in both directions and remain stable across full rotations', () => {
+  assert.equal(signedCircularOffset(0, 4), 1);
+  assert.equal(signedCircularOffset(4, 0), -1);
+  assert.equal(signedCircularOffset(0, 9), 1);
+  assert.equal(signedCircularOffset(4, 10), -1);
+  assert(Math.abs(signedCircularOffset(3, 1.4) - signedCircularOffset(3, 16.4)) < 1e-9);
+  const oneRotation = sectionSelectorPositions(320, 0.4);
+  const severalRotations = sectionSelectorPositions(320, 15.4);
+  for (let index = 0; index < oneRotation.length; index++) {
+    assert(Math.abs(oneRotation[index].offset - severalRotations[index].offset) < 1e-9);
+    assert(Math.abs(oneRotation[index].left - severalRotations[index].left) < 1e-9);
+    assert(Math.abs(oneRotation[index].opacity - severalRotations[index].opacity) < 1e-9);
+  }
+});
+
+test('selector fades the unique seam button before its circular offset wraps', () => {
+  const before = sectionSelectorPositions(320, 2.49)[0];
+  const after = sectionSelectorPositions(320, 2.51)[0];
+  assert(before.offset < -2.4);
+  assert(after.offset > 2.4);
+  assert(before.opacity < 0.01);
+  assert(after.opacity < 0.01);
+  for (const selected of [0, 1, 2, 3, 4]) {
+    assert(sectionSelectorPositions(320, selected).every(position => position.opacity === 1));
   }
 });
 
@@ -44,7 +84,7 @@ test('gallery deep links and legacy anchors map to the appropriate character', (
   assert.equal(sectionFromLocation({ pathname: '/', hash: '#unknown' }), 'whoami');
 });
 
-test('crew wheel accumulates small trackpad deltas without losing direction changes', () => {
+test('section selector accumulates small trackpad deltas without losing direction changes', () => {
   const first = accumulateWheelDelta(0, 3);
   assert.equal(first.ready, false);
   const second = accumulateWheelDelta(first.total, 4);

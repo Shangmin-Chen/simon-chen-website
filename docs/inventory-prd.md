@@ -94,3 +94,13 @@ Visual review checks that three photo subjects are recognizable in the grid, spa
 3. **Content-specific anatomy:** Use contained real thumbnails with brief photo identifiers; two typographic project dossiers with a title, one-line purpose, actual detail, technology cues and metadata; concise role/activity cards; and the existing ASCII letter slot. These types share the measured inventory frame and direct-opening behavior.
 
 The approved layout is implemented with the existing live data, portrait assets, navigation and readers. Validation covers sparse, typical, dense, narrow-phone and short-landscape bounds, including the 320×568 and 844×390 cases. Future composition changes should preserve this hierarchy and real-content behavior.
+
+## Current section-selector behavior (2026-10-15)
+
+The current selector supersedes the earlier wheel-size measurements and
+Previous/Next controls described above. It is an endless carousel: five unique
+section destinations circulate around an elliptical arc, the selected one
+settles at center/front, and the outer card fades before re-entering from the
+opposite side. Pointer selection, multi-step drag, accumulated wheel input, and
+focused-button looping Left/Right or Home/End navigation remain available.
+Other inventory and composition requirements above remain in effect.

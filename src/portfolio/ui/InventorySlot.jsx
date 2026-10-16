@@ -8,11 +8,14 @@ const InventorySlot = forwardRef(function InventorySlot({ item, index, selected,
   const kind = item.kind ?? (item.photo ? 'photo' : visual ? 'letter' : 'text');
   const accessibleLabel = item.accessibleLabel ?? (item.purpose ? `${item.title}: ${item.purpose}` : item.title);
   const descriptionId = useId();
+  const accessibleDescriptionId = `${descriptionId}-accessible`;
   const fileId = `${descriptionId}-file`;
   const detailId = `${descriptionId}-detail`;
   const metaId = `${descriptionId}-meta`;
   const hasDetails = item.label || item.description || meta;
-  const describedBy = kind === 'dossier'
+  const describedBy = item.accessibleDescription
+    ? accessibleDescriptionId
+    : kind === 'dossier'
     ? [fileId, item.detail ? detailId : '', metaId].filter(Boolean).join(' ')
     : kind === 'photo' ? descriptionId : hasDetails ? descriptionId : undefined;
 
@@ -35,7 +38,7 @@ const InventorySlot = forwardRef(function InventorySlot({ item, index, selected,
     onClick={onClick}
   >
     {kind === 'dossier' ? <>
-      <span className="inventory-dossier__head" id={fileId}><span>{item.label}</span><span aria-hidden="true">↗</span></span>
+      <span className="inventory-dossier__head" id={fileId}><span>{item.label}</span></span>
       <span className="inventory-dossier__title">{item.title}</span>
       <span className="inventory-dossier__purpose">{item.purpose}</span>
       {item.detail && <span className="inventory-dossier__detail" id={detailId}>{item.detail}</span>}
@@ -55,6 +58,8 @@ const InventorySlot = forwardRef(function InventorySlot({ item, index, selected,
         </span>}
       </span>
     </>}
+    {item.accessibleDescription && <span className="sr-only" id={accessibleDescriptionId}>{item.accessibleDescription}</span>}
+    <span className="inventory-slot__open" aria-hidden="true">OPEN ↵</span>
     <span className="inventory-slot__index" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
   </button>;
 });

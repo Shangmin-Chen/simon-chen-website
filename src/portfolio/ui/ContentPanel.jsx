@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { adjacentFileId, filesFor, sequenceFor } from '../domain/reader';
 import Whoami from './sections/Whoami';
 import Projects from './sections/Projects';
@@ -8,42 +8,62 @@ import Contact from './sections/Contact';
 import CardDeck from './CardDeck';
 import InspectPanel from './InspectPanel';
 
-export default function ContentPanel({ member, services, albumId, motion, sceneKey, onPortfolioHome, onGalleryHome }) {
+const ContentPanel = forwardRef(function ContentPanel({ member, services, albumId, motion, sceneKey, onReturnToCharacters, onGalleryHome }, forwardedRef) {
   const section = member.section;
+  const contentRef = useRef(null);
+  const textSceneRef = useRef(null);
+  const contactRef = useRef(null);
+  const picturesRef = useRef(null);
   const [selections, setSelections] = useState({});
   const selectedId = selections[section] ?? '';
   const isContact = section === 'contact';
   const isPictures = section === 'pictures';
   const handleKeyDown = event => {
-    if (event.key !== 'Escape' || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey
+    if (event.key !== 'Escape' || event.defaultPrevented || event.isComposing || event.keyCode === 229
+      || event.altKey || event.ctrlKey || event.metaKey
       || event.target.closest('input,textarea,select,[contenteditable="true"],[role="dialog"]')) return;
-    if (isContact) { event.preventDefault(); onPortfolioHome(); }
-    else if (isPictures && albumId) { event.preventDefault(); onGalleryHome(); }
+    if (isPictures && albumId) { event.preventDefault(); onGalleryHome(); }
+    else { event.preventDefault(); onReturnToCharacters?.(); }
   };
 
-  return <section className="readme" data-view={isContact ? 'contact' : isPictures ? 'gallery' : 'index'} aria-label="Simon Chen portfolio scene" onKeyDown={handleKeyDown}>
-    <h1 className="sr-only">Simon Chen</h1>
+  const sectionName = `${section[0].toUpperCase()}${section.slice(1)}`;
 
+  useImperativeHandle(forwardedRef, () => ({
+    focusContent() {
+      const activeRef = isContact ? contactRef : isPictures ? picturesRef : textSceneRef;
+      if (activeRef.current?.focusContent?.()) return true;
+      const root = contentRef.current;
+      if (!root?.isConnected || root.closest('[hidden],[inert],[aria-hidden="true"]')) return false;
+      root.focus({ preventScroll: true });
+      return document.activeElement === root;
+    },
+  }), [isContact, isPictures]);
+
+  return <section ref={contentRef} id="main-content" tabIndex={-1} className="readme" data-view={isContact ? 'contact' : isPictures ? 'gallery' : 'index'} aria-label={`${sectionName} content`} onKeyDown={handleKeyDown}>
     {!isContact && !isPictures && <TextScene
+      ref={textSceneRef}
       key={section}
       member={member}
       services={services}
       selectedId={selectedId}
       onSelect={id => setSelections(current => ({ ...current, [section]: id }))}
+      onReturnToCharacters={onReturnToCharacters}
       motion={motion}
     />}
 
     <div className="contact-scene" hidden={!isContact}>
-      <Contact sendMessage={services.sendMessage} active={isContact} motion={motion} sceneKey={sceneKey} />
+      <Contact ref={contactRef} sendMessage={services.sendMessage} active={isContact} motion={motion} sceneKey={sceneKey} onReturnToCharacters={onReturnToCharacters} />
     </div>
 
     <div className="pictures-slot" hidden={!isPictures}>
-      <Pictures resource={services.gallery} active={isPictures} albumId={albumId} motion={motion} />
+      <Pictures ref={picturesRef} resource={services.gallery} active={isPictures} albumId={albumId} motion={motion} onReturnToCharacters={onReturnToCharacters} />
     </div>
   </section>;
-}
+});
 
-function TextScene({ member, services, selectedId, onSelect, motion }) {
+export default ContentPanel;
+
+const TextScene = forwardRef(function TextScene({ member, services, selectedId, onSelect, onReturnToCharacters, motion }, forwardedRef) {
   const section = member.section;
   const files = useMemo(() => filesFor(section), [section]);
   const sequence = useMemo(() => sequenceFor(section), [section]);
@@ -57,7 +77,19 @@ function TextScene({ member, services, selectedId, onSelect, motion }) {
   const entryFocusFrame = useRef(0);
   const openerFocusFrame = useRef(0);
   const focusKeyRef = useRef('');
+  const focusHeadingOnEntryRef = useRef(true);
   const key = `${section}:${selectedId}`;
+
+  useImperativeHandle(forwardedRef, () => ({
+    focusContent() {
+      if (isInspecting) {
+        if (!heading.current?.isConnected || heading.current.closest('[hidden],[inert],[aria-hidden="true"]')) return false;
+        heading.current.focus({ preventScroll: true });
+        return document.activeElement === heading.current;
+      }
+      return Boolean(deckRef.current?.focusContent?.());
+    },
+  }), [isInspecting]);
 
   useEffect(() => () => {
     cancelAnimationFrame(entryFocusFrame.current);
@@ -67,23 +99,29 @@ function TextScene({ member, services, selectedId, onSelect, motion }) {
   const openInspector = id => {
     onSelect(id);
     setInspectionId(id);
+    focusHeadingOnEntryRef.current = true;
     focusKeyRef.current = '';
     if (body.current) body.current.scrollTop = 0;
   };
   const closeInspector = () => {
     setInspectionId('');
+    const origin = document.activeElement;
     cancelAnimationFrame(openerFocusFrame.current);
-    openerFocusFrame.current = requestAnimationFrame(() => deckRef.current?.focusSelected());
+    openerFocusFrame.current = requestAnimationFrame(() => {
+      if (document.activeElement === origin || document.activeElement === document.body) deckRef.current?.focusSelected();
+    });
   };
   const moveEntry = direction => {
     const nextId = adjacentFileId(sequence, selectedId, direction);
     if (!nextId) return;
+    const nextIndex = sequence.findIndex(entry => entry.id === nextId);
+    focusHeadingOnEntryRef.current = nextIndex === 0 || nextIndex === sequence.length - 1;
     onSelect(nextId);
     setInspectionId(nextId);
   };
 
   useEffect(() => {
-    if (!isInspecting) { focusKeyRef.current = ''; return undefined; }
+    if (!isInspecting) { focusKeyRef.current = ''; focusHeadingOnEntryRef.current = true; return undefined; }
     if (key === focusKeyRef.current) return undefined;
     focusKeyRef.current = key;
     if (body.current) body.current.scrollTop = 0;
@@ -91,13 +129,15 @@ function TextScene({ member, services, selectedId, onSelect, motion }) {
     cancelAnimationFrame(entryFocusFrame.current);
     entryFocusFrame.current = requestAnimationFrame(() => {
       if (focusKeyRef.current !== expectedKey) return;
-      heading.current?.focus();
+      if (focusHeadingOnEntryRef.current) heading.current?.focus();
+      focusHeadingOnEntryRef.current = false;
     });
     return () => cancelAnimationFrame(entryFocusFrame.current);
   }, [isInspecting, key]);
 
   const handleKeyDown = event => {
-    if (event.key !== 'Escape' || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey
+    if (event.key !== 'Escape' || event.defaultPrevented || event.isComposing || event.keyCode === 229
+      || event.altKey || event.ctrlKey || event.metaKey
       || event.target.closest('input,textarea,select,[contenteditable="true"],[role="dialog"]')) return;
     if (isInspecting) { event.preventDefault(); closeInspector(); }
   };
@@ -112,6 +152,7 @@ function TextScene({ member, services, selectedId, onSelect, motion }) {
         ref={deckRef}
         items={files}
         selectedId={selectedId}
+        onReturnToCharacters={onReturnToCharacters}
         motion={motion && !isInspecting}
         onSelect={onSelect}
         onActivate={openInspector}
@@ -123,12 +164,16 @@ function TextScene({ member, services, selectedId, onSelect, motion }) {
       title={title}
       breadcrumb={crumbs}
       onClose={closeInspector}
+      backLabel={`← ${section}`}
       position={currentIndex + 1}
       total={sequence.length}
+      currentLabel={currentEntry?.navigationLabel ?? title}
       onPrevious={() => moveEntry(-1)}
       onNext={() => moveEntry(1)}
       previousDisabled={currentIndex <= 0}
       nextDisabled={currentIndex < 0 || currentIndex >= sequence.length - 1}
+      previousLabel={currentIndex > 0 ? `Previous: ${sequence[currentIndex - 1].navigationLabel}` : 'Previous item'}
+      nextLabel={currentIndex >= 0 && currentIndex < sequence.length - 1 ? `Next: ${sequence[currentIndex + 1].navigationLabel}` : 'Next item'}
       headingRef={heading}
       bodyRef={body}
       navigationLabel={`${section} cards`}
@@ -142,4 +187,4 @@ function TextScene({ member, services, selectedId, onSelect, motion }) {
       </div>
     </InspectPanel>
   </div>;
-}
+});

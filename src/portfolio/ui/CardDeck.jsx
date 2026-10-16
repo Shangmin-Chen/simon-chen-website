@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useId, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
 import { cardIndexFor, moveInventoryIndex } from '../domain/card-navigation';
 import { inventoryLayout } from '../domain/inventory-layout';
 import InventoryFrame from './InventoryFrame';
@@ -12,6 +12,10 @@ function revealInventoryButton(button) {
   const rackRect = rack.getBoundingClientRect();
   const visibleTop = rackRect.top + rack.clientTop;
   const visibleBottom = visibleTop + rack.clientHeight;
+  if (buttonRect.height >= rack.clientHeight) {
+    rack.scrollTop += buttonRect.top - visibleTop;
+    return;
+  }
   if (buttonRect.top < visibleTop) rack.scrollTop -= visibleTop - buttonRect.top;
   else if (buttonRect.bottom > visibleBottom) rack.scrollTop += buttonRect.bottom - visibleBottom;
 }
@@ -22,7 +26,8 @@ function focusInventoryButton(button) {
   revealInventoryButton(button);
 }
 
-const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect, onActivate, label = 'Items', renderVisual, motion = true }, forwardedRef) {
+const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect, onActivate, onReturnToCharacters, label = 'Items', heading = label, backLabel = '← characters', emptyContent, renderVisual, motion = true }, forwardedRef) {
+  const instructionsId = useId();
   const deckRef = useRef(null);
   const rackRef = useRef(null);
   const layoutCacheRef = useRef(null);
@@ -37,13 +42,17 @@ const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect
 
   const focusSelected = useCallback(() => {
     const deck = deckRef.current;
-    if (!deck?.isConnected || deck.closest('[hidden],[inert]')) return;
+    if (!deck?.isConnected || deck.closest('[hidden],[inert],[aria-hidden="true"]')) return false;
     const index = cardIndexFor(items, selectedId);
-    if (index < 0) return;
+    if (index < 0) {
+      deck.focus({ preventScroll: true });
+      return document.activeElement === deck;
+    }
     focusInventoryButton(buttons.current.get(items[index].id));
+    return document.activeElement === buttons.current.get(items[index].id);
   }, [items, selectedId]);
 
-  useImperativeHandle(forwardedRef, () => ({ focusSelected }), [focusSelected]);
+  useImperativeHandle(forwardedRef, () => ({ focusSelected, focusContent: focusSelected }), [focusSelected]);
 
   useEffect(() => {
     const updateVisibility = () => setDocumentVisible(document.visibilityState !== 'hidden');
@@ -112,19 +121,25 @@ const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect
     const safeIndex = Math.max(0, Math.min(items.length - 1, index));
     const item = items[safeIndex];
     if (!item) return;
-    onSelect?.(item.id);
+    const origin = document.activeElement;
+    if (!origin?.matches('[data-inventory-index]') || !deckRef.current?.contains(origin)) return;
     cancelAnimationFrame(focusFrame.current);
     focusFrame.current = requestAnimationFrame(() => {
-      if (!deckRef.current?.isConnected || deckRef.current.closest('[hidden],[inert]')) return;
+      const deck = deckRef.current;
+      if (!deck?.isConnected || deck.closest('[hidden],[inert]') || document.activeElement !== origin || !deck.contains(origin)) return;
+      // Selection follows the new focused slot's onFocus handler, so Tab can
+      // leave from the original roving tab stop before this frame runs.
       focusInventoryButton(buttons.current.get(item.id));
     });
-  }, [items, onSelect]);
+  }, [items]);
 
   const handleKeyDown = event => {
-    if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.target.closest('input,textarea,select,[contenteditable="true"]')) return;
+    if (event.defaultPrevented || event.isComposing || event.keyCode === 229 || event.altKey || event.ctrlKey || event.metaKey
+      || event.target.closest('input,textarea,select,[contenteditable="true"]')) return;
     const focusedSlot = event.target.closest('[data-inventory-index]');
     const focusedIndex = focusedSlot && event.currentTarget.contains(focusedSlot) ? Number(focusedSlot.dataset.inventoryIndex) : -1;
-    const index = Number.isInteger(focusedIndex) && focusedIndex >= 0 ? focusedIndex : cardIndexFor(items, selectedId);
+    if (!Number.isInteger(focusedIndex) || focusedIndex < 0) return;
+    const index = focusedIndex;
     if (event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === 'ArrowUp' || event.key === 'ArrowDown') {
       event.preventDefault();
       const direction = event.key.slice(5).toLowerCase();
@@ -138,14 +153,32 @@ const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect
     }
   };
 
-  return <section className="card-deck" ref={deckRef} data-columns={layout.columns} data-kind={layout.kind} data-motion={motion} data-document-visible={documentVisible ? 'true' : 'false'} aria-label={label} onKeyDown={handleKeyDown}>
+  return <section
+    className="card-deck"
+    ref={deckRef}
+    tabIndex={-1}
+    data-columns={layout.columns}
+    data-kind={layout.kind}
+    data-motion={motion}
+    data-document-visible={documentVisible ? 'true' : 'false'}
+    aria-label={label}
+    onKeyDown={handleKeyDown}
+    onBlurCapture={event => {
+      if (!event.currentTarget.contains(event.relatedTarget)) {
+        cancelAnimationFrame(focusFrame.current);
+        focusFrame.current = 0;
+      }
+    }}
+  >
+    <p className="sr-only" id={instructionsId}>Use Tab or Shift+Tab to leave this inventory. Use the arrow keys to move between items; Home and End go to the first and last item. Press Enter or Space to open an item. Press Escape to go back to the parent menu.</p>
     <InventoryFrame motion={motion}>
       <header className="inventory-frame__header">
-        <h2>{label.toUpperCase()}</h2>
+        <h2>{heading.toUpperCase()}</h2>
+        {onReturnToCharacters && <button className="inventory-frame__back" type="button" aria-label="Back to character selection" onClick={onReturnToCharacters}>{backLabel}</button>}
         <span>{String(items.length).padStart(2, '0')} ITEMS</span>
       </header>
-      <div className="inventory-rack" ref={rackRef} role="group" aria-label={`${label} inventory`}>
-        <div className="inventory-slots" style={{ '--inventory-columns': layout.columns, '--inventory-rows': layout.rows, '--inventory-slot-min-height': `${layout.minimumSlotHeight}px` }}>
+      <div className="inventory-rack" ref={rackRef} role="group" aria-label={`${label} inventory`} aria-describedby={instructionsId}>
+        {items.length ? <div className="inventory-slots" style={{ '--inventory-columns': layout.columns, '--inventory-rows': layout.rows, '--inventory-slot-min-height': `${layout.minimumSlotHeight}px` }}>
           {items.map((item, index) => {
             const visual = renderVisual ? renderVisual(item) : item.visual;
             return <InventorySlot
@@ -162,10 +195,10 @@ const CardDeck = forwardRef(function CardDeck({ items = [], selectedId, onSelect
               ref={node => { if (node) buttons.current.set(item.id, node); else buttons.current.delete(item.id); }}
             />;
           })}
-        </div>
+        </div> : emptyContent && <div className="card-deck__empty" role="status">{emptyContent}</div>}
       </div>
       <footer className="inventory-frame__footer">
-        <p className="card-deck__hint"><span>ARROWS MOVE</span><span>SCROLL TO BROWSE</span><span>ENTER OPEN · ESC BACK</span></p>
+        <p className="card-deck__hint"><span className="card-deck__hint--pointer">CLICK / TAP TO OPEN</span><span className="card-deck__hint--keyboard">ARROWS · ENTER OPEN · ESC BACK · TAB</span></p>
       </footer>
     </InventoryFrame>
   </section>;

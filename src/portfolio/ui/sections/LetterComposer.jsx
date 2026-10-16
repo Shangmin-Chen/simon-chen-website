@@ -1,6 +1,6 @@
-import { socialLinks } from '../../../data/socialLinks';
 import { contactData } from '../../../data/contactData';
 import { contactLimits } from '../../domain/contact';
+import SocialLinks from '../SocialLinks';
 
 export default function LetterComposer({ form, formRef }) {
   return <div className="contact-letter">
@@ -42,9 +42,7 @@ export default function LetterComposer({ form, formRef }) {
         </p>
       </div>
       <span>Simon Chen · comms channel</span>
-      <nav aria-label="Social profiles">
-        {socialLinks.map(link => <a key={link.label} href={link.href} target="_blank" rel="noopener noreferrer">{link.label} ↗</a>)}
-      </nav>
+      <SocialLinks className="contact-letter__social" />
     </footer>
   </div>;
 }

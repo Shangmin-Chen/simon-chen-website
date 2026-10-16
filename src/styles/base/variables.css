@@ -4,7 +4,7 @@
   --color-bg-primary-hsl: 258 24% 5%;
   --color-bg-secondary-hsl: 258 24% 8%;
   --color-text-primary-hsl: 62 16% 87%;
-  --color-text-muted-hsl: 251 13% 65%;
+  --color-text-muted-hsl: 251 13% 70%;
   --color-border-hsl: 251 20% 30%;
   --color-accent-hsl: 68 100% 63%;
   --color-cyan-hsl: 175 86% 65%;
@@ -33,9 +33,6 @@
      from the reference frames, bound to --portrait-* at the portrait boundary. */
   --portrait-frame: var(--text-muted);
   --portrait-title: var(--link-color);
-  --wheel-rail: var(--border-color);
-  --wheel-ring: hsl(var(--color-accent-hsl) / .18);
-  --wheel-ring-inner: hsl(var(--color-cyan-hsl) / .12);
   --activity-empty: var(--text-muted);
   --activity-low: var(--link-color);
   --activity-high: var(--accent-color);
